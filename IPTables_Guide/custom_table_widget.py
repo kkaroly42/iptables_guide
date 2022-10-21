@@ -38,6 +38,8 @@ class CustomTableWidget(QWidget):
     #     ind, id = ind_id
     #     self.rows[ind][id] = value
 
+    # TODO indexing with string return column
+    # TODO Column type as List of QWidgets
     def __getitem__(
             self,
             ind_id: Union[int, slice, List[int], Tuple[int, str]]
@@ -99,6 +101,16 @@ class CustomTableWidget(QWidget):
         else:
             assert False
 
+    def __contains__(self, key: str) -> bool:
+        return any(k == key for k, _ in self.row_types)
+
+    def get_keys(self) -> List[str]:
+        return [k for k, _ in self.row_types]
+
+    def get_column(self, id: str) -> List[QWidget]:
+        assert id in self
+        return [r[id] for r in self.rows]
+
     def __create_row(self) -> Row:
         """
             creates a new row, but not insert it
@@ -116,6 +128,9 @@ class CustomTableWidget(QWidget):
         self.rows.append(new_row)
 
     def insert_row(self, ind: int) -> None:
+        """
+            inserts a row before the given index
+        """
         row_count: int = len(self)
         if ind < 0:
             ind += row_count
@@ -156,6 +171,3 @@ class CustomTableWidget(QWidget):
     ) -> None:
         for r in self.rows:
             func(r[id])
-
-    def get_column(self, id: str) -> List[QWidget]:
-        return [r[id] for r in self.rows]
