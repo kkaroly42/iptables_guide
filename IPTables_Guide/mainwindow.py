@@ -2,41 +2,64 @@
 import sys
 from PySide6.QtWidgets import QApplication, QMainWindow, QWidget
 from PySide6.QtWidgets import QHBoxLayout, QPushButton, QLineEdit
+from PySide6.QtWebEngineWidgets import QWebEngineView
+from PySide6.QtCore import QUrl
 
-from IPTables_Guide.custom_table_widget import CustomTableWidget
+from custom_table_widget import CustomTableWidget
 
 
 class MainWindow(QMainWindow):
+    """
+        test class
+    """
 
     def __init__(self):
-        super(MainWindow, self).__init__()
+        super().__init__()
 
-        self.tableWidget = CustomTableWidget(
-            [("button", QPushButton), ("textbox", QLineEdit)], self)
+        self.table_widget = CustomTableWidget(
+            [("button", QPushButton), ("textbox", QLineEdit)], self
+        )
 
-        self.mainLayout = QHBoxLayout()
+        self.main_layout = QHBoxLayout()
         self.setCentralWidget(QWidget(self))
-        self.centralWidget().setLayout(self.mainLayout)
+        self.centralWidget().setLayout(self.main_layout)
 
-        self.mainLayout.addWidget(self.tableWidget)
+        self.main_layout.addWidget(self.table_widget)
 
-        self.tableWidget.add_row()
+        self.table_widget.add_row()
 
-        self.tableWidget[0]["button"].setText('alma')   # type: ignore
-        self.tableWidget.insert_row(0)
-        self.tableWidget.add_row()
+        self.table_widget[0]["button"].setText("alma")  # type: ignore
+        self.table_widget.insert_row(0)
+        self.table_widget.add_row()
 
-        del self.tableWidget[[1]]
+        del self.table_widget[[1]]
 
-        self.tableWidget.apply_method_to_row(
-            [0, 1], lambda w: w.setMaximumHeight(1000))
-        for i, w in enumerate(self.tableWidget.get_column("button")):
+        self.table_widget.apply_method_to_row(
+            [0, 1], lambda w: w.setMaximumHeight(1000)
+        )
+        for i, w in enumerate(self.table_widget.get_column("button")):
             w.setText(str(i))  # type: ignore
-        self.tableWidget.apply_method_to_column("textbox", lambda w: w.setReadOnly(True))  # type: ignore
+        self.table_widget.apply_method_to_column(
+            "textbox", lambda w: w.setReadOnly(True) # type: ignore
+        ) 
 
-        self.tableWidget.add_row()
+        self.table_widget.add_row()
 
-        self.tableWidget.apply_method_to_row(2, lambda w: w.setText("Hello"))  # type: ignore
+        self.table_widget.apply_method_to_row(
+            2, lambda w: w.setText("Hello") # type: ignore
+        ) 
+        self.table_widget[2, "textbox"].setToolTip(  # type: ignore
+            "It's a tootip!"
+        )
+
+        # help menu
+        dialog = QMainWindow(self)
+        dialog.show()
+        dialog.resize(600, 800)
+        view = QWebEngineView(dialog)
+        dialog.setCentralWidget(view)
+        # view.setUrl(QUrl("https://www.google.com"))
+        view.setUrl(QUrl("./.index.html"))
 
 
 if __name__ == "__main__":

@@ -1,4 +1,13 @@
-from typing import Callable, Dict, Iterator, List, Optional, TypeAlias, Union, Tuple, Callable
+from typing import (
+    Callable,
+    Dict,
+    Iterator,
+    List,
+    Optional,
+    TypeAlias,
+    Union,
+    Tuple
+)
 
 from PySide6.QtWidgets import QWidget, QGridLayout
 
@@ -12,9 +21,8 @@ class CustomTableWidget(QWidget):
     """
 
     def __init__(
-            self,
-            row_types: List[Tuple[str, type]] = [],
-            parent: Optional[QWidget] = None):
+        self, row_types: List[Tuple[str, type]] = [], parent: Optional[QWidget] = None
+    ):
         """
             row_types: a list containing the key-type values of a row\\
             the elements of the row will be ordered the same way as represented
@@ -22,7 +30,7 @@ class CustomTableWidget(QWidget):
 
             parent: the containing widget
         """
-        super(CustomTableWidget, self).__init__(parent)
+        super().__init__(parent)
         assert all(issubclass(t, QWidget) for _, t in row_types)
         self.row_types: List[Tuple[str, type]] = row_types
         self.rows: List[Row] = []
@@ -41,8 +49,7 @@ class CustomTableWidget(QWidget):
     # TODO indexing with string return column
     # TODO Column type as List of QWidgets
     def __getitem__(
-            self,
-            ind_id: Union[int, slice, List[int], Tuple[int, str]]
+        self, ind_id: Union[int, slice, List[int], Tuple[int, str]]
     ) -> Union[QWidget, List[Row], Row]:
         if isinstance(ind_id, tuple):
             assert len(ind_id) == 2
@@ -50,8 +57,7 @@ class CustomTableWidget(QWidget):
             return self.rows[ind][id]
         elif isinstance(ind_id, (int, slice)):
             return self.rows[ind_id]  # type: ignore
-        elif isinstance(ind_id, List) and \
-                all(isinstance(i, int) for i in ind_id):
+        elif isinstance(ind_id, List) and all(isinstance(i, int) for i in ind_id):
             return [self.rows[i] for i in ind_id]
         else:
             assert False
@@ -77,6 +83,7 @@ class CustomTableWidget(QWidget):
         if isinstance(ind, int):
             if ind < 0:
                 ind += len(self)
+            assert ind >= 0
             correct_layout(ind)
             del self.rows[ind]
         elif isinstance(ind, slice):
@@ -145,13 +152,12 @@ class CustomTableWidget(QWidget):
         self.rows.insert(ind, new_row)
 
     def apply_method_to_row(
-        self,
-        ind: Union[int, slice, List[int]],
-        func: Callable[[QWidget], None]
+        self, ind: Union[int, slice, List[int]], func: Callable[[QWidget], None]
     ) -> None:
         def apply_method_to_widgets(r):
             for w in r.values():
                 func(w)
+
         if isinstance(ind, int):
             apply_method_to_widgets(self.rows[ind])
         elif isinstance(ind, slice):
@@ -164,10 +170,6 @@ class CustomTableWidget(QWidget):
         else:
             assert False
 
-    def apply_method_to_column(
-        self,
-        id: str,
-        func: Callable[[QWidget], None]
-    ) -> None:
+    def apply_method_to_column(self, id: str, func: Callable[[QWidget], None]) -> None:
         for r in self.rows:
             func(r[id])

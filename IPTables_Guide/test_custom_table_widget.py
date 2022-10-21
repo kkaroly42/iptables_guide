@@ -27,8 +27,7 @@ def test_initializing(qtbot):
     c2.deleteLater()
 
     # Check non-trivial parameeters
-    c3: CustomTableWidget = CustomTableWidget(
-        [("everything is fabulous", QWidget)])
+    c3: CustomTableWidget = CustomTableWidget([("everything is fabulous", QWidget)])
     assert c3.row_types == [("everything is fabulous", QWidget)]
     assert c3.rows == []
     assert c3.layout() == c3.main_layout
@@ -88,8 +87,9 @@ def test_getitem(qtbot):
 
             # Check if the given widget is
             # in the appropriate place in the layout
-            assert c1[((i, k))] == \
-                c1.main_layout.itemAtPosition(i, keys.index(k)).widget()
+            assert (
+                c1[((i, k))] == c1.main_layout.itemAtPosition(i, keys.index(k)).widget()
+            )
 
     # Check the length of given slice
     assert len(c1[:2]) == 2  # type: ignore
@@ -131,8 +131,7 @@ def test_getitem(qtbot):
 
 
 def test_len(qtbot):
-    c1: CustomTableWidget = CustomTableWidget(
-        [("a", QWidget), ("b", QLabel)])
+    c1: CustomTableWidget = CustomTableWidget([("a", QWidget), ("b", QLabel)])
 
     # Check length of an empty table is 0
     assert len(c1) == 0
@@ -213,7 +212,8 @@ def test_iter(qtbot):
 
 def test_del(qtbot):
     c1: CustomTableWidget = CustomTableWidget(
-        [("button", QPushButton), ("button2", QPushButton)])
+        [("button", QPushButton), ("button2", QPushButton)]
+    )
 
     # Check deleting an element from an empty table raises an error
     with pytest.raises(IndexError):
@@ -323,32 +323,32 @@ def test_del(qtbot):
 def test_contains(qtbot):
     c1: CustomTableWidget = CustomTableWidget(
         [
-            ('0', QWidget),
-            ('2', QWidget),
-            ('4', QWidget),
-            ('6', QWidget),
-            ('8', QWidget),
+            ("0", QWidget),
+            ("2", QWidget),
+            ("4", QWidget),
+            ("6", QWidget),
+            ("8", QWidget),
         ]
     )
 
     # Check containing keys
     assert all(k in c1 for k, _ in c1.row_types)
-    assert '0' in c1
-    assert '2' in c1
-    assert '4' in c1
-    assert '6' in c1
-    assert '8' in c1
+    assert "0" in c1
+    assert "2" in c1
+    assert "4" in c1
+    assert "6" in c1
+    assert "8" in c1
 
     # Check not containing key
-    assert '1' not in c1
-    assert '3' not in c1
-    assert '5' not in c1
-    assert '7' not in c1
-    assert '9' not in c1
-    assert 'a' not in c1
-    assert 'b' not in c1
-    assert 'c' not in c1
-    assert 'z' not in c1
+    assert "1" not in c1
+    assert "3" not in c1
+    assert "5" not in c1
+    assert "7" not in c1
+    assert "9" not in c1
+    assert "a" not in c1
+    assert "b" not in c1
+    assert "c" not in c1
+    assert "z" not in c1
     assert "foo" not in c1
     assert "bar" not in c1
 
@@ -369,29 +369,28 @@ def test_get_keys(qtbot):
 
     c2: CustomTableWidget = CustomTableWidget(
         [
-            ('0', QWidget),
-            ('2', QWidget),
-            ('4', QWidget),
-            ('6', QWidget),
-            ('8', QWidget),
+            ("0", QWidget),
+            ("2", QWidget),
+            ("4", QWidget),
+            ("6", QWidget),
+            ("8", QWidget),
         ]
     )
 
     # Check get keys
     assert len(c2.get_keys()) == 5
     assert all(k in c2 for k in c2.get_keys())
-    assert c2.get_keys() == ['0', '2', '4', '6', '8']
+    assert c2.get_keys() == ["0", "2", "4", "6", "8"]
 
     # Check add_row does not effect keys
     c2.add_row()
     assert len(c2.get_keys()) == 5
     assert all(k in c2 for k in c2.get_keys())
-    assert c2.get_keys() == ['0', '2', '4', '6', '8']
+    assert c2.get_keys() == ["0", "2", "4", "6", "8"]
 
 
 def test_get_column(qtbot):
-    c1: CustomTableWidget = CustomTableWidget(
-        [("a", QPushButton), ("b", QLabel)])
+    c1: CustomTableWidget = CustomTableWidget([("a", QPushButton), ("b", QLabel)])
 
     # Check empty table does not contain any column
     assert len(c1.get_column("a")) == 0
@@ -416,12 +415,12 @@ def test_get_column(qtbot):
     assert all(isinstance(w, QLabel) for w in c1.get_column("b"))
 
     # Check the order of the result
-    c1[(0, "a")].setText("foo") # type: ignore
-    c1[(2, "a")].setText("bar") # type: ignore
-    assert c1.get_column("a")[0].text() == "foo" # type: ignore
-    assert c1.get_column("a")[1].text() == "" # type: ignore
-    assert c1.get_column("a")[2].text() == "bar" # type: ignore
-    assert all(w.text() == "" for w in c1.get_column("b")) # type: ignore
+    c1[(0, "a")].setText("foo")  # type: ignore
+    c1[(2, "a")].setText("bar")  # type: ignore
+    assert c1.get_column("a")[0].text() == "foo"  # type: ignore
+    assert c1.get_column("a")[1].text() == ""  # type: ignore
+    assert c1.get_column("a")[2].text() == "bar"  # type: ignore
+    assert all(w.text() == "" for w in c1.get_column("b"))  # type: ignore
 
 
 def test_create_row(qtbot):
@@ -471,7 +470,8 @@ def test_add_row(qtbot):
     assert c1.main_layout.itemAtPosition(0, 0) is None
 
     c2: CustomTableWidget = CustomTableWidget(
-        [("epsilon", QPushButton), ("delta", QLabel)])
+        [("epsilon", QPushButton), ("delta", QLabel)]
+    )
 
     # Check adding a row rises the length and insert the widgets to the layout
     assert len(c2) == 0
@@ -547,7 +547,8 @@ def test_insert_row(qtbot):
 
 def test_apply_method_to_row(qtbot):
     c1: CustomTableWidget = CustomTableWidget(
-        [("label", QLabel), ("button", QPushButton)])
+        [("label", QLabel), ("button", QPushButton)]
+    )
 
     # Check apply method effects all the elements in a row indexed with int
     c1.add_row()
@@ -588,8 +589,7 @@ def test_apply_method_to_row(qtbot):
             assert r[k].isEnabled() == True  # type: ignore
             for_i += 1
     assert for_i > 0
-    c1.apply_method_to_row(
-        slice(1, 3), lambda x: x.setEnabled(False))  # type: ignore
+    c1.apply_method_to_row(slice(1, 3), lambda x: x.setEnabled(False))  # type: ignore
     for_i = 0
     for k in c1[0]:  # type: ignore
         for r in c1[1:3]:  # type: ignore
@@ -608,7 +608,8 @@ def test_apply_method_to_row(qtbot):
             for_i += 1
     assert for_i > 0
     c1.apply_method_to_row(
-        slice(-3, -1), lambda x: x.setAcceptDrops(True))  # type: ignore
+        slice(-3, -1), lambda x: x.setAcceptDrops(True)
+    )  # type: ignore
     for_i = 0
     for_j = 0
     for k in c1[0]:  # type: ignore
@@ -638,8 +639,7 @@ def test_apply_method_to_row(qtbot):
             assert r[k].isEnabled() == True  # type: ignore
             for_i += 1
     assert for_i > 0
-    c1.apply_method_to_row(
-        [1, -1], lambda x: x.setEnabled(False))  # type: ignore
+    c1.apply_method_to_row([1, -1], lambda x: x.setEnabled(False))  # type: ignore
     for_i = 0
     for k in c1[0]:  # type: ignore
         for r in c1[[1, 3]]:  # type: ignore
@@ -651,8 +651,7 @@ def test_apply_method_to_row(qtbot):
 
 
 def test_apply_method_to_column(qtbot):
-    c1: CustomTableWidget = CustomTableWidget(
-        [("1", QPushButton), ("2", QWidget)])
+    c1: CustomTableWidget = CustomTableWidget([("1", QPushButton), ("2", QWidget)])
 
     # Check applying a method to a column affects the column and no more
     c1.add_row()
