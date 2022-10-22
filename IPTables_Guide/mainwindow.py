@@ -1,11 +1,20 @@
+"""
+    test file
+"""
 # This Python file uses the following encoding: utf-8
 import sys
-from PySide6.QtWidgets import QApplication, QMainWindow, QWidget
-from PySide6.QtWidgets import QHBoxLayout, QPushButton, QLineEdit
-from PySide6.QtWebEngineWidgets import QWebEngineView
-from PySide6.QtCore import QUrl
+from PySide6.QtWidgets import (  # pylint: disable=import-error
+    QApplication,
+    QMainWindow,
+    QWidget,
+    QHBoxLayout,
+    QPushButton,
+    QLineEdit,
+)
+from PySide6.QtWebEngineWidgets import QWebEngineView  # pylint: disable=import-error
+from PySide6.QtCore import QUrl  # pylint: disable=import-error
 
-from custom_table_widget import CustomTableWidget
+from IPTables_Guide.custom_table_widget import CustomTableWidget
 
 
 class MainWindow(QMainWindow):
@@ -37,17 +46,17 @@ class MainWindow(QMainWindow):
         self.table_widget.apply_method_to_row(
             [0, 1], lambda w: w.setMaximumHeight(1000)
         )
-        for i, w in enumerate(self.table_widget.get_column("button")):
-            w.setText(str(i))  # type: ignore
+        for i, widget in enumerate(self.table_widget.get_column("button")):
+            widget.setText(str(i))  # type: ignore
         self.table_widget.apply_method_to_column(
-            "textbox", lambda w: w.setReadOnly(True) # type: ignore
-        ) 
+            "textbox", lambda w: w.setReadOnly(True)  # type: ignore
+        )
 
         self.table_widget.add_row()
 
         self.table_widget.apply_method_to_row(
-            2, lambda w: w.setText("Hello") # type: ignore
-        ) 
+            2, lambda w: w.setText("Hello")  # type: ignore
+        )
         self.table_widget[2, "textbox"].setToolTip(  # type: ignore
             "It's a tootip!"
         )
