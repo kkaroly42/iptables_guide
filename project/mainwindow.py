@@ -14,7 +14,7 @@ from PySide6.QtWidgets import (  # pylint: disable=import-error
 from PySide6.QtWebEngineWidgets import QWebEngineView  # pylint: disable=import-error
 from PySide6.QtCore import QUrl  # pylint: disable=import-error
 
-from IPTables_Guide.custom_table_widget import CustomTableWidget
+from custom_table_widget import CustomTableWidget
 
 
 class MainWindow(QMainWindow):
