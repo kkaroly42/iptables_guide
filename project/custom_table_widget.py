@@ -3,7 +3,13 @@
 """
 from typing import Callable, Dict, Iterator, List, Optional, TypeAlias, Union, Tuple
 
-from PySide6.QtWidgets import QWidget, QGridLayout  # pylint: disable=import-error
+# from PySide6.QtCore import Qt
+from PySide6.QtWidgets import (
+    QWidget,
+    QGridLayout,
+    QVBoxLayout,
+    QSpacerItem,
+)  # pylint: disable=import-error
 
 Row: TypeAlias = Dict[str, QWidget]
 
@@ -32,7 +38,7 @@ class CustomTableWidget(QWidget):
         assert all(issubclass(t, QWidget) for _, t in row_types)
         self.row_types: List[Tuple[str, type]] = row_types
         self.rows: List[Row] = []
-        self.main_layout: QGridLayout = QGridLayout(self)
+        self.main_layout: QGridLayout = QGridLayout()
         self.setLayout(self.main_layout)
         self.main_layout.setHorizontalSpacing(0)
         self.main_layout.setVerticalSpacing(0)
@@ -83,7 +89,7 @@ class CustomTableWidget(QWidget):
         """
 
         def correct_layout(i):
-            for r_ind in range(i, len(self)):
+            for r_ind in range(i + 1, len(self)):
                 for c_ind in range(len(self.row_types)):
                     item = self.main_layout.itemAtPosition(r_ind, c_ind)
                     widget: QWidget = item.widget()
