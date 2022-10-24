@@ -5,23 +5,18 @@ import sys
 from typing import Optional, List
 from PySide6.QtWidgets import (  # pylint: disable=import-error
     QApplication,
-    QMainWindow,
     QWidget,
-    QHBoxLayout,
-    QVBoxLayout,
     QPushButton,
     QLineEdit,
     QCheckBox,
-    QLabel,
 )
 
-# from PySide6.QtWebEngineWidgets import QWebEngineView  # pylint: disable=import-error
-from PySide6.QtCore import Slot  # , QUrl  # pylint: disable=import-error
+from PySide6.QtCore import Slot  # pylint: disable=import-error
 
-from custom_table_widget import CustomTableWidget
+from abstract_window import AbstractWindow
 
 
-class TableWindow(QMainWindow):
+class TableWindow(AbstractWindow):
     """
         Window representing a table
     """
@@ -29,26 +24,11 @@ class TableWindow(QMainWindow):
     def __init__(self, parent: Optional[QWidget] = None) -> None:
         """
         """
-        super().__init__(parent)
-        self.setCentralWidget(QWidget(self))
-        self.main_layout = QHBoxLayout()
-        self.centralWidget().setLayout(self.main_layout)
-
-        self.menu_line = QWidget(self.centralWidget())
-        self.menu_line.setMaximumWidth(200)
-        self.table = CustomTableWidget(
+        super().__init__(
+            "",
             [("select", QCheckBox), ("name", QLineEdit), ("statistics", QLineEdit)],
-            self.centralWidget(),
+            parent,
         )
-
-        self.main_layout.addWidget(self.menu_line)
-        self.table_layout = QVBoxLayout()
-        self.table_layout.addWidget(QLabel("", self.centralWidget()))
-        self.table_layout.addWidget(self.table)
-        self.table_layout.insertStretch(-1)
-        self.main_layout.addLayout(self.table_layout)
-
-        self.menu_line.setLayout(QVBoxLayout())
 
         self.buttons = []
         self.buttons.append(QPushButton("New Chain", self.menu_line))
@@ -60,13 +40,6 @@ class TableWindow(QMainWindow):
             self.menu_line.layout().addWidget(button)
         self.buttons[0].clicked.connect(self.append_row)
         self.buttons[1].clicked.connect(self.delete_row)
-
-    def __get_selected_indices(self) -> List[int]:
-        return [
-            i
-            for i, w in enumerate(self.table.get_column("select"))
-            if w.isChecked()  # type: ignore
-        ]
 
     @Slot()
     def append_row(self):
@@ -81,7 +54,7 @@ class TableWindow(QMainWindow):
         """
             Append a row to the end of the table
         """
-        inds: List[int] = self.__get_selected_indices()
+        inds: List[int] = self._get_selected_indices()
         if len(inds) != 1:
             return
         # TODO call API first and wait for its signal
@@ -93,7 +66,7 @@ class TableWindow(QMainWindow):
             remove rows from table
         """
         # TODO call API first and wait for its signal
-        del self.table[self.__get_selected_indices()]
+        del self.table[self._get_selected_indices()]
 
 
 if __name__ == "__main__":

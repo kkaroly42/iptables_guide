@@ -4,11 +4,9 @@
 from typing import Callable, Dict, Iterator, List, Optional, TypeAlias, Union, Tuple
 
 # from PySide6.QtCore import Qt
-from PySide6.QtWidgets import (
+from PySide6.QtWidgets import (  # pylint: disable=import-error
     QWidget,
     QGridLayout,
-    QVBoxLayout,
-    QSpacerItem,
 )  # pylint: disable=import-error
 
 Row: TypeAlias = Dict[str, QWidget]
