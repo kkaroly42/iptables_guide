@@ -3,6 +3,8 @@
 """
 
 from typing import Optional, List, Tuple
+
+from PySide6.QtCore import Slot  # pylint: disable=import-error
 from PySide6.QtWidgets import (  # pylint: disable=import-error
     QMainWindow,
     QWidget,
@@ -29,11 +31,12 @@ class AbstractWindow(QMainWindow):
         """
         super().__init__(parent)
         self.setCentralWidget(QWidget(self))
+        self.resize(600, 400)
         self.main_layout = QHBoxLayout()
         self.centralWidget().setLayout(self.main_layout)
 
         self.menu_line = QWidget(self.centralWidget())
-        self.menu_line.setMaximumWidth(200)
+        self.menu_line.setFixedWidth(100)
         self.table = CustomTableWidget(row_types, self.centralWidget(),)
 
         self.main_layout.addWidget(self.menu_line)
@@ -51,3 +54,35 @@ class AbstractWindow(QMainWindow):
             for i, w in enumerate(self.table.get_column("select"))
             if w.isChecked()  # type: ignore
         ]
+
+    @Slot()
+    def append_row(self):
+        """
+            Append a row to the end of the table
+        """
+        # TODO call API first and wait for its signal
+        self.table.add_row()
+        self._set_row(len(self.table) - 1)
+
+    @Slot()
+    def insert_row(self):
+        """
+            Append a row to the end of the table
+        """
+        inds: List[int] = self._get_selected_indices()
+        if len(inds) != 1:
+            return
+        # TODO call API first and wait for its signal
+        self.table.insert_row(inds[0])
+        self._set_row(inds[0])
+
+    @Slot()
+    def delete_row(self):
+        """
+            remove rows from table
+        """
+        # TODO call API first and wait for its signal
+        del self.table[self._get_selected_indices()]
+
+    def _set_row(self, ind: int) -> None:  # pylint: disable-all
+        ...

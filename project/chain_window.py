@@ -3,7 +3,10 @@
 """
 
 import sys
-from typing import Optional, List
+from typing import Optional  # type: ignore
+from overrides import override  # pylint: disable=import-error
+from PySide6.QtGui import QCloseEvent  # pylint: disable=import-error
+from PySide6.QtCore import Qt  # pylint: disable=import-error
 from PySide6.QtWidgets import (  # pylint: disable=import-error
     QApplication,
     QWidget,
@@ -14,8 +17,6 @@ from PySide6.QtWidgets import (  # pylint: disable=import-error
     QTextEdit,
 )
 
-from PySide6.QtCore import Slot  # pylint: disable=import-error
-
 from abstract_window import AbstractWindow
 
 
@@ -24,7 +25,7 @@ class ChainWindow(AbstractWindow):
         Window representing a table
     """
 
-    def __init__(self, parent: Optional[QWidget] = None) -> None:
+    def __init__(self, chain, parent: Optional[QWidget] = None) -> None:
         """
         """
         super().__init__(
@@ -32,48 +33,38 @@ class ChainWindow(AbstractWindow):
             [("select", QCheckBox), ("type", QComboBox), ("other", QLineEdit)],
             parent,
         )
+        self.chain = chain
+
+        self.setWindowModality(Qt.WindowModal)  # type: ignore
 
         self.buttons = []
         self.buttons.append(QPushButton("Insert rule before", self.menu_line))
         self.buttons.append(QPushButton("insert rule at the end", self.menu_line))
         self.buttons.append(QPushButton("Delete rule", self.menu_line))
-        self.buttons.append(QTextEdit(self.menu_line))
+        self.description = QTextEdit(self.menu_line)
         for button in self.buttons:
             self.menu_line.layout().addWidget(button)
         self.buttons[0].clicked.connect(self.insert_row)
         self.buttons[1].clicked.connect(self.append_row)
         self.buttons[2].clicked.connect(self.delete_row)
 
-    @Slot()
-    def append_row(self):
-        """
-            Append a row to the end of the table
-        """
-        # TODO call API first and wait for its signal
-        self.table.add_row()
+        self.menu_line.layout().addWidget(self.description)
 
-    @Slot()
-    def insert_row(self):
-        """
-            Append a row to the end of the table
-        """
-        inds: List[int] = self._get_selected_indices()
-        if len(inds) != 1:
-            return
-        # TODO call API first and wait for its signal
-        self.table.insert_row(inds[0])
+    @override
+    def _set_row(self, ind: int) -> None:
+        pass
 
-    @Slot()
-    def delete_row(self):
+    @override
+    def closeEvent(self, event: QCloseEvent) -> None:  # pylint: disable=invalid-name
         """
-            remove rows from table
+            handling close event
         """
-        # TODO call API first and wait for its signal
-        del self.table[self._get_selected_indices()]
+        super().closeEvent(event)
+        self.deleteLater()
 
 
 if __name__ == "__main__":
     app = QApplication([])
-    window = ChainWindow()
+    window = ChainWindow(None)
     window.show()
     sys.exit(app.exec())
