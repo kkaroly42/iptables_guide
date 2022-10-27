@@ -5,7 +5,6 @@
 import sys
 from typing import Optional  # type: ignore
 from overrides import override  # pylint: disable=import-error
-from PySide6.QtGui import QCloseEvent  # pylint: disable=import-error
 from PySide6.QtCore import Qt  # pylint: disable=import-error
 from PySide6.QtWidgets import (  # pylint: disable=import-error
     QApplication,
@@ -39,7 +38,7 @@ class ChainWindow(AbstractWindow):
 
         self.buttons = []
         self.buttons.append(QPushButton("Insert rule before", self.menu_line))
-        self.buttons.append(QPushButton("insert rule at the end", self.menu_line))
+        self.buttons.append(QPushButton("Insert rule at the end", self.menu_line))
         self.buttons.append(QPushButton("Delete rule", self.menu_line))
         self.description = QTextEdit(self.menu_line)
         for button in self.buttons:
@@ -53,14 +52,6 @@ class ChainWindow(AbstractWindow):
     @override
     def _set_row(self, ind: int) -> None:
         pass
-
-    @override
-    def closeEvent(self, event: QCloseEvent) -> None:  # pylint: disable=invalid-name
-        """
-            handling close event
-        """
-        super().closeEvent(event)
-        self.deleteLater()
 
 
 if __name__ == "__main__":
