@@ -4,7 +4,10 @@
 
 from typing import Optional, List, Tuple
 
+from overrides import override
+
 from PySide6.QtCore import Slot  # pylint: disable=import-error
+from PySide6.QtGui import QCloseEvent  # pylint: disable=import-error
 from PySide6.QtWidgets import (  # pylint: disable=import-error
     QMainWindow,
     QWidget,
@@ -14,6 +17,7 @@ from PySide6.QtWidgets import (  # pylint: disable=import-error
 )
 
 from custom_table_widget import CustomTableWidget
+from help_window import HelpWindow
 
 
 class AbstractWindow(QMainWindow):
@@ -36,7 +40,7 @@ class AbstractWindow(QMainWindow):
         self.centralWidget().setLayout(self.main_layout)
 
         self.menu_line = QWidget(self.centralWidget())
-        self.menu_line.setFixedWidth(100)
+        self.menu_line.setFixedWidth(150)
         self.table = CustomTableWidget(row_types, self.centralWidget(),)
 
         self.main_layout.addWidget(self.menu_line)
@@ -86,3 +90,11 @@ class AbstractWindow(QMainWindow):
 
     def _set_row(self, ind: int) -> None:  # pylint: disable-all
         ...
+
+    @override
+    def closeEvent(self, event: QCloseEvent) -> None:  # pylint: disable=invalid-name
+        """
+            handling close event
+        """
+        super().closeEvent(event)
+        self.deleteLater()
