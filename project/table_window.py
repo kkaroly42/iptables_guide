@@ -38,6 +38,8 @@ class IPTableWindow(AbstractWindow):
             ],
             parent,
         )
+        # TODO get name of ip_table from API
+        # self.setWindowTitle(ip_table.get_name())
         self.ip_table = ip_table
 
         self.buttons = []

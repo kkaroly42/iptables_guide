@@ -1,3 +1,3 @@
 {
-    "files": ["custom_table_widget.py","__init__.py","mainwindow.py"]
+    "files": ["__init__.py","abstract_window.py","chain_window.py","custom_table_widget.py","gui_utils.py","help_window.py","main_window.py","table_window.py"]
 }
