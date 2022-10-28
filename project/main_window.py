@@ -29,6 +29,9 @@ class MainWindow(QMainWindow):
 
         self.setCentralWidget(QWidget(self))
 
+        self.resize(300, 300)
+        self.setWindowTitle("IPTable-Guide")
+
         self.buttons = {
             "filter": QPushButton("Filter table", self.centralWidget()),
             "nat": QPushButton("Nat table", self.centralWidget()),

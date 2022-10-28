@@ -5,7 +5,6 @@
 import sys
 from typing import Optional  # type: ignore
 from overrides import override  # pylint: disable=import-error
-from PySide6.QtCore import Qt  # pylint: disable=import-error
 from PySide6.QtWidgets import (  # pylint: disable=import-error
     QApplication,
     QWidget,
@@ -33,8 +32,8 @@ class ChainWindow(AbstractWindow):
             parent,
         )
         self.chain = chain
-
-        self.setWindowModality(Qt.WindowModal)  # type: ignore
+        # TODO get name of ip_table from API
+        # self.setWindowTitle(chain.get_name())
 
         self.buttons = []
         self.buttons.append(QPushButton("Insert rule before", self.menu_line))

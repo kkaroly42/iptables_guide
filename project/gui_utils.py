@@ -2,7 +2,7 @@
     Utils for GUI
 """
 from typing import Optional
-from PySide6.QtCore import Slot, QEventLoop  # pylint: disable=import-error
+from PySide6.QtCore import Slot, QEventLoop, Qt  # pylint: disable=import-error
 from PySide6.QtWidgets import QMainWindow  # pylint: disable=import-error
 
 from help_window import HelpWindow
@@ -22,14 +22,16 @@ def open_window(window_type: type, param, parent: Optional[QMainWindow]) -> None
     """
         Opens a new IPTableWindow and wait until it closes
     """
-    if parent is not None:
-        parent.setEnabled(False)
     window = window_type(param, parent)
+    window.setWindowModality(Qt.WindowModal)  # type: ignore
     window.show()
-    # TODO fix modality
-    # window.setWindowModality(Qt.WindowModal)  # type: ignore
+
+    # wait until the child window closes
+    # the child window must call deleteLater after close
     event_loop = QEventLoop()
     window.destroyed.connect(event_loop.quit)  # type: ignore
     event_loop.exec()
+
+    # only the top window can be editable
     if parent is not None:
-        parent.setEnabled(True)
+        parent.setWindowModality(Qt.WindowModal)  #  type: ignore
