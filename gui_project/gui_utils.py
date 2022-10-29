@@ -5,11 +5,11 @@ from typing import Optional
 from PySide6.QtCore import Slot, QEventLoop, Qt  # pylint: disable=import-error
 from PySide6.QtWidgets import QMainWindow  # pylint: disable=import-error
 
-from help_window import HelpWindow
+from gui_project.help_window import HelpWindow
 
 
 @Slot()
-def display_help():
+def display_help() -> None:
     """
         Display the help manual
     """

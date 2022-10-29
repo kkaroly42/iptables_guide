@@ -15,9 +15,9 @@ from PySide6.QtWidgets import (  # pylint: disable=import-error
     QVBoxLayout,
 )
 
-from abstract_window import AbstractWindow
-from chain_window import ChainWindow
-from gui_utils import display_help, open_window
+from gui_project.abstract_window import AbstractWindow
+from gui_project.chain_window import ChainWindow
+from gui_project.gui_utils import display_help, open_window
 
 
 class IPTableWindow(AbstractWindow):

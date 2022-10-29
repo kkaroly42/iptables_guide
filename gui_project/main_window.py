@@ -14,9 +14,9 @@ from PySide6.QtWidgets import (  # pylint: disable=import-error
     QPushButton,
 )
 
-from help_window import HelpWindow
-from table_window import IPTableWindow
-from gui_utils import display_help, open_window
+from gui_project.help_window import HelpWindow
+from gui_project.iptable_window import IPTableWindow
+from gui_project.gui_utils import display_help, open_window
 
 
 class MainWindow(QMainWindow):
