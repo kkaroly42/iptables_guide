@@ -11,7 +11,7 @@ from PySide6.QtWidgets import (  # pylint: disable=import-error
     QPushButton,
 )
 
-from custom_table_widget import CustomTableWidget
+from gui_project.custom_table_widget import CustomTableWidget
 
 
 def test_initializing(qtbot):
@@ -240,7 +240,7 @@ def test_iter(qtbot):
     assert for_i == 3
 
 
-def test_del(qtbot):
+def test_del(qtbot):  # pylint: disable=R0915
     """
         testing __delitem__
     """
@@ -610,7 +610,8 @@ def test_insert_row(qtbot):
         ctw2.insert_row(-5)
 
 
-def test_apply_method_to_row(qtbot):
+def test_apply_method_to_row(qtbot):  # pylint: disable=R0915
+
     """
         testing apply_method_to_row
     """

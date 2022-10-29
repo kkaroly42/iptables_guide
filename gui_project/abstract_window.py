@@ -16,8 +16,7 @@ from PySide6.QtWidgets import (  # pylint: disable=import-error
     QLabel,
 )
 
-from custom_table_widget import CustomTableWidget
-from help_window import HelpWindow
+from gui_project.custom_table_widget import CustomTableWidget
 
 
 class AbstractWindow(QMainWindow):

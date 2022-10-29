@@ -15,7 +15,7 @@ from PySide6.QtWidgets import (  # pylint: disable=import-error
     QTextEdit,
 )
 
-from abstract_window import AbstractWindow
+from gui_project.abstract_window import AbstractWindow
 
 
 class ChainWindow(AbstractWindow):
