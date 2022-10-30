@@ -23,7 +23,7 @@ class HelpWindow(QMainWindow):
         super().__init__()
         view = QWebEngineView(self)
         self.setCentralWidget(view)
-        view.setUrl(QUrl("./.index.html"))
+        view.setUrl(QUrl("./index.html"))
         self.resize(600, 800)
         HelpWindow._instance = self
 
