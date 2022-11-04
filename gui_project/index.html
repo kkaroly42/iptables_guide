@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="style.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Source+Code+Pro');
+        </style>
+    <title>Felhasználói súgó</title>
+</head>
+<body>
+
+     
+    <h1 class="maintitle" id="mid">
+        Felhasználói súgó
+    </h1>
+    <div class="summ">
+        <h2> Tartalom </h2>
+        <a href="#section1">Iptables alapok</a><br />
+        <a href="#section2">A program ismertetése</a><br />
+        <a href="#section3">Rendszerkövetelmények</a><br />
+        <a href="#section4">Telepítés és indítás</a><br />
+        <a href="#section5">Kezdőoldal</a><br />
+        <a href="#section6">Láncok oldala</a><br />
+        <a href="#section7">Szabályok oldala</a><br />
+        <a href="#section8">Egyéb információk</a><br />
+    </div>
+
+  
+<div class="maindiv">
+
+    <h2 id="section1"> <span style="color:#a3d4ac">man</span> <span style="color:#379fb0">iptables</span> </h2>
+    <p>Az iptbales IPv4 csomagszűrő szabályok tábláinak a beállítására, karbarntartására és ellenőrzésére szolgál a linux kernelben (Netfilter), ami magát a csomagtovábbítést végzi. A segítségével tűzfalat készíthetünk a rendszereinkhez. Ezekkel a szabályokkal adhatjuk meg, hogy a hálózati forgalom melyik részét engedhetjük át, és melyiket nem.<br/></p>
+    <p>Több különböző tábla is definiálható. Minden <b>tábla</b> számos beépített láncot is tartalmaz, és tartalmazhat felhasználó által definiált láncokat is. Minden <b>lánc</b> olyan szabályok listája, amelyek adott csomagokhoz alkalmazhatók. Minden <b>szabály</b> megadja, hogy mit kell tenni az adott csomaggal. Ezt 'targetnek' nevezik, ami egy felhasználó által definiált láncra történő ugrást jelenthet.</p><br/>
+    <h3>Táblák</h3>
+    <p>Öt független táblát különböztetünk meg jelenleg a funkcionailtásuk alapján, ezek mind más szabályokat tartalmazhatnak. A táblák láncokból épülnek fel, a láncok pedig szabályokból. A csomagtovábbítási szabályok funkció szerinti csoportosítása a táblákkal történik, a kézbesítés sorrendje szeronti csoportosítás pedig a láncokkal.</p>
+    <p>Az, hogy egy adott időpontban mely táblák vannak érvényben, a kernel konfigurációs beállításaitól és a jelen lévő moduloktól függ.</p>
+    <br/>
+
+    <div class="card">
+        <header class="card-header">filter</header>
+        <div class="container">
+            <ul>
+                <li>alapértelmezett / fő tábla</li>
+                <li>feladata: csomagszűrés</li>
+                <li>eldönti, hogy egy csomag haladhat-e tovább, vagy megtagadhatja a továbbküldését</li>
+                <li>ez a felhasználók által a legtöbbet használt tábla</li>
+            </ul>
+        </div>
+        <div class="footer">láncok: INPUT, FORWARD, OUTPUT</div>
+    </div>
+    <br/>
+    <br/>
+
+    <div class="card">
+        <header class="card-header">nat</header>
+        <div class="container">
+            <ul>
+                <li>hálózati címfordítás</li>
+                <li>ha egy belső hálózatnak egy kijárata van az internet felé, amit több gép is szeretne használni</li>
+                <li>a router használja ezt a táblát</li>
+                <li>belső hálózatról internet használata: a belső hálózat gépei belső IP-címeket kapnak, amiket a router külső IP-címre fordít át, amit az internetre továbbít (POSTROUTING lánc)</li>
+                <li>internetről belső hálózat használata: küldő címek visszafordítása a belső címekre (PREROUTING lánc)</li>
+            </ul>
+        </div>
+        <div class="footer">láncok: PREROUTING, INPUT, OUTPUT, POSTROUTING</div>
+    </div>
+    <br/>
+    <br/>
+
+    <div class="card">
+        <header class="card-header">mangle</header>
+        <div class="container">
+            <ul>
+                <li>tábla csomagok módosításához</li>
+                <li>bejövő csomagok módosítása továbbirányítás előtt (PREROUTING lánc)</li>
+                <li>lokálisan készített csomagok módosítása továbbirányítás előtt (POSTROUTING lánc)</li>
+            </ul>
+        </div>
+        <div class="footer">láncok: PREROUTING, INPUT, FORWARD, OUTPUT, POSTROUTING</div>
+    </div>
+    <br/>
+    <br/>
+
+    <div class="card">
+        <header class="card-header">raw</header>
+        <div class="container">
+            <ul>
+                <li>a kapcsolatfigyelés alóli mentességek konfigurálására használják</li>
+                <li>a Netfilter hookokon magasabb prioritással regisztrálódik, így ez fut le leghamarabb</li>
+                <li>bármely hálózati interfészen keresztül érkező csomaghoz - PREROUTING lánc</li>
+                <li>helyi folyamatok által generált csomagokhoz - OUTPUT lánc</li>
+            </ul>
+        </div>
+        <div class="footer">láncok: PREROUTING, OUTPUT</div>
+    </div>
+    <br/>
+    <br/>
+
+    <div class="card">
+        <header class="card-header">security</header>
+        <div class="container">
+            <ul>
+                <li>MAC (Mandatory Access Control) hálózati szabályokhoz használják</li>
+                <li>kötelező hozzáférés-szabályozást a Linux biztonsági moduljai valósítják meg</li>
+                <li>a filter tábla után kerül meghívásra, hogy a filter tábla DAC (Discretionary Access Control) szabályai a MAC szabályok előtt lépjenek érvénybe</li>
+            </ul>
+        </div>
+        <div class="footer">láncok: INPUT, FORWARD, OUTPUT</div>
+    </div>
+    <br/>
+
+    <p>Mivel a két leggyakrabban használt tábla <span class="cd">filter</span> és a <span class="cd">nat</span> tábla, így a program ezek módosítására ad lehetőséget.<br/></p>
+    
+    <br/><br/>
+    <h3>Targetek</h3>
+    <p>Egy tűzfal szabály meghatározza a kritériumokat, amik egy csomagra és egy targetre vonatkoznak. Ha a csomag nem felel meg a szabálynak, akkor a lánc következő szabályának a vizsgálata következik. Ha megfelel a csomag, akkor a következő szabályt a szabályban megadott target határozza meg. Ez lehet egy felhasználó által definiált lánc neve, egy beépített lánc, vagy az ACCEPT, DROP vagy RETURN speciális értékek egyike.</p>
+    <br/>
+    <div class="card">
+        <div class="containerr">
+            <ul>
+                <li>ACCEPT: átengedi a szabály a csomagot</li>
+                <li>DROP: a csomagot eldobja a szabály, a csomag feldolgozása befejeződik</li>
+                <li>RETURN: a lánc végigjárását megszakítjuk, és az előző (hívó) lánc következő szabályánál folytatódik</li>
+                <li>REJECT: a szabály eldobja a csomagot, ICMP üzenetben értesíti a feladót, a csomag feldolgozása befejeződik</li>
+            </ul>
+        </div>
+    </div>
+    <br/>
+    <p>Ha egy beépített lánc végére érünk, vagy egy beépített láncban egy RETURN célú szabályt találunk, akkor a láncok default értékei által meghatározott cél adja meg, hogy mi a teendő a csomaggal.</p>
+    <p>Fontos, hogy nem minden target lehetőség érhető el minden lánc és tábla esetén, ezt a típusaik határozzák meg.</p>
+
+    <br/><br/>
+    <h3>Láncok</h3>
+    <p>A láncok a csomag útjának az állomásai, ahol szabályokat alkalmazhatunk. Nem minden chain érhető el minden tábla számára, ez táblánként specifikus.</p>
+    <p>A csomagtovábbítás szempontjából öt típusa van a csomagoknak:</p>
+    <div class="card">
+        <div class="containerr">
+            <ul>
+                <li>PREROUTING: beérkező csomagokra, amint bekerülnek a network stack-be; feldolgozásra kerül mielőtt bármilyen útválasztási döntést meghoznánk arról, hogy merre küldjük tovább a csomagot</li>
+                <li>INPUT lánc: a beérkező csomagokra (hálózatról érkező, az adott gépnek szánt csomag)</li>
+                <li>FORWARD lánc: a továbbítandó csomagokra (hálózatról érkező, de nem az adott gépnek szánt csomag)</li>
+                <li>OUTPUT lánc: a kimenő csomagokra (az adott gépről indított csomag)</li>                
+                <li>PREROUTING: kimenő vagy továbbított csomagokra, miután az útválasztási döntéseket meghoztuk, közvetlenül mielőtt a csomag a hálózatra kerüln (a PREROUTING ellentéte)</li>
+            </ul>
+        </div>
+    </div>
+    <br/>
+    <p>A felhasználó emellett saját láncokat is létrehozhat. Az öt beépített láncnak minden táblában van default értéke (policy). Ezek akkor érvényesülnek, amikor a láncban egy szabályt sem lehetett végrehajtani, vagyis egyik végrehajtási feltétel sem teljesült vagy a lánc nem tartalmaz szabályt. Ez az alapértelmezett érték ACCEPT vagy DROP lehet.</p>
+    
+    <br/>
+    <div class="cardd">
+        <header class="card-head">A láncok bejárásának a sorrendje</header>
+        <div class="container">
+            <ul>
+                <li>beérkező csomagokhoz a helyi hálózatra: <span class="ch">PREROUTING</span> &rarr; <span class="ch">INPUT</span> </li>
+                <li>beérkező csomagokhoz, amik egy másik hostra tartanak: <span class="ch">PREROUTING</span> &rarr; <span class="ch">FORWARD</span> &rarr; <span class="ch">POSTROUTING</span> </li></li>
+                <li>lokálisan létrehozott csomagokra: <span class="ch">OUTPUT</span> &rarr; <span class="ch">POSTROUTING</span> </li>
+            </ul>
+        </div>
+    </div>
+
+    <br/><br/>
+    <h3>Szabályok</h3>
+    <p>A szabályok parancsok, amelyek segítségével a hálózati forgalmat manipulálhatjuk. Ha egy lánc meghívásra kerül, a csomagot a lánc minden szabályára ellenőrizni kell a szabályok sorrendjét követve. Ha a csomag nem felel meg egy vizsgált szabálynak, akkora láncban a következő szabályra ellenőrizzük, ha a csomag megfelel egy adott szabálynak, akkor a következő vizsgált szabály a targetben megadott lesz. 
+        Minden szabály három részből áll, ezek közül az első kötelező, a másik két rész opcionális.</p>
+       <p> <u>A szabályok alakja:</u>
+        <ol>
+            <li>parancs (command): a szabály helyének megadása (tábla, lánc) és a végrehajtandó művelet</li>
+            <li>feltétel (match): protokoll típus, cél vagy forrás IP-cím, cél vagy forrás port, input vagy output interface, header</li>
+            <li>célok (target/jump): ha egy csomag megfelel egy szabálynak, akkor ez mondja meg, mi lesz a következő lépés</li>
+        </ol>
+    </p>
+    <br/>
+
+    <br/><br/>
+    <h2 id="section2"> A program ismertetése </h2>
+    <p>A program iptables szabályok összeállítását teszi lehetővé a felhasználó számára grafikus felületen. A szabályok összeállításában magyarázó szövegek és példa szabályok segítenek. 
+        A felhasználónak lehetősége van teszt forgalom futtatására a megalkotott szabályrendszeren, ezzel szemléltetve a szabályok alkalmazhatóságát.<br/></p>
+    
+    <p>A program segítségével a <span class="cd">filter</span> és a <span class="cd">nat</span> táblákhoz adhatuk hozzá láncokat és szabályokat.<br/></p>
+    <br/>
+
+    <h2 id="section3"> Rendszerkövetelmények </h2>
+    <p>A program platformfüggetlen, bármilyen operációs rendszeren futtatható.<br/></p>
+    <br/>
+
+    <h2 id="section4"> Telepítés és indítás </h2>
+    <p><br/></p>
+
+    <h2 id="section5"> Kezdőoldal </h2>
+    <p><br/></p>
+
+    <h2 id="section6"> Láncok oldala </h2>
+    <p><br/></p>
+
+    <h2 id="section7"> Szabályok oldala </h2>
+    <p><br/></p>
+
+    <h2 id="section8"> Egyéb információk </h2>
+    <p><br/></p>
+</div>
+
+
+</body>
