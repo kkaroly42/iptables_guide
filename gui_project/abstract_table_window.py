@@ -17,9 +17,10 @@ from PySide6.QtWidgets import (  # pylint: disable=import-error
 )
 
 from gui_project.custom_table_widget import CustomTableWidget
+from gui_project.gui_utils import log_gui
 
 
-class AbstractWindow(QMainWindow):
+class AbstractTableWindow(QMainWindow):
     """
         Window representing a table
     """
@@ -95,5 +96,6 @@ class AbstractWindow(QMainWindow):
         """
             handling close event
         """
+        assert log_gui(f"{type(self)} Closed")
         super().closeEvent(event)
         self.deleteLater()
