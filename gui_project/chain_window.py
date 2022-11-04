@@ -15,36 +15,39 @@ from PySide6.QtWidgets import (  # pylint: disable=import-error
     QTextEdit,
 )
 
-from gui_project.abstract_window import AbstractWindow
+from gui_project.abstract_table_window import AbstractTableWindow
+
+# from gui_project.gui_utils import log_gui
 
 
-class ChainWindow(AbstractWindow):
+class ChainWindow(AbstractTableWindow):
     """
         Window representing a table
     """
 
-    def __init__(self, chain, parent: Optional[QWidget] = None) -> None:
+    def __init__(self, parent: Optional[QWidget] = None, **kwargs) -> None:
         """
+            kwargs: chain
         """
         super().__init__(
             "",
             [("select", QCheckBox), ("type", QComboBox), ("other", QLineEdit)],
             parent,
         )
-        self.chain = chain
+        self.chain = kwargs["chain"] if "chain" in kwargs else None  # type: ignore
         # TODO get name of ip_table from API
         # self.setWindowTitle(chain.get_name())
 
-        self.buttons = []
-        self.buttons.append(QPushButton("Insert rule before", self.menu_line))
-        self.buttons.append(QPushButton("Insert rule at the end", self.menu_line))
-        self.buttons.append(QPushButton("Delete rule", self.menu_line))
+        self.buttons = {}
+        self.buttons["insert"] = QPushButton("Insert rule before", self.menu_line)
+        self.buttons["append"] = QPushButton("Insert rule at the end", self.menu_line)
+        self.buttons["delete"] = QPushButton("Delete rule", self.menu_line)
         self.description = QTextEdit(self.menu_line)
-        for button in self.buttons:
-            self.menu_line.layout().addWidget(button)
-        self.buttons[0].clicked.connect(self.insert_row)
-        self.buttons[1].clicked.connect(self.append_row)
-        self.buttons[2].clicked.connect(self.delete_row)
+        for k in ["append", "insert", "delete"]:
+            self.menu_line.layout().addWidget(self.buttons[k])
+        self.buttons["insert"].clicked.connect(self.insert_row)  # type: ignore
+        self.buttons["append"].clicked.connect(self.append_row)  # type: ignore
+        self.buttons["delete"].clicked.connect(self.delete_row)  # type: ignore
 
         self.menu_line.layout().addWidget(self.description)
 

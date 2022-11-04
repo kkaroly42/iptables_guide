@@ -3,8 +3,7 @@
 """
 import pytest
 
-from gui_project.help_window import HelpWindow
-from gui_project import gui_utils
+from gui_project.help_window import HelpWindow, display_help
 
 
 def test_help_window(qtbot):
@@ -15,12 +14,12 @@ def test_help_window(qtbot):
 
     # check if HelpWindow is created as a singleton
     assert HelpWindow._instance is None  # pylint: disable=W0212
-    gui_utils.display_help()
+    display_help()
     assert HelpWindow._instance is not None  # pylint: disable=W0212
     with pytest.raises(AssertionError):
         HelpWindow()
     h_w = HelpWindow.get_instance()
-    gui_utils.display_help()
+    display_help()
     assert HelpWindow._instance is not None  # pylint: disable=W0212
     assert h_w == HelpWindow.get_instance()
     assert HelpWindow.get_instance() == HelpWindow.get_instance()

@@ -14,9 +14,10 @@ from PySide6.QtWidgets import (  # pylint: disable=import-error
     QPushButton,
 )
 
-from gui_project.help_window import HelpWindow
+from gui_project.help_window import HelpWindow, display_help
 from gui_project.iptable_window import IPTableWindow
-from gui_project.gui_utils import display_help, open_window
+from gui_project.persistence import PersistenceWindow
+from gui_project.gui_utils import open_window, log_gui
 
 
 class MainWindow(QMainWindow):
@@ -36,22 +37,27 @@ class MainWindow(QMainWindow):
             "filter": QPushButton("Filter table", self.centralWidget()),
             "nat": QPushButton("Nat table", self.centralWidget()),
             "packages": QPushButton("Edit packages", self.centralWidget()),
+            "persistence": QPushButton("Save/Load", self.centralWidget()),
             "help": QPushButton("Help", self.centralWidget()),
         }
 
         self.main_layout: QVBoxLayout = QVBoxLayout()
         self.centralWidget().setLayout(self.main_layout)
 
-        for button in self.buttons.values():
-            self.main_layout.addWidget(button)
+        for k in ["filter", "nat", "packages", "persistence", "help"]:
+            self.main_layout.addWidget(self.buttons[k])
 
         self.buttons["filter"].clicked.connect(  # type: ignore
             # TODO API call
-            lambda: open_window(IPTableWindow, None, self)
+            lambda: open_window(IPTableWindow, self, ip_table=None)
         )
         self.buttons["nat"].clicked.connect(  # type: ignore
             # TODO API call
-            lambda: open_window(IPTableWindow, None, self)
+            lambda: open_window(IPTableWindow, self, ip_table=None)
+        )
+        self.buttons["persistence"].clicked.connect(  # type: ignore
+            # TODO API call
+            lambda: open_window(PersistenceWindow, self)
         )
         self.buttons["help"].clicked.connect(  # type: ignore
             display_help
@@ -62,6 +68,7 @@ class MainWindow(QMainWindow):
         """
             handling close event
         """
+        assert log_gui("Main Window close")
         HelpWindow.delete_instance()
         super().closeEvent(event)
 

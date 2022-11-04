@@ -15,18 +15,20 @@ from PySide6.QtWidgets import (  # pylint: disable=import-error
     QVBoxLayout,
 )
 
-from gui_project.abstract_window import AbstractWindow
+from gui_project.abstract_table_window import AbstractTableWindow
 from gui_project.chain_window import ChainWindow
-from gui_project.gui_utils import display_help, open_window
+from gui_project.gui_utils import open_window
+from gui_project.help_window import display_help
 
 
-class IPTableWindow(AbstractWindow):
+class IPTableWindow(AbstractTableWindow):
     """
         Window representing a table
     """
 
-    def __init__(self, ip_table, parent: Optional[QWidget] = None) -> None:
+    def __init__(self, parent: Optional[QWidget] = None, **kwargs) -> None:
         """
+            kwargs: ip_table
         """
         super().__init__(
             "",
@@ -40,35 +42,38 @@ class IPTableWindow(AbstractWindow):
         )
         # TODO get name of ip_table from API
         # self.setWindowTitle(ip_table.get_name())
-        self.ip_table = ip_table
+        self.ip_table = kwargs["ip_table"] if "ip_table" in kwargs else None
 
-        self.buttons = []
+        self.buttons = {}
         self.cathegory_widget = QWidget(self.menu_line)
         self.menu_line.layout().addWidget(self.cathegory_widget)
         self.menu_line.layout().insertStretch(-1)  # type: ignore
 
-        self.buttons.append(QPushButton("New Chain", self.menu_line))
-        self.buttons.append(QPushButton("Delete row", self.menu_line))
-        self.buttons.append(QPushButton("Save", self.menu_line))
-        self.buttons.append(QPushButton("Load", self.menu_line))
-        self.buttons.append(QPushButton("Help", self.menu_line))
-        for button in self.buttons:
-            self.menu_line.layout().addWidget(button)
-        self.buttons[0].clicked.connect(self.append_row)
-        self.buttons[1].clicked.connect(self.delete_row)
-        self.buttons[4].clicked.connect(display_help)
+        self.buttons["new"] = QPushButton("New Chain", self.menu_line)
+        self.buttons["delete"] = QPushButton("Delete row", self.menu_line)
+        self.buttons["help"] = QPushButton("Help", self.menu_line)
+        for k in ["new", "delete", "help"]:
+            self.menu_line.layout().addWidget(self.buttons[k])
+        self.buttons["new"].clicked.connect(self.append_row)  # type: ignore
+        self.buttons["delete"].clicked.connect(self.delete_row)  # type: ignore
+        self.buttons["help"].clicked.connect(display_help)  # type: ignore
 
         self.cathegory_widget.setLayout(QVBoxLayout(self.cathegory_widget))
 
-        self.cathegories = []
-        self.cathegories.append(QRadioButton("Prerouting", self.cathegory_widget))
-        self.cathegories.append(QRadioButton("Input", self.cathegory_widget))
-        self.cathegories.append(QRadioButton("Forward", self.cathegory_widget))
-        self.cathegories.append(QRadioButton("Output", self.cathegory_widget))
-        self.cathegories.append(QRadioButton("Postrouting", self.cathegory_widget))
-        for cathegory in self.cathegories:
+        # TODO get from ip_table
+        self.cathegory_types = [
+            "Prerouting",
+            "Input",
+            "Forward",
+            "Output",
+            "Postrouting",
+        ]
+        self.cathegory_buttons = [
+            QRadioButton(ct, self.cathegory_widget) for ct in self.cathegory_types
+        ]
+        for cathegory in self.cathegory_buttons:
             self.cathegory_widget.layout().addWidget(cathegory)
-        self.cathegories[0].setChecked(True)
+        self.cathegory_buttons[0].setChecked(True)
 
     @override
     def _set_row(self, ind: int):
@@ -78,7 +83,7 @@ class IPTableWindow(AbstractWindow):
         # TODO API call
         chain = None
         self.table[ind, "open"].clicked.connect(  # type: ignore
-            lambda: open_window(ChainWindow, chain, self)
+            lambda: open_window(ChainWindow, self, chain=chain)
         )
         self.table[ind, "open"].setText("Modify")  # type: ignore
         # self.table.apply_method_to_row(ind, lambda w: w.setToolTip(chain.get_description()))
