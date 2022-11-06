@@ -1,7 +1,5 @@
 import unittest
 
-import IPTables_Guide
-
 import IPTables_Guide.model.packets as packets
 
 class TCP(unittest.TestCase):
