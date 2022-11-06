@@ -2,6 +2,7 @@ import scapy  # type: ignore
 
 from scapy.all import rdpcap, wrpcap  # type: ignore
 from scapy.layers.inet import IP, TCP, UDP, ICMP  # type: ignore
+
 from enum import Enum
 
 
@@ -9,12 +10,19 @@ from typing import List, Dict, Any, Optional
 
 
 class PacketType(Enum):
-    TCP = 1
-    UDP = 2
-    ICMP = 3
+    TCP = "tcp"
+    UDP = "udp"
+    # UDP_LITE = "udplite"
+    ICMP = "icmp"
+    # ICMPV6 = "icmpv6"
+    ESP = "esp"
+    AH = "ah"
+    SCTP = "sctp"
+    # MH = "mh"
 
 
 # TODO set values
+# TODO add ipv6 support
 class Packet:
     def __init__(self, packet: scapy.packet.Packet):
         self._packet: scapy.packet.Packet = packet
@@ -34,9 +42,11 @@ class Packet:
     def get_fields(self) -> Dict[str, Dict[str, Any]]:
         # TODO add explanation
         d = dict()
-        for layer in self._packet:
-            ids = [field.name for field in layer.fields_desc]
-            d[layer.name] = {id: getattr(layer, id) for id in ids}
+        payload = self._packet
+        while payload:
+            ids = [field.name for field in payload.fields_desc]
+            d[payload.name] = {id: getattr(payload, id) for id in ids}
+            payload = payload.payload
         return d
 
 
@@ -54,4 +64,5 @@ def create_packet(
         return Packet(IP(**layer1_args) / UDP(**layer2_args))
     if type == PacketType.ICMP:
         return Packet(IP(**layer1_args) / ICMP(**layer2_args))
+    
     return None
