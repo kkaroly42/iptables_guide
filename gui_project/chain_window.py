@@ -4,6 +4,7 @@
 
 import sys
 from typing import Optional  # type: ignore
+
 from overrides import override  # pylint: disable=import-error
 from PySide6.QtWidgets import (  # pylint: disable=import-error
     QApplication,
@@ -34,7 +35,8 @@ class ChainWindow(AbstractTableWindow):
             [("select", QCheckBox), ("type", QComboBox), ("other", QLineEdit)],
             parent,
         )
-        self.chain = kwargs["chain"] if "chain" in kwargs else None  # type: ignore
+        # type: ignore
+        self.chain = kwargs["chain"] if "chain" in kwargs else None
         # TODO get name of ip_table from API
         # self.setWindowTitle(chain.get_name())
 

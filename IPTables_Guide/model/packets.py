@@ -64,5 +64,5 @@ def create_packet(
         return Packet(IP(**layer1_args) / UDP(**layer2_args))
     if type == PacketType.ICMP:
         return Packet(IP(**layer1_args) / ICMP(**layer2_args))
-    
+
     return None
