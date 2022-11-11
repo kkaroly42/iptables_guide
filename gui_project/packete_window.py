@@ -1,5 +1,5 @@
 """
-    Package manager window
+    Packete manager window
 """
 
 from typing import Optional, Any, List
@@ -24,9 +24,9 @@ from gui_project.abstract_table_window import AbstractTableWindow
 from gui_project.gui_utils import log_gui
 
 
-class PackageType(Enum):
+class PacketeType(Enum):
     """
-        Enum for package types
+        Enum for packete types
     """
 
     TCP = "TCP"
@@ -35,20 +35,22 @@ class PackageType(Enum):
 
 class CreatorDialog(QDialog):
     """
-        dialog for creating a package
+        dialog for creating a packete
     """
 
-    def __init__(self, parent: QWidget, package_type: Optional[PackageType] = None, package=None) -> None:
+    def __init__(
+        self, parent: QWidget, packete_type: Optional[PacketeType] = None, packete=None
+    ) -> None:
         super().__init__(parent)
-        assert package or package_type
-        if (package is not None) and (package_type is not None):
-            # TODO check if the package_type is correct
+        assert packete or packete_type
+        if (packete is not None) and (packete_type is not None):
+            # TODO check if the packete_type is correct
             pass
-        elif package is not None:
-            # TODO set correct package_type
+        elif packete is not None:
+            # TODO set correct packete_type
             pass
 
-        self.package = package
+        self.packete = packete
 
         self.main_layout = QVBoxLayout()
         self.setLayout(self.main_layout)
@@ -68,23 +70,23 @@ class CreatorDialog(QDialog):
         self.accept_button.clicked.connect(self.added)  # type: ignore
         self.reject_button.clicked.connect(self.close)  # type: ignore
 
-        if package_type is PackageType.TCP:
-            self.setWindowTitle("TCP package config")
+        if packete_type is PacketeType.TCP:
+            self.setWindowTitle("TCP packete config")
             self.preferences.setPlainText(
                 "from_adress=localhost\n"
                 "from_port=10000\n"
                 "to_adress=localhost\n"
                 "to_port=10001\n"
-                "package_size=10\n"
+                "packete_size=10\n"
             )
-        elif package_type is PackageType.UDP:
-            self.setWindowTitle("UDP package config")
+        elif packete_type is PacketeType.UDP:
+            self.setWindowTitle("UDP packete config")
             self.preferences.setPlainText(
                 "from_adress=localhost\n"
                 "from_port=10000\n"
                 "to_adress=localhost\n"
                 "to_port=10001\n"
-                "package_size=10\n"
+                "packete_size=10\n"
             )
         else:
             assert False
@@ -95,13 +97,13 @@ class CreatorDialog(QDialog):
             handling close event
         """
         msg_box = QMessageBox()
-        msg_box.setStandardButtons(
-            QMessageBox.Ok | QMessageBox.Cancel)  # type: ignore
+        msg_box.setStandardButtons(QMessageBox.Ok | QMessageBox.Cancel)  # type: ignore
         msg_box.setText("Your changes wont be saved.")
-        if msg_box.exec() is QMessageBox.Cancel:  # type: ignore
+        ret: int = msg_box.exec()
+        if ret == QMessageBox.Cancel:  # type: ignore
             arg__1.ignore()
             return
-        assert log_gui("PackageWindow closed")
+        assert log_gui("PacketeWindow closed")
         # TODO
         super().closeEvent(arg__1)
 
@@ -121,29 +123,29 @@ class CreatorDialog(QDialog):
             msg_box.setText("A line must contain exactly 1 '='")
             msg_box.exec()
             return
-        if self.package is not None:
+        if self.packete is not None:
             # TODO set preferences
             pass
         self.accept()
 
 
-class PackageWindow(AbstractTableWindow):
+class PacketeWindow(AbstractTableWindow):
     """
-        Window managing packages
+        Window managing packetes
     """
 
-    _instance: Optional["PackageWindow"] = None
+    _instance: Optional["PacketeWindow"] = None
 
     def __init__(self, **kwargs) -> None:
         """
         """
-        assert PackageWindow._instance is None
+        assert PacketeWindow._instance is None
         super().__init__(
-            "Packages",
-            [("select", QCheckBox), ("name", QLineEdit), ("open", QPushButton), ],
+            "Packetes",
+            [("select", QCheckBox), ("name", QLineEdit), ("open", QPushButton),],
         )
-        self.package_manager = (
-            kwargs["package_manager"] if "package_manager" in kwargs else None
+        self.packete_manager = (
+            kwargs["packete_manager"] if "packete_manager" in kwargs else None
         )
         self.resize(600, 400)
 
@@ -159,40 +161,38 @@ class PackageWindow(AbstractTableWindow):
         self.menu_line.layout().insertStretch(-1)  # type: ignore
 
         self.buttons["tcp"].clicked.connect(  # type: ignore
-            lambda: self.create_package(PackageType.TCP)
+            lambda: self.create_packete(PacketeType.TCP)
         )
         self.buttons["udp"].clicked.connect(  # type: ignore
-            lambda: self.create_package(PackageType.UDP)
+            lambda: self.create_packete(PacketeType.UDP)
         )
         self.buttons["delete"].clicked.connect(self.delete_row)  # type: ignore
 
-        PackageWindow._instance = self
-        assert log_gui("PackageWindow opened")
+        PacketeWindow._instance = self
+        assert log_gui("PacketeWindow opened")
 
     @Slot()
-    def create_package(self, package_type: PackageType):
+    def create_packete(self, packete_type: PacketeType):
         """
             open a dialog with TCP template
         """
-        dialog = CreatorDialog(self, package_type=package_type)
+        dialog = CreatorDialog(self, packete_type=packete_type)
         dialog.accepted.connect(  # type: ignore
-            lambda: self.add_package(
-                package_type, dialog.preferences.toPlainText())
+            lambda: self.add_packete(packete_type, dialog.preferences.toPlainText())
         )
         dialog.exec()
 
     @Slot()
-    def modify_package(self, package):
+    def modify_packete(self, packete):
         """
             open a dialog with TCP template
         """
-        dialog = CreatorDialog(self, package=package)
-        # TODO handle package modified
-        dialog.accepted.connect(  # type: ignore
-        )
+        dialog = CreatorDialog(self, packete=packete)
+        # TODO handle packete modified
+        dialog.accepted.connect()  # type: ignore
         dialog.exec()
 
-    def add_package(self, package_type: PackageType, preferences: str) -> None:
+    def add_packete(self, packete_type: PacketeType, preferences: str) -> None:
         """
         """
         # TODO API calls
@@ -200,10 +200,10 @@ class PackageWindow(AbstractTableWindow):
 
     @override
     def _set_row(self, ind: int) -> None:
-        package=None
+        packete = None
         self.table[ind, "open"].clicked.connect(  # type: ignore
-            # TODO handle package
-            lambda: self.modify_package(package)
+            # TODO handle packete
+            lambda: self.modify_packete(packete)
         )
         self.table[ind, "open"].setText("Modify")  # type: ignore
 
@@ -212,42 +212,42 @@ class PackageWindow(AbstractTableWindow):
         """
             Set instance to None
         """
-        PackageWindow._instance = None
+        PacketeWindow._instance = None
 
     @override
     def closeEvent(self, event: QCloseEvent) -> None:  # pylint: disable=invalid-name
         """
             handling close event
         """
-        assert log_gui("PackageWindow closed")
+        assert log_gui("PacketeWindow closed")
         super().closeEvent(event)
-        PackageWindow.__instance_deleted()
+        PacketeWindow.__instance_deleted()
         self.deleteLater()
 
     @staticmethod
-    def get_instance(package_manager: Optional[Any] = None) -> "PackageWindow":
+    def get_instance(packete_manager: Optional[Any] = None) -> "PacketeWindow":
         """
             Returns the instance of this class
 
             If no intance is created, creates one
         """
-        assert (package_manager is None) or (PackageWindow._instance is None)
-        return PackageWindow._instance or PackageWindow(package_manager=package_manager)
+        assert (packete_manager is None) or (PacketeWindow._instance is None)
+        return PacketeWindow._instance or PacketeWindow(packete_manager=packete_manager)
 
     @staticmethod
     def delete_instance() -> None:
         """
             Deletes the only instance if exists
         """
-        if PackageWindow._instance is not None:
-            PackageWindow._instance.close()
+        if PacketeWindow._instance is not None:
+            PacketeWindow._instance.close()
 
 
 @Slot()
-def get_package_window(package_manager) -> None:
+def get_packete_window(packete_manager) -> None:
     """
-        Display the package manager
+        Display the packete manager
     """
-    package_manager = package_manager if PackageWindow._instance is None else None
-    PackageWindow.get_instance(package_manager).show()
-    PackageWindow.get_instance().activateWindow()
+    packete_manager = packete_manager if PacketeWindow._instance is None else None
+    PacketeWindow.get_instance(packete_manager).show()
+    PacketeWindow.get_instance().activateWindow()
