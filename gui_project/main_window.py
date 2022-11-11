@@ -15,6 +15,7 @@ from PySide6.QtWidgets import (  # pylint: disable=import-error
 )
 
 from gui_project.help_window import HelpWindow, display_help
+from gui_project.package_window import PackageWindow, get_package_window
 from gui_project.iptable_window import IPTableWindow
 from gui_project.persistence import PersistenceWindow
 from gui_project.gui_utils import open_window, log_gui
@@ -55,6 +56,10 @@ class MainWindow(QMainWindow):
             # TODO API call
             lambda: open_window(IPTableWindow, self, ip_table=None)
         )
+        self.buttons["packages"].clicked.connect(  # type: ignore
+            # TODO give the package manager as parameter
+            lambda: get_package_window(None)
+        )
         self.buttons["persistence"].clicked.connect(  # type: ignore
             # TODO API call
             lambda: open_window(PersistenceWindow, self)
@@ -70,6 +75,7 @@ class MainWindow(QMainWindow):
         """
         assert log_gui("Main Window close")
         HelpWindow.delete_instance()
+        PackageWindow.delete_instance()
         super().closeEvent(event)
 
 

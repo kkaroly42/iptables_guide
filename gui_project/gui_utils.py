@@ -13,7 +13,7 @@ def open_window(window_type: type, parent: Optional[QMainWindow], **kwargs) -> N
         Opens a new IPTableWindow and wait until it closes
     """
     if len(kwargs) > 0:
-        window = window_type(parent=parent, kwargs = kwargs)
+        window = window_type(parent=parent, kwargs=kwargs)
     else:
         window = window_type(parent=parent)
     assert log_gui(f"{type(window)} opened")
