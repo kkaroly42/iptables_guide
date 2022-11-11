@@ -73,3 +73,5 @@ Thumbs.db
 
 **/.*
 **/*.pyproject.user
+
+.coverage
