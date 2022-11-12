@@ -17,16 +17,16 @@ class Chain(Enum):
 
 
 class RuleComponent:
-    def __init__(self, raw_form: string):
+    def __init__(self, raw_form: str):
         parsed_form = self.parse_raw_form(raw_form)
-        self.string_form = parsed_form["string_form"]
+        self.str_form = parsed_form["str_form"]
         self.explanation = parsed_form["explanation"]
         if "value" in parsed_form:
             self.value = parsed_form["value"]
         else:
             self.value = None
 
-    def parse_raw_form(self, raw_form: string) -> Dict[string, string]:
+    def parse_raw_form(self, raw_form: str) -> Dict[str, str]:
         pass
 
     def has_value(self) -> bool:
@@ -42,7 +42,7 @@ class Rule:
     def __init__(self, raw_form):
         parsed_form = self.parse_raw_form(raw_form)
 
-    def parse_raw_form(self, raw_form) -> List[Dist[string, string]]:
+    def parse_raw_form(self, raw_form) -> List[Dict[str, str]]:
         pass
 
     def check_total_correctness(self) -> bool:

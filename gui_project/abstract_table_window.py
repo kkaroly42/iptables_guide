@@ -14,6 +14,7 @@ from PySide6.QtWidgets import (  # pylint: disable=import-error
     QHBoxLayout,
     QVBoxLayout,
     QLabel,
+    QMessageBox,
 )
 
 from gui_project.custom_table_widget import CustomTableWidget
@@ -75,6 +76,9 @@ class AbstractTableWindow(QMainWindow):
         """
         inds: List[int] = self._get_selected_indices()
         if len(inds) != 1:
+            msg_box = QMessageBox()
+            msg_box.setText("Insert is only enabled for exactly one row selected")
+            msg_box.exec()
             return
         # TODO call API first and wait for its signal
         self.table.insert_row(inds[0])
