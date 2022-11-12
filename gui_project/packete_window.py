@@ -35,7 +35,7 @@ class CreatorDialog(QDialog):
         self,
         parent: QWidget,
         packet_type: Optional[PacketType] = None,
-        packet: Optional[packet.Packet] = None,  # TODO change if necessary
+        packet: Optional[Packet] = None,  # TODO change if necessary
     ) -> None:
         super().__init__(parent)
         assert packet or packet_type
@@ -179,7 +179,7 @@ class PacketWindow(AbstractTableWindow):
         dialog.exec()
 
     @Slot()
-    def modify_packet(self, packet: packet.Packet):  # TODO modify if necessary
+    def modify_packet(self, packet: Packet):  # TODO modify if necessary
         """
             open a dialog with TCP template
         """
