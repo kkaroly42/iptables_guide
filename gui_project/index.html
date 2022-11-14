@@ -31,10 +31,10 @@
 <div class="maindiv">
 
     <h2 id="section1"> <span style="color:#a3d4ac">man</span> <span style="color:#379fb0">iptables</span> </h2>
-    <p>Az iptbales IPv4 csomagszűrő szabályok tábláinak a beállítására, karbarntartására és ellenőrzésére szolgál a linux kernelben (Netfilter), ami magát a csomagtovábbítést végzi. A segítségével tűzfalat készíthetünk a rendszereinkhez. Ezekkel a szabályokkal adhatjuk meg, hogy a hálózati forgalom melyik részét engedhetjük át, és melyiket nem.<br/></p>
+    <p>Az iptbales IPv4 csomagszűrő szabályok tábláinak a beállítására, karbarntartására és ellenőrzésére szolgál a linux kernelben (Netfilter), ami magát a csomagtovábbítást végzi. A segítségével tűzfalat készíthetünk a rendszereinkhez. Ezekkel a szabályokkal adhatjuk meg, hogy a hálózati forgalom melyik részét engedhetjük át, és melyiket nem.<br/></p>
     <p>Több különböző tábla is definiálható. Minden <b>tábla</b> számos beépített láncot is tartalmaz, és tartalmazhat felhasználó által definiált láncokat is. Minden <b>lánc</b> olyan szabályok listája, amelyek adott csomagokhoz alkalmazhatók. Minden <b>szabály</b> megadja, hogy mit kell tenni az adott csomaggal. Ezt 'targetnek' nevezik, ami egy felhasználó által definiált láncra történő ugrást jelenthet.</p><br/>
     <h3>Táblák</h3>
-    <p>Öt független táblát különböztetünk meg jelenleg a funkcionailtásuk alapján, ezek mind más szabályokat tartalmazhatnak. A táblák láncokból épülnek fel, a láncok pedig szabályokból. A csomagtovábbítási szabályok funkció szerinti csoportosítása a táblákkal történik, a kézbesítés sorrendje szeronti csoportosítás pedig a láncokkal.</p>
+    <p>Öt független táblát különböztetünk meg jelenleg a funkcionailtásuk alapján, ezek mind más szabályokat tartalmazhatnak. A táblák láncokból épülnek fel, a láncok pedig szabályokból. A csomagtovábbítási szabályok funkció szerinti csoportosítása a táblákkal történik, a kézbesítés sorrendje szerinti csoportosítás pedig a láncokkal.</p>
     <p>Az, hogy egy adott időpontban mely táblák vannak érvényben, a kernel konfigurációs beállításaitól és a jelen lévő moduloktól függ.</p>
     <br/>
 
@@ -142,7 +142,7 @@
                 <li>INPUT lánc: a beérkező csomagokra (hálózatról érkező, az adott gépnek szánt csomag)</li>
                 <li>FORWARD lánc: a továbbítandó csomagokra (hálózatról érkező, de nem az adott gépnek szánt csomag)</li>
                 <li>OUTPUT lánc: a kimenő csomagokra (az adott gépről indított csomag)</li>                
-                <li>PREROUTING: kimenő vagy továbbított csomagokra, miután az útválasztási döntéseket meghoztuk, közvetlenül mielőtt a csomag a hálózatra kerüln (a PREROUTING ellentéte)</li>
+                <li>PREROUTING: kimenő vagy továbbított csomagokra, miután az útválasztási döntéseket meghoztuk, közvetlenül mielőtt a csomag a hálózatra kerülne (a PREROUTING ellentéte)</li>
             </ul>
         </div>
     </div>
@@ -163,7 +163,7 @@
 
     <br/><br/>
     <h3>Szabályok</h3>
-    <p>A szabályok parancsok, amelyek segítségével a hálózati forgalmat manipulálhatjuk. Ha egy lánc meghívásra kerül, a csomagot a lánc minden szabályára ellenőrizni kell a szabályok sorrendjét követve. Ha a csomag nem felel meg egy vizsgált szabálynak, akkora láncban a következő szabályra ellenőrizzük, ha a csomag megfelel egy adott szabálynak, akkor a következő vizsgált szabály a targetben megadott lesz. 
+    <p>A szabályok parancsok, amelyek segítségével a hálózati forgalmat manipulálhatjuk. Ha egy lánc meghívásra kerül, a csomagot a lánc minden szabályára ellenőrizni kell a szabályok sorrendjét követve. Ha a csomag nem felel meg egy vizsgált szabálynak, akkor a láncban a következő szabályra ellenőrizzük, ha a csomag megfelel egy adott szabálynak, akkor a következő vizsgált szabály a targetben megadott lesz. 
         Minden szabály három részből áll, ezek közül az első kötelező, a másik két rész opcionális.</p>
        <p> <u>A szabályok alakja:</u>
         <ol>
