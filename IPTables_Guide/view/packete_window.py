@@ -28,7 +28,7 @@ from IPTables_Guide.view.gui_utils import log_gui
 
 class CreatorDialog(QDialog):
     """
-        dialog for creating a packet
+    dialog for creating a packet
     """
 
     def __init__(
@@ -90,7 +90,7 @@ class CreatorDialog(QDialog):
     @override
     def closeEvent(self, arg__1: QCloseEvent) -> None:  # pylint: disable=invalid-name
         """
-            handling close event
+        handling close event
         """
         msg_box = QMessageBox()
         msg_box.setStandardButtons(QMessageBox.Ok | QMessageBox.Cancel)  # type: ignore
@@ -106,9 +106,9 @@ class CreatorDialog(QDialog):
     @Slot()
     def added(self):
         """
-            handle if the user choiced add
+        handle if the user choiced add
 
-            check if the given text has a valid format
+        check if the given text has a valid format
         """
         line: str = self.preferences.toPlainText()
         line = line.replace("\r", "").replace(" ", "").replace("\t", "")
@@ -127,18 +127,21 @@ class CreatorDialog(QDialog):
 
 class PacketWindow(AbstractTableWindow):
     """
-        Window managing packets
+    Window managing packets
     """
 
     _instance: Optional["PacketWindow"] = None
 
     def __init__(self, **kwargs) -> None:
-        """
-        """
+        """ """
         assert PacketWindow._instance is None
         super().__init__(
             "Packets",
-            [("select", QCheckBox), ("name", QLineEdit), ("open", QPushButton),],
+            [
+                ("select", QCheckBox),
+                ("name", QLineEdit),
+                ("open", QPushButton),
+            ],
         )
         self.packet_manager = (
             kwargs["packet_manager"] if "packet_manager" in kwargs else None
@@ -170,7 +173,7 @@ class PacketWindow(AbstractTableWindow):
     @Slot()
     def create_packet(self, packet_type: PacketType):
         """
-            open a dialog with TCP template
+        open a dialog with TCP template
         """
         dialog = CreatorDialog(self, packet_type=packet_type)
         dialog.accepted.connect(  # type: ignore
@@ -181,7 +184,7 @@ class PacketWindow(AbstractTableWindow):
     @Slot()
     def modify_packet(self, packet: Packet):  # TODO modify if necessary
         """
-            open a dialog with TCP template
+        open a dialog with TCP template
         """
         dialog = CreatorDialog(self, packet=packet)
         # TODO handle packet modified
@@ -189,8 +192,7 @@ class PacketWindow(AbstractTableWindow):
         dialog.exec()
 
     def add_packet(self, packet_type: PacketType, preferences: str) -> None:
-        """
-        """
+        """ """
         # TODO API calls
         self.append_row()
 
@@ -206,14 +208,14 @@ class PacketWindow(AbstractTableWindow):
     @staticmethod
     def __instance_deleted():
         """
-            Set instance to None
+        Set instance to None
         """
         PacketWindow._instance = None
 
     @override
     def closeEvent(self, event: QCloseEvent) -> None:  # pylint: disable=invalid-name
         """
-            handling close event
+        handling close event
         """
         assert log_gui("PacketWindow closed")
         super().closeEvent(event)
@@ -223,9 +225,9 @@ class PacketWindow(AbstractTableWindow):
     @staticmethod
     def get_instance(packet_manager: Optional[Any] = None) -> "PacketWindow":
         """
-            Returns the instance of this class
+        Returns the instance of this class
 
-            If no intance is created, creates one
+        If no intance is created, creates one
         """
         assert (packet_manager is None) or (PacketWindow._instance is None)
         return PacketWindow._instance or PacketWindow(packet_manager=packet_manager)
@@ -233,7 +235,7 @@ class PacketWindow(AbstractTableWindow):
     @staticmethod
     def delete_instance() -> None:
         """
-            Deletes the only instance if exists
+        Deletes the only instance if exists
         """
         if PacketWindow._instance is not None:
             PacketWindow._instance.close()
@@ -242,7 +244,7 @@ class PacketWindow(AbstractTableWindow):
 @Slot()
 def get_packet_window(packet_manager) -> None:
     """
-        Display the packet manager
+    Display the packet manager
     """
     packet_manager = packet_manager if PacketWindow._instance is None else None
     PacketWindow.get_instance(packet_manager).show()

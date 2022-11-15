@@ -10,7 +10,7 @@ from PySide6.QtWidgets import QMainWindow  # pylint: disable=import-error
 @Slot()
 def open_window(window_type: type, parent: Optional[QMainWindow], **kwargs) -> None:
     """
-        Opens a new IPTableWindow and wait until it closes
+    Opens a new IPTableWindow and wait until it closes
     """
     if len(kwargs) > 0:
         window = window_type(parent=parent, kwargs=kwargs)
@@ -34,7 +34,7 @@ def open_window(window_type: type, parent: Optional[QMainWindow], **kwargs) -> N
 
 def log_gui(msg: str) -> Literal[True]:
     """
-        Log Gui events to stdout
+    Log Gui events to stdout
     """
     print(f"<{time.ctime()}> log: {msg}")
     return True

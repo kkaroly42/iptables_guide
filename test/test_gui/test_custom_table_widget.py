@@ -16,7 +16,7 @@ from IPTables_Guide.view.custom_table_widget import CustomTableWidget
 
 def test_initializing(qtbot):
     """
-        testing __init__
+    testing __init__
     """
     _ = qtbot
 
@@ -53,7 +53,7 @@ def test_initializing(qtbot):
 
 def test_getitem(qtbot):
     """
-        testing __getitem__
+    testing __getitem__
     """
     _ = qtbot
 
@@ -152,7 +152,7 @@ def test_getitem(qtbot):
 
 def test_len(qtbot):
     """
-        testing __len__
+    testing __len__
     """
     _ = qtbot
 
@@ -204,7 +204,7 @@ def test_len(qtbot):
 
 def test_iter(qtbot):
     """
-        testing __iter__
+    testing __iter__
     """
     _ = qtbot
 
@@ -242,7 +242,7 @@ def test_iter(qtbot):
 
 def test_del(qtbot):  # pylint: disable=R0915
     """
-        testing __delitem__
+    testing __delitem__
     """
     _ = qtbot
 
@@ -357,7 +357,7 @@ def test_del(qtbot):  # pylint: disable=R0915
 
 def test_contains(qtbot):
     """
-        testing __contains__
+    testing __contains__
     """
     _ = qtbot
 
@@ -395,7 +395,7 @@ def test_contains(qtbot):
 
 def test_get_keys(qtbot):
     """
-        testing get_keys
+    testing get_keys
     """
     _ = qtbot
 
@@ -436,7 +436,7 @@ def test_get_keys(qtbot):
 
 def test_get_column(qtbot):
     """
-        testing get_column
+    testing get_column
     """
     _ = qtbot
 
@@ -475,7 +475,7 @@ def test_get_column(qtbot):
 
 def test_create_row(qtbot):
     """
-        testing __create_row
+    testing __create_row
     """
     _ = qtbot
 
@@ -516,7 +516,7 @@ def test_create_row(qtbot):
 
 def test_add_row(qtbot):
     """
-        testing add_row
+    testing add_row
     """
     _ = qtbot
 
@@ -547,7 +547,7 @@ def test_add_row(qtbot):
 
 def test_insert_row(qtbot):
     """
-        testing insert_row
+    testing insert_row
     """
     _ = qtbot
 
@@ -613,7 +613,7 @@ def test_insert_row(qtbot):
 def test_apply_method_to_row(qtbot):  # pylint: disable=R0915
 
     """
-        testing apply_method_to_row
+    testing apply_method_to_row
     """
     _ = qtbot
 
@@ -723,7 +723,7 @@ def test_apply_method_to_row(qtbot):  # pylint: disable=R0915
 
 def test_apply_method_to_column(qtbot):
     """
-        testing apply_method_to_column
+    testing apply_method_to_column
     """
     _ = qtbot
 

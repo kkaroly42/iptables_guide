@@ -23,12 +23,12 @@ from IPTables_Guide.view.help_window import display_help
 
 class IPTableWindow(AbstractTableWindow):
     """
-        Window representing a table
+    Window representing a table
     """
 
     def __init__(self, parent: Optional[QWidget] = None, **kwargs) -> None:
         """
-            kwargs: ip_table
+        kwargs: ip_table
         """
         super().__init__(
             "",
@@ -78,7 +78,7 @@ class IPTableWindow(AbstractTableWindow):
     @override
     def _set_row(self, ind: int):
         """
-            config new row's behaviour
+        config new row's behaviour
         """
         # TODO API call
         chain = None

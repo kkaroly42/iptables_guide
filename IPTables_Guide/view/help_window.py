@@ -13,14 +13,13 @@ from IPTables_Guide.view.gui_utils import log_gui
 
 class HelpWindow(QMainWindow):
     """
-        Window displaying the help manual
+    Window displaying the help manual
     """
 
     _instance: Optional["HelpWindow"] = None
 
     def __init__(self) -> None:
-        """
-        """
+        """ """
         assert HelpWindow._instance is None
         super().__init__()
         view = QWebEngineView(self)
@@ -33,14 +32,14 @@ class HelpWindow(QMainWindow):
     @staticmethod
     def __instance_deleted():
         """
-            Set instance to None
+        Set instance to None
         """
         HelpWindow._instance = None
 
     @override
     def closeEvent(self, event: QCloseEvent) -> None:  # pylint: disable=invalid-name
         """
-            handling close event
+        handling close event
         """
         assert log_gui("Help Window closed")
         super().closeEvent(event)
@@ -50,16 +49,16 @@ class HelpWindow(QMainWindow):
     @staticmethod
     def get_instance() -> "HelpWindow":
         """
-            Returns the instance of this class
+        Returns the instance of this class
 
-            If no intance is created, creates one
+        If no intance is created, creates one
         """
         return HelpWindow._instance or HelpWindow()
 
     @staticmethod
     def delete_instance() -> None:
         """
-            Deletes the only instance if exists
+        Deletes the only instance if exists
         """
         if HelpWindow._instance is not None:
             HelpWindow._instance.close()
@@ -68,7 +67,7 @@ class HelpWindow(QMainWindow):
 @Slot()
 def display_help() -> None:
     """
-        Display the help manual
+    Display the help manual
     """
     HelpWindow.get_instance().show()
     HelpWindow.get_instance().activateWindow()
