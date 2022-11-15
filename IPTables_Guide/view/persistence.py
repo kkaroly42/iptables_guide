@@ -11,7 +11,7 @@ from PySide6.QtWidgets import (  # pylint: disable=import-error
     QGridLayout,
 )
 
-from gui_project.gui_utils import log_gui
+from IPTables_Guide.view.gui_utils import log_gui
 
 
 class PersistenceWindow(QMainWindow):

@@ -14,11 +14,11 @@ from PySide6.QtWidgets import (  # pylint: disable=import-error
     QPushButton,
 )
 
-from gui_project.help_window import HelpWindow, display_help
-from gui_project.packete_window import PacketWindow, get_packet_window
-from gui_project.iptable_window import IPTableWindow
-from gui_project.persistence import PersistenceWindow
-from gui_project.gui_utils import open_window, log_gui
+from IPTables_Guide.view.help_window import HelpWindow, display_help
+from IPTables_Guide.view.packete_window import PacketWindow, get_packet_window
+from IPTables_Guide.view.iptable_window import IPTableWindow
+from IPTables_Guide.view.persistence import PersistenceWindow
+from IPTables_Guide.view.gui_utils import open_window, log_gui
 
 
 class MainWindow(QMainWindow):

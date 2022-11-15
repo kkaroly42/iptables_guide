@@ -1,7 +1,7 @@
 import sys
 
 sys.path.append("./model/")
-from rule_generator import *
+from IPTables_Guide.model.rule_generator import *
 
 
 def test_CommandComponent():

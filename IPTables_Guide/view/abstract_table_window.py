@@ -17,8 +17,8 @@ from PySide6.QtWidgets import (  # pylint: disable=import-error
     QMessageBox,
 )
 
-from gui_project.custom_table_widget import CustomTableWidget
-from gui_project.gui_utils import log_gui
+from IPTables_Guide.view.custom_table_widget import CustomTableWidget
+from IPTables_Guide.view.gui_utils import log_gui
 
 
 class AbstractTableWindow(QMainWindow):

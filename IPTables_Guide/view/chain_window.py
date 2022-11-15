@@ -16,7 +16,7 @@ from PySide6.QtWidgets import (  # pylint: disable=import-error
     QTextEdit,
 )
 
-from gui_project.abstract_table_window import AbstractTableWindow
+from IPTables_Guide.view.abstract_table_window import AbstractTableWindow
 
 # from gui_project.gui_utils import log_gui
 
