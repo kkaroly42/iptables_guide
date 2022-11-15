@@ -15,10 +15,10 @@ from PySide6.QtWidgets import (  # pylint: disable=import-error
     QVBoxLayout,
 )
 
-from gui_project.abstract_table_window import AbstractTableWindow
-from gui_project.chain_window import ChainWindow
-from gui_project.gui_utils import open_window
-from gui_project.help_window import display_help
+from IPTables_Guide.view.abstract_table_window import AbstractTableWindow
+from IPTables_Guide.view.chain_window import ChainWindow
+from IPTables_Guide.view.gui_utils import open_window
+from IPTables_Guide.view.help_window import display_help
 
 
 class IPTableWindow(AbstractTableWindow):

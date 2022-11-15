@@ -8,7 +8,7 @@ from PySide6.QtGui import QCloseEvent  # pylint: disable=import-error
 from PySide6.QtCore import QUrl, Slot  # pylint: disable=import-error
 from PySide6.QtWidgets import QMainWindow  # pylint: disable=import-error
 
-from gui_project.gui_utils import log_gui
+from IPTables_Guide.view.gui_utils import log_gui
 
 
 class HelpWindow(QMainWindow):

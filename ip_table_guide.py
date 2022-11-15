@@ -5,7 +5,7 @@ import sys
 
 from PySide6.QtWidgets import QApplication  # pylint: disable=import-error
 
-from gui_project.main_window import MainWindow
+from IPTables_Guide.view.main_window import MainWindow
 
 if __name__ == "__main__":
     app = QApplication([])

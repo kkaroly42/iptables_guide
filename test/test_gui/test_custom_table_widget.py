@@ -11,7 +11,7 @@ from PySide6.QtWidgets import (  # pylint: disable=import-error
     QPushButton,
 )
 
-from gui_project.custom_table_widget import CustomTableWidget
+from IPTables_Guide.view.custom_table_widget import CustomTableWidget
 
 
 def test_initializing(qtbot):
