@@ -6,6 +6,7 @@ from typing import Optional, Any, List
 from overrides import override  # pylint: disable=import-error
 
 from IPTables_Guide.model.packets import PacketType, Packet
+
 # from IPTables_Guide.model.rule_generator import Rule
 from PySide6.QtCore import Slot  # pylint: disable=import-error
 from PySide6.QtGui import QCloseEvent  # pylint: disable=import-error
