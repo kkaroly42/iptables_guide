@@ -1,4 +1,4 @@
-from enum import Enum
+# from enum import Enum
 from typing import Dict, List, Optional, Tuple, Union
 from abc import abstractmethod
 import IPTables_Guide.model.parser_entries as parser_entries
