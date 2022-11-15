@@ -23,7 +23,7 @@ from IPTables_Guide.view.gui_utils import open_window, log_gui
 
 class MainWindow(QMainWindow):
     """
-        main window of the project
+    main window of the project
     """
 
     def __init__(self, parent: Optional[QWidget] = None) -> None:
@@ -64,14 +64,12 @@ class MainWindow(QMainWindow):
             # TODO API call
             lambda: open_window(PersistenceWindow, self)
         )
-        self.buttons["help"].clicked.connect(  # type: ignore
-            display_help
-        )
+        self.buttons["help"].clicked.connect(display_help)  # type: ignore
 
     @override
     def closeEvent(self, event: QCloseEvent) -> None:  # pylint: disable=invalid-name
         """
-            handling close event
+        handling close event
         """
         assert log_gui("Main Window close")
         HelpWindow.delete_instance()

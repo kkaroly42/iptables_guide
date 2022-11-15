@@ -23,7 +23,7 @@ from IPTables_Guide.view.gui_utils import log_gui
 
 class AbstractTableWindow(QMainWindow):
     """
-        Window representing a table
+    Window representing a table
     """
 
     def __init__(
@@ -32,8 +32,7 @@ class AbstractTableWindow(QMainWindow):
         row_types: List[Tuple[str, type]],
         parent: Optional[QWidget] = None,
     ) -> None:
-        """
-        """
+        """ """
         super().__init__(parent)
         self.setCentralWidget(QWidget(self))
         self.resize(600, 400)
@@ -42,7 +41,10 @@ class AbstractTableWindow(QMainWindow):
 
         self.menu_line = QWidget(self.centralWidget())
         self.menu_line.setFixedWidth(150)
-        self.table = CustomTableWidget(row_types, self.centralWidget(),)
+        self.table = CustomTableWidget(
+            row_types,
+            self.centralWidget(),
+        )
 
         self.main_layout.addWidget(self.menu_line)
         self.table_layout = QVBoxLayout()
@@ -63,7 +65,7 @@ class AbstractTableWindow(QMainWindow):
     @Slot()
     def append_row(self):
         """
-            Append a row to the end of the table
+        Append a row to the end of the table
         """
         # TODO call API first and wait for its signal
         self.table.add_row()
@@ -72,7 +74,7 @@ class AbstractTableWindow(QMainWindow):
     @Slot()
     def insert_row(self):
         """
-            Append a row to the end of the table
+        Append a row to the end of the table
         """
         inds: List[int] = self._get_selected_indices()
         if len(inds) != 1:
@@ -87,7 +89,7 @@ class AbstractTableWindow(QMainWindow):
     @Slot()
     def delete_row(self):
         """
-            remove rows from table
+        remove rows from table
         """
         # TODO call API first and wait for its signal
         del self.table[self._get_selected_indices()]
@@ -98,7 +100,7 @@ class AbstractTableWindow(QMainWindow):
     @override
     def closeEvent(self, event: QCloseEvent) -> None:  # pylint: disable=invalid-name
         """
-            handling close event
+        handling close event
         """
         assert log_gui(f"{type(self)} Closed")
         super().closeEvent(event)

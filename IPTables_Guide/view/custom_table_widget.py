@@ -14,8 +14,8 @@ Row: TypeAlias = Dict[str, QWidget]
 
 class CustomTableWidget(QWidget):
     """
-        Custom table representation which allows
-        to have buttons, checkboxes, etc. in a row
+    Custom table representation which allows
+    to have buttons, checkboxes, etc. in a row
     """
 
     def __init__(
@@ -54,10 +54,10 @@ class CustomTableWidget(QWidget):
         self, ind_id: Union[int, slice, List[int], Tuple[int, str]]
     ) -> Union[QWidget, List[Row], Row]:
         """
-            return the `ind_id` row if `ind_id` is an int, slice or list
+        return the `ind_id` row if `ind_id` is an int, slice or list
 
-            return the `id` widget in the `ind`th row, if `ind_id`
-            is a tuple containing (`ind, id`)
+        return the `id` widget in the `ind`th row, if `ind_id`
+        is a tuple containing (`ind, id`)
         """
         if isinstance(ind_id, tuple):
             assert len(ind_id) == 2
@@ -70,20 +70,20 @@ class CustomTableWidget(QWidget):
 
     def __len__(self) -> int:
         """
-            return the column count of the table
+        return the column count of the table
         """
         return len(self.rows)
 
     def __iter__(self) -> Iterator:
         """
-            return an interator over the rows of the table
+        return an interator over the rows of the table
         """
         for row in self.rows:
             yield row
 
     def __delitem__(self, ind: Union[int, slice, List[int]]):
         """
-            delete the `ind`th row of the table
+        delete the `ind`th row of the table
         """
 
         def correct_layout(i):
@@ -126,26 +126,26 @@ class CustomTableWidget(QWidget):
 
     def __contains__(self, key: str) -> bool:
         """
-            return if the table has a column indexed with `key`
+        return if the table has a column indexed with `key`
         """
         return any(k == key for k, _ in self.row_types)
 
     def get_keys(self) -> List[str]:
         """
-            return the keys of the columns
+        return the keys of the columns
         """
         return [k for k, _ in self.row_types]
 
     def get_column(self, col_id: str) -> List[QWidget]:
         """
-            return the column represented by `col_id`
+        return the column represented by `col_id`
         """
         assert col_id in self
         return [r[col_id] for r in self.rows]
 
     def __create_row(self) -> Row:
         """
-            creates a new row, but not insert it
+        creates a new row, but not insert it
         """
         new_row = {}
         for key, typ in self.row_types:
@@ -154,7 +154,7 @@ class CustomTableWidget(QWidget):
 
     def add_row(self) -> None:
         """
-            append a row to the bottom of the table
+        append a row to the bottom of the table
         """
         row_count: int = len(self)
         new_row: Row = self.__create_row()
@@ -164,7 +164,7 @@ class CustomTableWidget(QWidget):
 
     def insert_row(self, ind: int) -> None:
         """
-            inserts a row before the given index
+        inserts a row before the given index
         """
         row_count: int = len(self)
         if ind < 0:
@@ -183,7 +183,7 @@ class CustomTableWidget(QWidget):
         self, ind: Union[int, slice, List[int]], func: Callable[[QWidget], None]
     ) -> None:
         """
-            apply a method to all the rows at `ind`
+        apply a method to all the rows at `ind`
         """
 
         def apply_method_to_widgets(row):
@@ -206,7 +206,7 @@ class CustomTableWidget(QWidget):
         self, col_id: str, func: Callable[[QWidget], None]
     ) -> None:
         """
-            apply a method to the column represented by `col_id`
+        apply a method to the column represented by `col_id`
         """
         for row in self.rows:
             func(row[col_id])

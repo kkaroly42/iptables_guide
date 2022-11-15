@@ -16,12 +16,11 @@ from IPTables_Guide.view.gui_utils import log_gui
 
 class PersistenceWindow(QMainWindow):
     """
-        Persistence Window
+    Persistence Window
     """
 
     def __init__(self, parent: QWidget) -> None:
-        """
-        """
+        """ """
         super().__init__(parent)
 
         self.setCentralWidget(QWidget(self))
@@ -46,13 +45,13 @@ class PersistenceWindow(QMainWindow):
     @Slot()
     def save_clicked(self):
         """
-            Handle save
+        Handle save
         """
         assert log_gui("Save clicked")
 
     @Slot()
     def load_clicked(self):
         """
-            Handle load
+        Handle load
         """
         assert log_gui("Load clicked")

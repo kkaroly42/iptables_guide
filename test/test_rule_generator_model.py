@@ -5,7 +5,11 @@ from IPTables_Guide.model.rule_generator import *
 
 
 def test_CommandComponent():
-    commands = {"-A": {"str_form": "-A",}}
+    commands = {
+        "-A": {
+            "str_form": "-A",
+        }
+    }
 
     component = CommandComponent(commands)
     assert component.find_fit(["hello"]) == None

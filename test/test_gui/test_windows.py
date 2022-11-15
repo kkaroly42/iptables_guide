@@ -8,7 +8,7 @@ from IPTables_Guide.view.help_window import HelpWindow, display_help
 
 def test_help_window(qtbot):
     """
-        test HelpWindow
+    test HelpWindow
     """
     _ = qtbot
 

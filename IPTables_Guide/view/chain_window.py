@@ -23,12 +23,12 @@ from IPTables_Guide.view.abstract_table_window import AbstractTableWindow
 
 class ChainWindow(AbstractTableWindow):
     """
-        Window representing a table
+    Window representing a table
     """
 
     def __init__(self, parent: Optional[QWidget] = None, **kwargs) -> None:
         """
-            kwargs: chain
+        kwargs: chain
         """
         super().__init__(
             "",
