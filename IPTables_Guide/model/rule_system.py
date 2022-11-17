@@ -22,50 +22,88 @@ class Chain(Enum):
     POSTROUTING = "postrouting"
     FORWARD = "forward"
 
+class Rule: # Remove once the original module can be included!
+    pass
+
+class Packet: # Remove once the original module can be included!
+    pass
+
 class RuleSystem:
-    _validChains: Dict[Table, List[Chain]] = {
-        Table.FILTER: [Chain.INPUT, Chain.FORWARD],
-        Table.NAT: [Chain.INPUT, Chain.FORWARD, Chain.PREROUTING, Chain.POSTROUTING],
-        Table.MANGLE: [Chain.INPUT, Chain.OUTPUT, Chain.FORWARD, Chain.PREROUTING, Chain.POSTROUTING]
-    }
+    def __init__(self):
+        self._tables: Dict[str, Dict[str, List[Rule]]] = RuleSystem.empty_tables()
+
+    def __init__(self, table: Table, chain: Chain, rules: List[Rule]):
+        self._tables: Dict[str, Dict[str, List[Rule]]] = RuleSystem.empty_tables()
+        self._tables[table.value][chain.value] = rules
+
+    @staticmethod
+    def empty_tables() -> Dict[str, Dict[str, List[Rule]]]:
+        tables = {
+            Table.FILTER.value: {
+                "INPUT": [],
+                "FORWARD": []
+            },
+            Table.NAT.value: {
+                "PREROUTING": [],
+                "INPUT": [],
+                "FORWARD": [],
+                "POSTROUTING": []
+            },
+            Table.MANGLE.value: {
+                "PREROUTING": [],
+                "INPUT": [],
+                "FORWARD": [],
+                "OUTPUT": [],
+                "POSTROUTING": []
+            },
+        }
+
+        return tables
+
+    def run_on_packet(self, packet: Packet) -> Packet:
+        pass
+
+    def get_rule(self, id: int) -> Rule:
+        pass
+
+    def update_rule(id, rule: Rule) -> bool:
+        pass
     
-    def __init__(
-        self,
-        rules: List[Rule],
-        table: Optional[Table], # Could be str instead of Enum
-        chain: Optional[Chain] # Could be str instead of Enum
-    ):
-        self.rules = rules
+    def append_rule(self, table: Table, chain: Chain, rule: Rule):
+        if chain.value in self.get_chain_names(table.value):
+            self._tables[table.value][chain.value].append(rule)
 
-        self.table = table,
-        if (chain != None and table != None): # OPTIONAL
-            if (chain not in self._validChains[table]):
-                raise ValueError() 
-        self.chain = chain,
+    def insert_rule(self, table: Table, chain: Chain, rule: Rule, rule_num: int):
+        if chain.value in self.get_chain_names(table.value):
+            self._tables[table.value][chain.value].insert(rule_num, rule)
 
-    def get_rule(self, id) -> Rule:
+    def delete_rule(self, table: Table, chain: Chain, rule_num: int):
+        if chain.value in self.get_chain_names(table.value):
+            del self._tables[table.value][chain.value][rule_num]
+    
+    def get_chain_names(self, table: Table) -> List[str]:
+        return list(self._tables[table].keys())
+
+    def replace(self, table: Table, chain: str, rule_num: int, rule_specs: Dict[str, Any]):
         pass
 
-    def update_rule(self, id, rule: Rule) -> bool:
+    def flush(self, table: Table, chain: str):
         pass
 
-    def delete_rule(self, id) -> bool:
+    def new_chain(self, table: Table, chain: str):
         pass
 
-    def append_rule(self, rule: Rule):
-        self.rules.append(rule)
-
-    def insert_rule(self, rule_num: int, rule: Rule):
-        self.rules.insert(rule_num, rule)
-
-    def delete_rule(self, rule_num: int):
-        del self.rules[rule_num]
-
-    def run_on_packet(self, packet) -> Packet:
+    def delete_chain(self, table: Table, chain: str):
         pass
 
-    def write_to_file(self, path: str) -> bool:
+    def policy(self, table: Table, chain: str, target: str):
         pass
 
-    def read_from_file(self, path: str) -> bool:
+    def rename_chain(self, table: Table, old_chain: str, new_chain: str):
+        pass
+
+    def write_to_file(self):
+        pass
+
+    def read_from_file(self):
         pass
