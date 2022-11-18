@@ -49,13 +49,9 @@ class IPTableWindow(AbstractTableWindow):
         self.menu_line.layout().addWidget(self.cathegory_widget)
         self.menu_line.layout().insertStretch(-1)  # type: ignore
 
-        self.buttons["new"] = QPushButton("New Chain", self.menu_line)
-        self.buttons["delete"] = QPushButton("Delete row", self.menu_line)
         self.buttons["help"] = QPushButton("Help", self.menu_line)
-        for k in ["new", "delete", "help"]:
+        for k in ["help"]:
             self.menu_line.layout().addWidget(self.buttons[k])
-        self.buttons["new"].clicked.connect(self.append_row)  # type: ignore
-        self.buttons["delete"].clicked.connect(self.delete_row)  # type: ignore
         self.buttons["help"].clicked.connect(display_help)  # type: ignore
 
         self.cathegory_widget.setLayout(QVBoxLayout(self.cathegory_widget))
@@ -68,12 +64,9 @@ class IPTableWindow(AbstractTableWindow):
             "Output",
             "Postrouting",
         ]
-        self.cathegory_buttons = [
-            QRadioButton(ct, self.cathegory_widget) for ct in self.cathegory_types
-        ]
-        for cathegory in self.cathegory_buttons:
-            self.cathegory_widget.layout().addWidget(cathegory)
-        self.cathegory_buttons[0].setChecked(True)
+        for cathegory in self.cathegory_types:
+            self.append_row()
+            self.table[-1, "name"].setText(cathegory)  # type: ignore
 
     @override
     def _set_row(self, ind: int):
@@ -85,6 +78,7 @@ class IPTableWindow(AbstractTableWindow):
         self.table[ind, "open"].clicked.connect(  # type: ignore
             lambda: open_window(ChainWindow, self, chain=chain)
         )
+        self.table[ind, "name"].setReadOnly(True) # type: ignore
         self.table[ind, "open"].setText("Modify")  # type: ignore
         # self.table.apply_method_to_row(ind, lambda w: w.setToolTip(chain.get_description()))
 
