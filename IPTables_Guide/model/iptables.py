@@ -1,13 +1,7 @@
-# from rule_generator import Rule
-from rule_system import RuleSystem, Table, Chain
+from IPTables_Guide.model.rule_system import Rule
+from IPTables_Guide.model.rule_system import RuleSystem, Table, Chain
 
 from typing import Dict, List, Any, Optional
-
-class Rule: # Remove once the original module can be included!
-    pass
-
-class Packet: # Remove once the original module can be included!
-    pass
 
 class Iptables:
     def __init__(self, table: Optional[Table], chain: Optional[Chain], rule_system: Optional[RuleSystem]):
