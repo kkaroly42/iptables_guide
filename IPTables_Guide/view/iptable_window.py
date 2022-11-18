@@ -78,7 +78,7 @@ class IPTableWindow(AbstractTableWindow):
         self.table[ind, "open"].clicked.connect(  # type: ignore
             lambda: open_window(ChainWindow, self, chain=chain)
         )
-        self.table[ind, "name"].setReadOnly(True) # type: ignore
+        self.table[ind, "name"].setReadOnly(True)  # type: ignore
         self.table[ind, "open"].setText("Modify")  # type: ignore
         # self.table.apply_method_to_row(ind, lambda w: w.setToolTip(chain.get_description()))
 
