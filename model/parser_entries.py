@@ -36,16 +36,19 @@ possible_commands = {
 possible_chains = {
     "INPUT": {
         "str_form": "INPUT",
+        "value": "INPUT"
         "explanation": "",
         "tables" : ["FILTER", "NAT"]
     },
     "FORWARD": {
         "str_form": "FORWARD",
+        "value": "FORWARD"
         "explanation": "",
     },
     "OUTPUT": {
         "str_form": "OUTPUT",
         "explanation": "",
+        "value": "OUTPUT"
         "tables" : ["FILTER", "NAT"]
     }
 }

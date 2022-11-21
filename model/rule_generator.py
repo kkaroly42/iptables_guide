@@ -149,6 +149,7 @@ class Rule:
                 #print(substr)
                 if type(part) == ChainComponent:
                     result = part.find_fit(substr, self.table)
+                    self.chain = result[0]["value"]
                 else:
                     result = part.find_fit(substr)
                 if result:
