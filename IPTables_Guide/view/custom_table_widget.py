@@ -41,13 +41,6 @@ class CustomTableWidget(QWidget):
         self.main_layout.setHorizontalSpacing(0)
         self.main_layout.setVerticalSpacing(0)
 
-    # TODO is this necessary?
-    # TODO potencial bug source !!!
-    # def __setitem__(self, ind_id, value) -> None:
-    #     assert isinstance(ind_id, tuple) and len(ind_id) == 2
-    #     ind, id = ind_id
-    #     self.rows[ind][id] = value
-
     # TODO indexing with string return column
     # TODO Column type as List of QWidgets
     def __getitem__(

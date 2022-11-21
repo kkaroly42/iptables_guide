@@ -1,39 +1,46 @@
+from typing import Dict, List, Any, Optional
+
+from PySide6.QtCore import QObject, Signal
+
 from IPTables_Guide.model.rule_system import Rule
 from IPTables_Guide.model.rule_system import RuleSystem, Table, Chain
 
-from typing import Dict, List, Any, Optional
 
+class Iptables(QObject):
+    rule_appended = Signal(Table, Chain)
+    rule_inserted = Signal(int, Table, Chain)
+    rule_deleted = Signal(int, Table, Chain)
 
-class Iptables:
     def __init__(
         self,
-        table: Optional[Table],
-        chain: Optional[Chain],
-        rule_system: Optional[RuleSystem],
+        table: Optional[Table] = None,
+        chain: Optional[Chain] = None,
+        rule_system: Optional[RuleSystem] = None,
     ):
+        super().__init__()
         self._tables: Dict[str, Dict[str, List[Rule]]] = RuleSystem.empty_tables()
-        if table != None and chain != None and rule_system != None:
-            self._tables[table.value][chain.value] = rule_system
+        # if table != None and chain != None and rule_system != None:
+        #     self._tables[table.value][chain.value] = rule_system
 
     @staticmethod
-    def empty_tables() -> Dict[str, Dict[str, RuleSystem]]:
+    def empty_tables() -> Dict[str, Dict[str, List[Rule]]]:
         tables = {
             Table.FILTER.value: {
-                "INPUT": RuleSystem([], Table.FILTER, Chain.INPUT),
-                "FORWARD": RuleSystem([], Table.FILTER, Chain.FORWARD),
+                "INPUT": [],
+                "FORWARD": [],
             },
             Table.NAT.value: {
-                "PREROUTING": RuleSystem([], Table.NAT, Chain.PREROUTING),
-                "INPUT": RuleSystem([], Table.NAT, Chain.INPUT),
-                "FORWARD": RuleSystem([], Table.NAT, Chain.FORWARD),
-                "POSTROUTING": RuleSystem([], Table.NAT, Chain.POSTROUTING),
+                "PREROUTING": [],
+                "INPUT": [],
+                "FORWARD": [],
+                "POSTROUTING": [],
             },
             Table.MANGLE.value: {
-                "PREROUTING": RuleSystem([], Table.MANGLE, Chain.PREROUTING),
-                "INPUT": RuleSystem([], Table.MANGLE, Chain.INPUT),
-                "FORWARD": RuleSystem([], Table.MANGLE, Chain.FORWARD),
-                "OUTPUT": RuleSystem([], Table.MANGLE, Chain.OUTPUT),
-                "POSTROUTING": RuleSystem([], Table.MANGLE, Chain.POSTROUTING),
+                "PREROUTING": [],
+                "INPUT": [],
+                "FORWARD": [],
+                "OUTPUT": [],
+                "POSTROUTING": [],
             },
         }
 
@@ -41,15 +48,18 @@ class Iptables:
 
     def append_rule(self, table: Table, chain: Chain, rule: Rule):
         if chain.value in self.get_chain_names(table.value):
-            self._tables[table.value][chain.value].append_rule(rule)
+            self._tables[table.value][chain.value].append(rule)
+            self.rule_appended.emit(table, chain)
 
     def insert_rule(self, table: Table, chain: Chain, rule: Rule, rule_num: int):
         if chain.value in self.get_chain_names(table.value):
-            self._tables[table.value][chain.value].insert_rule(rule_num, rule)
+            self._tables[table.value][chain.value].insert(rule_num, rule)
+            self.rule_inserted.emit(rule_num, table, chain)
 
     def delete_rule(self, table: Table, chain: Chain, rule_num: int):
         if chain.value in self.get_chain_names(table.value):
-            self._tables[table.value][chain.value].delete_rule(rule_num)
+            del self._tables[table.value][chain.value][rule_num]
+            self.rule_deleted.emit(rule_num, table, chain)
 
     def get_chain_names(self, table: Table) -> List[str]:
         return list(self._tables[table].keys())

@@ -6,17 +6,17 @@ from IPTables_Guide.model.rule_generator import *
 
 
 class Table(Enum):
-    FILTER = "filter"
-    NAT = "nat"
-    MANGLE = "mangle"
+    FILTER = "FILTER"
+    NAT = "NAT"
+    MANGLE = "MANGLE"
 
 
 class Chain(Enum):
-    INPUT = "input"
-    OUTPUT = "output"
-    PREROUTING = "prerouting"
-    POSTROUTING = "postrouting"
-    FORWARD = "forward"
+    INPUT = "INPUT"
+    OUTPUT = "OUTPUT"
+    PREROUTING = "PREROUTING"
+    POSTROUTING = "POSTROUTING"
+    FORWARD = "FORWARD"
 
 
 class Packet:  # Remove once the original module can be included!

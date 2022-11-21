@@ -115,8 +115,8 @@ class Rule:
         signatures: List[
             List[Union[SignatureComponent, ChainComponent, RuleSpecification]]
         ],
-        table: Optional[str],
-        chain: Optional[str],
+        table: Optional[str] = None,
+        chain: Optional[str] = None,
     ):
         self.table = table
         self.signatures = signatures

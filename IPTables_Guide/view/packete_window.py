@@ -144,6 +144,8 @@ class PacketWindow(AbstractTableWindow):
                 ("open", QPushButton),
             ],
         )
+        if "kwargs" in kwargs:
+            kwargs = kwargs["kwargs"]
         self.packet_manager = (
             kwargs["packet_manager"] if "packet_manager" in kwargs else None
         )
@@ -183,7 +185,7 @@ class PacketWindow(AbstractTableWindow):
         self.buttons["udp"].clicked.connect(  # type: ignore
             lambda: self.create_packet(PacketType.UDP)
         )
-        self.buttons["delete"].clicked.connect(self.delete_row)  # type: ignore
+        self.buttons["delete"].clicked.connect(self.delete_clicked)  # type: ignore
 
         PacketWindow._instance = self
         assert log_gui("PacketWindow opened")
@@ -257,6 +259,18 @@ class PacketWindow(AbstractTableWindow):
         """
         if PacketWindow._instance is not None:
             PacketWindow._instance.close()
+
+    @Slot()
+    def delete_clicked(self) -> None:
+        inds: List[int] = self._get_selected_indices()
+        if len(inds) == 0:
+            msg_box = QMessageBox()
+            msg_box.setWindowTitle("Message")
+            msg_box.setText("No selected items")
+            msg_box.exec()
+            return
+        for ind in inds:
+            self.delete_row(ind)
 
 
 @Slot()

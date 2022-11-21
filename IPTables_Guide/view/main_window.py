@@ -20,6 +20,9 @@ from IPTables_Guide.view.iptable_window import IPTableWindow
 from IPTables_Guide.view.persistence import PersistenceWindow
 from IPTables_Guide.view.gui_utils import open_window, log_gui
 
+from IPTables_Guide.model.iptables import Iptables
+from IPTables_Guide.model.rule_system import Table
+
 
 class MainWindow(QMainWindow):
     """
@@ -30,6 +33,8 @@ class MainWindow(QMainWindow):
         super().__init__(parent)
 
         self.setCentralWidget(QWidget(self))
+
+        self.model = Iptables()
 
         self.resize(300, 300)
         self.setWindowTitle("iptables guide")
@@ -58,12 +63,14 @@ class MainWindow(QMainWindow):
             self.main_layout.addWidget(self.buttons[k])
 
         self.buttons["filter"].clicked.connect(  # type: ignore
-            # TODO API call
-            lambda: open_window(IPTableWindow, self, ip_table=None)
+            lambda: open_window(
+                IPTableWindow, self, model=self.model, ip_table_type=Table.FILTER
+            )
         )
         self.buttons["nat"].clicked.connect(  # type: ignore
-            # TODO API call
-            lambda: open_window(IPTableWindow, self, ip_table=None)
+            lambda: open_window(
+                IPTableWindow, self, model=self.model, ip_table_type=Table.NAT
+            )
         )
         self.buttons["packages"].clicked.connect(  # type: ignore
             # TODO give the package manager as parameter

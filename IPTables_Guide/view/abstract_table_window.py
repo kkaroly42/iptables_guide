@@ -60,13 +60,11 @@ class AbstractTableWindow(QMainWindow):
 
         self.main_layout.addWidget(self.menu_line)
         self.table_layout = QVBoxLayout()
-        # TODO CHAIN = selected radiobutton chain name
-        self.table_layout.addWidget(
-            QLabel(
-                "sudo iptables -L " + "CHAIN" + " -t " + table_name,
-                self.centralWidget(),
-            )
+        self.table_label = QLabel(
+            table_name,
+            self.centralWidget(),
         )
+        self.table_layout.addWidget(self.table_label)
         self.table_layout.addWidget(self.scroll_area)
         self.main_layout.addLayout(self.table_layout)
 
@@ -88,36 +86,37 @@ class AbstractTableWindow(QMainWindow):
         self.table.add_row()
         self._set_row(len(self.table) - 1)
 
-    @Slot()
-    def insert_row(self):
+    @Slot(int)
+    def insert_row(self, ind: int):
         """
         Append a row to the end of the table
         """
-        inds: List[int] = self._get_selected_indices()
-        if len(inds) != 1:
-            msg_box = QMessageBox()
-            msg_box.setWindowTitle("Message")
-            msg_box.setText("Insert is only enabled for exactly one row selected")
-            msg_box.exec()
-            return
         # TODO call API first and wait for its signal
-        self.table.insert_row(inds[0])
-        self._set_row(inds[0])
+        #     inds: List[int] = self._get_selected_indices()
+        #     if len(inds) != 1:
+        #         msg_box = QMessageBox()
+        #         msg_box.setWindowTitle("Message")
+        #         msg_box.setText("Insert is only enabled for exactly one row selected")
+        #         msg_box.exec()
+        #         return
+        self.table.insert_row(ind)
+        self._set_row(ind)
 
-    @Slot()
-    def delete_row(self):
+    @Slot(int)
+    def delete_row(self, ind: int):
         """
         remove rows from table
         """
-        inds: List[int] = self._get_selected_indices()
-        if len(inds) == 0:
-            msg_box = QMessageBox()
-            msg_box.setWindowTitle("Message")
-            msg_box.setText("No selected items")
-            msg_box.exec()
-            return
+        # inds: List[int] = self._get_selected_indices()
+        # if len(inds) == 0:
+        #     msg_box = QMessageBox()
+        #     msg_box.setWindowTitle("Message")
+        #     msg_box.setText("No selected items")
+        #     msg_box.exec()
+        #     return
         # TODO call API first and wait for its signal
-        del self.table[self._get_selected_indices()]
+        # del self.table[self._get_selected_indices()]
+        del self.table[ind]
 
     def _set_row(self, ind: int) -> None:  # pylint: disable-all
         ...
