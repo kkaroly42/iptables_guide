@@ -13,16 +13,17 @@ def test_CommandComponent():
     assert component.find_fit(["-A"]) == ({"str_form": "-A"}, [])
     assert component.find_fit(["-A", "hi"]) == ({"str_form": "-A"}, ["hi"])
 
-    
     rule_a = MockRule([{"str_form": "-A"}])
     rule_b = MockRule([])
-    
+
     assert component.possible_elements(rule_a) == None
     assert component.possible_elements(rule_b) == commands
+
 
 class MockRule:
     def __init__(self, components):
         self.components = components
+
 
 def test_StartComponent():
     start_strings = {"hi": {"str_form": "hi"}}
@@ -34,9 +35,9 @@ def test_StartComponent():
     assert component.find_fit(["table", "..."]) == None
     rule_a = MockRule([{"str_form": "hi"}])
     rule_b = MockRule([])
-    
+
     assert component.possible_elements(rule_a) == None
-    assert component.possible_elements(rule_b) == {'hi': {'str_form': 'hi'}}
+    assert component.possible_elements(rule_b) == {"hi": {"str_form": "hi"}}
 
 
 def test_ChainComponent():
@@ -48,10 +49,10 @@ def test_ChainComponent():
     )
     assert component.find_fit(["test_chain", "..."], "not_existing_table") == None
     assert component.find_fit(["not_existing_chain", "..."], "test_table") == None
-    
+
     rule_a = MockRule([{"tables": ["test_table"]}])
     rule_b = MockRule([])
-    
+
     assert component.possible_elements(rule_a) == None
     assert component.possible_elements(rule_b) == possible_chains
 
@@ -74,7 +75,7 @@ def test_RuleSpecification():
     spec_components = [MockRuleSpec(1), MockRuleSpec(2)]
     component = RuleSpecification(spec_components)
     assert component.find_fit(["hello", "123", "testing", "apple"]) == (
-        [{'test': 'value'}, {'test': 'value'}],
+        [{"test": "value"}, {"test": "value"}],
         ["apple"],
     )
 
@@ -95,14 +96,12 @@ def test_TableComponent():
 
     result = component.find_fit(["Nobody", "expects", "the"])
     assert result == None
-    
+
     rule_a = MockRule([{"hello": "unit_test"}])
     rule_b = MockRule([])
-    
+
     assert component.possible_elements(rule_a) == None
     assert component.possible_elements(rule_b) == possible_tables
-    
-    
 
 
 class MockComponent(SignatureComponent):

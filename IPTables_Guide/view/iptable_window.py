@@ -105,7 +105,7 @@ class IPTableWindow(AbstractTableWindow):
             QRadioButton(ct, self.chain_widget) for ct in self.chain_types
         ]
         for chain in self.chain_radiobuttons:
-            chain.clicked.connect(lambda: self.setup_rules(chain.text())) # type: ignore
+            chain.clicked.connect(lambda: self.setup_rules(chain.text()))  # type: ignore
             self.chain_widget.layout().addWidget(chain)
         self.chain_radiobuttons[0].setChecked(True)
 

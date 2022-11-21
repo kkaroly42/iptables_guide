@@ -55,7 +55,7 @@ class AbstractTableWindow(QMainWindow):
 
         self.scroll_area = QScrollArea(self.centralWidget())
         self.scroll_area.setWidget(self.scroll_widget)
-        self.scroll_area.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOn) # type: ignore
+        self.scroll_area.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOn)  # type: ignore
         self.scroll_area.setWidgetResizable(True)
 
         self.main_layout.addWidget(self.menu_line)

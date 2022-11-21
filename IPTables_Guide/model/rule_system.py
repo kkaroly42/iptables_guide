@@ -1,13 +1,15 @@
 from enum import Enum
 from typing import List, Dict, Optional
 
-#from IPTables_Guide.model.packets import *
+# from IPTables_Guide.model.packets import *
 from IPTables_Guide.model.rule_generator import *
+
 
 class Table(Enum):
     FILTER = "filter"
     NAT = "nat"
     MANGLE = "mangle"
+
 
 class Chain(Enum):
     INPUT = "input"
@@ -16,42 +18,41 @@ class Chain(Enum):
     POSTROUTING = "postrouting"
     FORWARD = "forward"
 
-class Packet: # Remove once the original module can be included!
+
+class Packet:  # Remove once the original module can be included!
     pass
+
 
 class RuleSystem:
     def __init__(self, rule_signatures):
         self._tables: Dict[str, Dict[str, List[Rule]]] = RuleSystem.empty_tables()
         self._rule_signatures = rule_signatures
 
-#    def __init__(self, table: Table, chain: Chain, rules: List[Rule]):
-#        self._tables: Dict[str, Dict[str, List[Rule]]] = RuleSystem.empty_tables()
-#        self._tables[table.value][chain.value] = rules
+    #    def __init__(self, table: Table, chain: Chain, rules: List[Rule]):
+    #        self._tables: Dict[str, Dict[str, List[Rule]]] = RuleSystem.empty_tables()
+    #        self._tables[table.value][chain.value] = rules
 
     @staticmethod
     def empty_tables() -> Dict[str, Dict[str, List[Rule]]]:
         tables = {
-            Table.FILTER.value: {
-                "INPUT": [],
-                "FORWARD": []
-            },
+            Table.FILTER.value: {"INPUT": [], "FORWARD": []},
             Table.NAT.value: {
                 "PREROUTING": [],
                 "INPUT": [],
                 "FORWARD": [],
-                "POSTROUTING": []
+                "POSTROUTING": [],
             },
             Table.MANGLE.value: {
                 "PREROUTING": [],
                 "INPUT": [],
                 "FORWARD": [],
                 "OUTPUT": [],
-                "POSTROUTING": []
+                "POSTROUTING": [],
             },
         }
 
         return tables
-    
+
     def create_rule_from_raw_str(self, raw: str, table: Table, chain: Chain) -> Rule:
         return Rule(raw, self._rule_signatures, table, chain)
 
@@ -74,7 +75,7 @@ class RuleSystem:
             except (IndexError, KeyError):
                 return False
         return False
-    
+
     def append_rule(self, table: Table, chain: Chain, rule: Rule) -> bool:
         table_str = table.value.lower()
         chain_str = chain.value.upper()
@@ -86,12 +87,18 @@ class RuleSystem:
                 return False
         return False
 
-    def insert_rule(self, table: Table, chain: Chain, rule: Rule, rule_num: int) -> bool:
+    def insert_rule(
+        self, table: Table, chain: Chain, rule: Rule, rule_num: int
+    ) -> bool:
         table_str = table.value.lower()
         chain_str = chain.value.upper()
         if table_str == rule.table.lower() and chain_str == rule.chain.upper():
             try:
-                self._tables[table_str][chain_str] = self._tables[table_str][chain_str][0:rule_num] + [rule] + self._tables[table_str][chain_str][rule_num:]
+                self._tables[table_str][chain_str] = (
+                    self._tables[table_str][chain_str][0:rule_num]
+                    + [rule]
+                    + self._tables[table_str][chain_str][rule_num:]
+                )
                 return True
             except (IndexError, KeyError):
                 return False
@@ -105,7 +112,7 @@ class RuleSystem:
             return True
         except (IndexError, KeyError):
             return False
-    
+
     def get_rules_in_chain(self, table: Table, chain: Chain) -> Optional[List[Rule]]:
         table_str = table.value.lower()
         chain_str = chain.value.upper()
@@ -113,7 +120,7 @@ class RuleSystem:
             return self._tables[table_str][chain_str]
         except KeyError:
             return None
-    
+
     def get_chain_names(self, table: Table) -> List[str]:
         return list(self._tables[table].keys())
 
@@ -137,9 +144,12 @@ class RuleSystem:
             for table in self._tables:
                 for chain in self._tables[table]:
                     if self._tables[table][chain]:
-                        f.write("#{}.{}\n".format(table,chain))
-                    print("hey",self._tables[table][chain])
-                    rules = [rule.get_str_form() + "\n" for rule in self._tables[table][chain]]
+                        f.write("#{}.{}\n".format(table, chain))
+                    print("hey", self._tables[table][chain])
+                    rules = [
+                        rule.get_str_form() + "\n"
+                        for rule in self._tables[table][chain]
+                    ]
                     f.writelines(rules)
 
     def read_from_file(self, file_name):
@@ -154,4 +164,6 @@ class RuleSystem:
                     table, chain = line[1:].split(".")
                 else:
                     rule = self.create_rule_from_raw_str(line, table, chain)
-                    self.append_rule(Table(rule.table.lower()), Chain(rule.chain.lower()), rule)
+                    self.append_rule(
+                        Table(rule.table.lower()), Chain(rule.chain.lower()), rule
+                    )
