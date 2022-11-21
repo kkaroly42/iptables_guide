@@ -68,12 +68,7 @@ class AbstractTableWindow(QMainWindow):
             )
         )
         self.table_layout.addWidget(self.scroll_area)
-        self.table_layout.insertStretch(-1)
         self.main_layout.addLayout(self.table_layout)
-
-        for i in range(self.table_layout.count()):
-            log_gui(self.table_layout.itemAt(i)) # type: ignore
-        self.table_layout.removeItem(self.table_layout.itemAt(2))
 
         self.menu_line.setLayout(QVBoxLayout())
 
