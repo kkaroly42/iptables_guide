@@ -1,8 +1,8 @@
 from enum import Enum
 from typing import List, Dict, Optional
 
-from IPTables_Guide.model.packets import Packet
-from IPTables_Guide.model.rule_generator import Rule
+from IPTables_Guide.model.packets import *
+from IPTables_Guide.model.rule_generator import *
 
 class Table(Enum):
     FILTER = "filter"
