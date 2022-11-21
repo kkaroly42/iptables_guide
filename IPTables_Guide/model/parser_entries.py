@@ -36,19 +36,20 @@ possible_commands = {
 possible_chains = {
     "INPUT": {
         "str_form": "INPUT",
-        "value": "INPUT"
+        "value": "INPUT",
         "explanation": "",
         "tables" : ["FILTER", "NAT"]
     },
     "FORWARD": {
         "str_form": "FORWARD",
-        "value": "FORWARD"
+        "value": "FORWARD",
         "explanation": "",
+        "tables" : ["FILTER"]
     },
     "OUTPUT": {
         "str_form": "OUTPUT",
         "explanation": "",
-        "value": "OUTPUT"
+        "value": "OUTPUT",
         "tables" : ["FILTER", "NAT"]
     }
 }
@@ -73,8 +74,10 @@ class JumpParser:
         self.actions = actions
 
     def find_fit(self, substr: List[str]):
-        start = substr[0] + " " + substr[1]
-        for action in self.actions:
-            if start == self.actions[action]["str_form"]:
-                return self.actions[action], substr[2:]
+        if len(substr) > 1:
+            start = substr[0] + " " + substr[1]
+            for action in self.actions:
+                if start == self.actions[action]["str_form"]:
+                    return self.actions[action], substr[2:]
+        return None
                     

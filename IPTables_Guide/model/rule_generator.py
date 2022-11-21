@@ -57,7 +57,7 @@ class RuleSpecification:
         while i < len(self.possible_components) and substr:
             result = self.possible_components[i].find_fit(substr)
             if result:
-                specs += result[0]
+                specs.append(result[0])
                 substr = result[1]
             i += 1
         return (specs, substr) if len(specs) > 0 else None
@@ -146,19 +146,23 @@ class Rule:
                 #print(substr)
                 if type(part) == ChainComponent:
                     result = part.find_fit(substr, self.table)
-                    self.chain = result[0]["value"]
+                    if result:
+                        self.chain = result[0]["value"]
                 else:
                     result = part.find_fit(substr)
                 if result:
                     if type(part) == TableComponent and self.table == "":
                         self.table = result[0]["value"]
-                    components.append(result[0])
+                    if type(part) == RuleSpecification:
+                        components += result[0]
+                    else:    
+                        components.append(result[0])
                     substr = result[1]
                 i += 1
             if (i < len(signature)-1 and len(substr) == 0):
                 possible_elements.append(signature[i].possible_elements(self))
                 possible_elements.append(signature[i+1].possible_elements(self))
-            if i == len(signature)-1 and len(substr) == 0:
+            if i == len(signature) and len(substr) == 0:
                 return components
             if keep_best_estimate and len(components) > best_components_length:
                 best_components = components
@@ -195,3 +199,8 @@ class Rule:
 
     def get_elements(self):
         return self.components
+    
+    def get_str_form(self):
+        raw_parts = [component["str_form"] for component in self.components]
+        self.raw_form = " ".join(raw_parts)
+        return self.raw_form
