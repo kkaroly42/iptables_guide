@@ -15,7 +15,7 @@ from PySide6.QtWidgets import (  # pylint: disable=import-error
     QVBoxLayout,
     QLabel,
     QMessageBox,
-    QScrollArea
+    QScrollArea,
 )
 
 from IPTables_Guide.view.custom_table_widget import CustomTableWidget
@@ -56,7 +56,12 @@ class AbstractTableWindow(QMainWindow):
         self.main_layout.addWidget(self.menu_line)
         self.table_layout = QVBoxLayout()
         # TODO CHAIN = selected radiobutton chain name
-        self.table_layout.addWidget(QLabel("sudo iptables -L " + "CHAIN" + " -t " + table_name, self.centralWidget()))
+        self.table_layout.addWidget(
+            QLabel(
+                "sudo iptables -L " + "CHAIN" + " -t " + table_name,
+                self.centralWidget(),
+            )
+        )
         self.table_layout.addWidget(self.scroll_area)
         self.table_layout.insertStretch(-1)
         self.main_layout.addLayout(self.table_layout)
@@ -113,7 +118,6 @@ class AbstractTableWindow(QMainWindow):
             return
         # TODO call API first and wait for its signal
         del self.table[self._get_selected_indices()]
-
 
     def _set_row(self, ind: int) -> None:  # pylint: disable-all
         ...

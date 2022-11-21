@@ -27,7 +27,9 @@ class HelpWindow(QMainWindow):
         view = QWebEngineView(self)
         self.setCentralWidget(view)
         self.setWindowTitle("Súgó")
-        file_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'index.html')
+        file_path = os.path.join(
+            os.path.dirname(os.path.realpath(__file__)), "index.html"
+        )
         view.setUrl(QUrl.fromLocalFile(file_path))
         self.resize(600, 700)
         HelpWindow._instance = self

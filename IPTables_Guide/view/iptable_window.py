@@ -47,39 +47,45 @@ class IPTableWindow(AbstractTableWindow):
         # self.setWindowTitle(ip_table.get_name())
         self.ip_table = kwargs["ip_table"] if "ip_table" in kwargs else None
 
-        self.setStyleSheet("""
+        self.setStyleSheet(
+            """
             background-color: #1C1C1E;
             color: #BABBBE;
             font-family: Consolas;
             font-size: 16px;
-        """)
+        """
+        )
 
         self.buttons = {}
         self.chain_widget = QWidget(self.menu_line)
         self.menu_line.layout().addWidget(self.chain_widget)
         self.menu_line.layout().insertStretch(-1)  # type: ignore
 
-        self.menu_line.setStyleSheet("""
+        self.menu_line.setStyleSheet(
+            """
             background-color: #2F2F32;
             color: #A2D5AC;
-        """)
+        """
+        )
 
-        #self.description = QTextEdit(self.menu_line)
-        #self.description.setReadOnly(True)
+        # self.description = QTextEdit(self.menu_line)
+        # self.description.setReadOnly(True)
         # TODO get the description
-        #self.menu_line.layout().addWidget(self.description)
+        # self.menu_line.layout().addWidget(self.description)
 
         self.buttons["new"] = QPushButton("hozzáadás", self.menu_line)
         self.buttons["delete"] = QPushButton("törlés", self.menu_line)
         self.buttons["insert"] = QPushButton("beszúrás elé", self.menu_line)
         self.buttons["help"] = QPushButton("súgó", self.menu_line)
-        
+
         for k in ["new", "delete", "insert", "help"]:
-            self.buttons[k].setStyleSheet("""
+            self.buttons[k].setStyleSheet(
+                """
                 color: #BABABE;
-            """)
+            """
+            )
             self.menu_line.layout().addWidget(self.buttons[k])
-        
+
         self.buttons["new"].clicked.connect(self.append_row)  # type: ignore
         self.buttons["delete"].clicked.connect(self.delete_row)  # type: ignore
         self.buttons["insert"].clicked.connect(self.insert_row)  # type: ignore
@@ -111,12 +117,11 @@ class IPTableWindow(AbstractTableWindow):
         # TODO API call
         chain = None
         # self.table[ind, "open"].clicked.connect(  # type: ignore
-          #  lambda: open_window(ChainWindow, self, chain=chain)
-        #)
+        #  lambda: open_window(ChainWindow, self, chain=chain)
+        # )
         self.table[ind, "name"].setReadOnly(True)  # type: ignore
         self.table[ind, "open"].setText("Modify")  # type: ignore
         # self.table.apply_method_to_row(ind, lambda w: w.setToolTip(chain.get_description()))
-
 
     @Slot()
     def setup_rules(self, text: str) -> None:

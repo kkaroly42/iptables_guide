@@ -42,12 +42,14 @@ class MainWindow(QMainWindow):
             "help": QPushButton("Súgó", self.centralWidget()),
         }
 
-        self.setStyleSheet("""
+        self.setStyleSheet(
+            """
             background-color: #1C1C1E;
             color: #BABBBE;
             font-family: Consolas;
             font-size: 20px;
-        """)
+        """
+        )
 
         self.main_layout: QVBoxLayout = QVBoxLayout()
         self.centralWidget().setLayout(self.main_layout)

@@ -9,7 +9,8 @@ from IPTables_Guide.view.main_window import MainWindow
 
 if __name__ == "__main__":
     app = QApplication([])
-    app.setStyleSheet("""
+    app.setStyleSheet(
+        """
         QScrollArea {
             border: 0px;
         }
@@ -88,8 +89,8 @@ if __name__ == "__main__":
         QCheckBox::indicator:checked:pressed {
             background-color: #707070;
         }
-    """)
+    """
+    )
     window = MainWindow()
     window.show()
     sys.exit(app.exec())
-
