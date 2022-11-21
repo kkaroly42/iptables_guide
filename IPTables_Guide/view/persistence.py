@@ -25,6 +25,7 @@ class PersistenceWindow(QMainWindow):
 
         self.setCentralWidget(QWidget(self))
         self.resize(600, 400)
+        self.setWindowTitle("Mentés / Betöltés")
 
         self.file_name_edit = QLineEdit(self.centralWidget())
 

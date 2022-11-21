@@ -210,3 +210,7 @@ class CustomTableWidget(QWidget):
         """
         for row in self.rows:
             func(row[col_id])
+
+    def clear_table(self) -> None:
+        while len(self.rows) != 0:
+            del self[0]

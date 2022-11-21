@@ -10,6 +10,8 @@ from PySide6.QtWidgets import QMainWindow  # pylint: disable=import-error
 
 from IPTables_Guide.view.gui_utils import log_gui
 
+import os
+
 
 class HelpWindow(QMainWindow):
     """
@@ -24,8 +26,12 @@ class HelpWindow(QMainWindow):
         super().__init__()
         view = QWebEngineView(self)
         self.setCentralWidget(view)
-        view.setUrl(QUrl("./index.html"))
-        self.resize(600, 800)
+        self.setWindowTitle("Súgó")
+        file_path = os.path.join(
+            os.path.dirname(os.path.realpath(__file__)), "index.html"
+        )
+        view.setUrl(QUrl.fromLocalFile(file_path))
+        self.resize(600, 700)
         HelpWindow._instance = self
         assert log_gui("Help Window opened")
 
