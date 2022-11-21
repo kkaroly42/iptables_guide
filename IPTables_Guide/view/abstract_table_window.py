@@ -47,10 +47,15 @@ class AbstractTableWindow(QMainWindow):
             row_types,
             self.centralWidget(),
         )
+        self.scroll_layout = QVBoxLayout()
+        self.scroll_widget = QWidget(self.centralWidget())
+        self.scroll_layout.addWidget(self.table)
+        self.scroll_layout.insertStretch(-1)
+        self.scroll_widget.setLayout(self.scroll_layout)
 
         self.scroll_area = QScrollArea(self.centralWidget())
-        self.scroll_area.setWidget(self.table)
-        self.scroll_area.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOn)
+        self.scroll_area.setWidget(self.scroll_widget)
+        self.scroll_area.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOn) # type: ignore
         self.scroll_area.setWidgetResizable(True)
 
         self.main_layout.addWidget(self.menu_line)
@@ -67,7 +72,7 @@ class AbstractTableWindow(QMainWindow):
         self.main_layout.addLayout(self.table_layout)
 
         for i in range(self.table_layout.count()):
-            log_gui(self.table_layout.itemAt(i))
+            log_gui(self.table_layout.itemAt(i)) # type: ignore
         self.table_layout.removeItem(self.table_layout.itemAt(2))
 
         self.menu_line.setLayout(QVBoxLayout())
