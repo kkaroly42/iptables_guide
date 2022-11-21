@@ -47,6 +47,7 @@ class CreatorDialog(QDialog):
             pass
 
         self.packet = packet
+        self.setWindowTitle("Csomagküldés")
 
         self.main_layout = QVBoxLayout()
         self.setLayout(self.main_layout)
@@ -149,7 +150,15 @@ class PacketWindow(AbstractTableWindow):
         self.resize(600, 400)
 
         self.buttons = {}
+        self.setWindowTitle("Csomagküldés")
 
+        self.setStyleSheet("""
+            background-color: #1C1C1E;
+            color: #BABBBE;
+            font-family: Consolas;
+            font-size: 16px;
+        """)
+        
         self.buttons["tcp"] = QPushButton("TCP template", self.centralWidget())
         self.buttons["udp"] = QPushButton("UDP template", self.centralWidget())
         self.buttons["delete"] = QPushButton("Delete", self.centralWidget())
@@ -158,6 +167,12 @@ class PacketWindow(AbstractTableWindow):
             self.menu_line.layout().addWidget(self.buttons[key])
 
         self.menu_line.layout().insertStretch(-1)  # type: ignore
+
+        self.menu_line.setStyleSheet("""
+            background-color: #2F2F32;
+            color: #BABABE;
+        """)
+
 
         self.buttons["tcp"].clicked.connect(  # type: ignore
             lambda: self.create_packet(PacketType.TCP)

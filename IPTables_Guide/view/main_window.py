@@ -32,15 +32,22 @@ class MainWindow(QMainWindow):
         self.setCentralWidget(QWidget(self))
 
         self.resize(300, 300)
-        self.setWindowTitle("IPTable-Guide")
+        self.setWindowTitle("iptables guide")
 
         self.buttons = {
             "filter": QPushButton("Filter table", self.centralWidget()),
             "nat": QPushButton("Nat table", self.centralWidget()),
-            "packages": QPushButton("Edit packages", self.centralWidget()),
-            "persistence": QPushButton("Save/Load", self.centralWidget()),
-            "help": QPushButton("Help", self.centralWidget()),
+            "packages": QPushButton("Csomagküldés", self.centralWidget()),
+            "persistence": QPushButton("Mentés/Betöltés", self.centralWidget()),
+            "help": QPushButton("Súgó", self.centralWidget()),
         }
+
+        self.setStyleSheet("""
+            background-color: #1C1C1E;
+            color: #BABBBE;
+            font-family: Consolas;
+            font-size: 20px;
+        """)
 
         self.main_layout: QVBoxLayout = QVBoxLayout()
         self.centralWidget().setLayout(self.main_layout)
