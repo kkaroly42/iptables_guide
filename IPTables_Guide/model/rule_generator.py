@@ -1,14 +1,11 @@
 from enum import Enum
 from typing import Dict, List, Optional, Tuple, Union, Any
 from abc import abstractmethod
-import parser_entries
+from IPTables_Guide.model.parser_entries import *
+
 
 
 class SignatureComponent:
-    @abstractmethod
-    def find_fit(self, substr: List[str]) -> Optional[Tuple[Dict[str, str], List[str]]]:
-        pass
-    
     @abstractmethod
     def possible_elements(self, rule):
         pass

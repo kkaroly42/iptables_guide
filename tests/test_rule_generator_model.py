@@ -1,7 +1,4 @@
-import sys
-
-sys.path.append("./model/")
-from rule_generator import *
+from IPTables_Guide.model.rule_generator import *
 
 
 def test_CommandComponent():
@@ -15,6 +12,7 @@ def test_CommandComponent():
     assert component.find_fit(["hello"]) == None
     assert component.find_fit(["-A"]) == ({"str_form": "-A"}, [])
     assert component.find_fit(["-A", "hi"]) == ({"str_form": "-A"}, ["hi"])
+
     
     rule_a = MockRule([{"str_form": "-A"}])
     rule_b = MockRule([])

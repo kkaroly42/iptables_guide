@@ -4,7 +4,7 @@ from typing import Dict, List, Optional, Tuple, Union, Any
 start_strs = {
     "iptables": {
         "str_form": "iptables",
-        "explanation": "Ezzel a kapcsolóval azt jelöljük meg, hogy a NAT(Network Address Translation) táblára fog vonatkozni az aktuális szabály.",
+        "explanation": "Kezdő parancs.",
         "value": "NAT",
     }
 }
@@ -78,4 +78,3 @@ class JumpParser:
             if start == self.actions[action]["str_form"]:
                 return self.actions[action], substr[2:]
                     
-            
