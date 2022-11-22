@@ -23,9 +23,7 @@ from IPTables_Guide.view.abstract_table_window import AbstractTableWindow
 from IPTables_Guide.view.gui_utils import log_gui
 from IPTables_Guide.view.help_window import display_help
 
-from IPTables_Guide.model.iptables import Iptables
-from IPTables_Guide.model.rule_system import Table, Chain
-from IPTables_Guide.model.rule_generator import Rule
+from IPTables_Guide.model.rule_system import Table, RuleSystem
 
 
 class IPTableWindow(AbstractTableWindow):
@@ -43,14 +41,13 @@ class IPTableWindow(AbstractTableWindow):
             parent,
         )
 
-        if "kwargs" in kwargs:
-            kwargs = kwargs["kwargs"]
+        kwargs = kwargs.get("kwargs", kwargs)
 
         assert "model" in kwargs
         assert "ip_table_type" in kwargs
 
         self.ip_table_type: Table = kwargs["ip_table_type"]
-        self.model: Iptables = kwargs["model"]
+        self.model: RuleSystem = kwargs["model"]
 
         self.setWindowTitle(self.ip_table_type.value.upper())
 
@@ -95,9 +92,7 @@ class IPTableWindow(AbstractTableWindow):
 
         self.chain_widget.setLayout(QVBoxLayout(self.chain_widget))
 
-        self.chain_types: List = list(
-            self.model._tables[self.ip_table_type.value].keys()
-        )
+        self.chain_types: List = self.model.get_chain_names(self.ip_table_type)
 
         self.chain_radiobuttons = [
             QRadioButton(ct, self.chain_widget) for ct in self.chain_types
@@ -113,13 +108,46 @@ class IPTableWindow(AbstractTableWindow):
         self.table_label.setText(
             "sudo iptables -L " + self.checked_value + " -t " + self.ip_table_type.value
         )
-        for _ in self.model._tables[self.ip_table_type.value][self.chain_types[0]]:
+        for _ in self.model.get_rules_in_chain(self.ip_table_type, self.checked_value):
             self.append_row()
 
         # TODO check Table and Chain
-        self.model.rule_appended.connect(self.append_row)
-        self.model.rule_inserted.connect(lambda x: self.insert_row(x))
-        self.model.rule_deleted.connect(lambda x: self.delete_row(x))
+        self.model.rule_appended.connect(self.rule_appended)
+        self.model.rule_inserted.connect(self.rule_inserted)
+        self.model.rule_deleted.connect(self.rule_deleted)
+
+    @Slot(str, str)
+    def rule_appended(self, table_str, chain_str) -> None:
+        """
+        handle model rule_appended
+        """
+        assert log_gui(f"Rule appended recived: {table_str} {chain_str}")
+        if self.ip_table_type.value == table_str and self.checked_value == chain_str:
+            self.append_row()
+        else:
+            assert False
+
+    @Slot(str, str, int)
+    def rule_inserted(self, table_str, chain_str, ind) -> None:
+        """
+        handle model rule_inserted
+        """
+        assert log_gui(f"Rule inserted recived: {table_str} {chain_str} {ind}")
+        if self.ip_table_type.value == table_str and self.checked_value == chain_str:
+            self.insert_row(ind)
+        else:
+            assert False
+
+    @Slot(str, str, int)
+    def rule_deleted(self, table_str, chain_str, ind) -> None:
+        """
+        handle model rule_deleted
+        """
+        assert log_gui(f"Rule inserted recived: {table_str} {chain_str} {ind}")
+        if self.ip_table_type.value == table_str and self.checked_value == chain_str:
+            self.insert_row(ind)
+        else:
+            assert False
 
     @override
     def _set_row(self, ind: int):
@@ -128,20 +156,20 @@ class IPTableWindow(AbstractTableWindow):
         """
         # TODO API call instead of setting attribute
         self.table[ind, "rule"].setText(  # type: ignore
-            self.model._tables[self.ip_table_type.value][self.checked_value][
-                ind
-            ].raw_form
+            self.model.get_rule(self.ip_table_type, self.checked_value, ind).raw_form
         )
         self.table[ind, "check"].setText("")  # type: ignore
-        # TODO check what differs
-        def set_raw_form(text):
-            self.model._tables[self.ip_table_type.value][self.checked_value][
-                ind
-            ].raw_form = text
-
         self.table[ind, "rule"].textEdited.connect(  # type: ignore
-            lambda text: set_raw_form(text)
+            lambda text: self.model.update_rule(
+                self.ip_table_type,
+                self.checked_value,
+                ind,
+                self.model.create_rule_from_raw_str(
+                    text, self.ip_table_type, self.checked_value
+                ),
+            )
         )
+        # TODO set label based on checks
 
     @Slot()
     def setup_rules(self) -> None:
@@ -154,31 +182,30 @@ class IPTableWindow(AbstractTableWindow):
         log_gui("entered setup rules " + text)
         self.table.clear_table()
         self.checked_value = text
-        for _ in self.model._tables[self.ip_table_type.value][self.checked_value]:
+        for _ in self.model.get_rules_in_chain(self.ip_table_type, self.checked_value):
             self.append_row()
         self.table_label.setText(
             "sudo iptables -L " + self.checked_value + " -t " + self.ip_table_type.value
         )
 
-    @staticmethod
-    def __convert_to_chain(text: str) -> Chain:
-        assert text.upper() in [e.value.upper() for e in Chain]
-        for e in Chain:
-            if e.value.upper() == text.upper():
-                return e
-        assert False
-
     @Slot()
     def append_clicked(self) -> None:
-        # TODO pass table and chain as parameter
+        """
+        handle append clicked
+        """
         self.model.append_rule(
             self.ip_table_type,
-            self.__convert_to_chain(self.checked_value),
-            Rule("", []),
+            self.checked_value,
+            self.model.create_rule_from_raw_str(
+                "", self.ip_table_type, self.checked_value
+            ),
         )
 
     @Slot()
     def insert_clicked(self) -> None:
+        """
+        handle insert clicked
+        """
         inds: List[int] = self._get_selected_indices()
         if len(inds) != 1:
             msg_box = QMessageBox()
@@ -188,21 +215,23 @@ class IPTableWindow(AbstractTableWindow):
             return
         self.model.insert_rule(
             self.ip_table_type,
-            self.__convert_to_chain(self.checked_value),
-            Rule("", []),
+            self.checked_value,
+            self.model.create_rule_from_raw_str(
+                "", self.ip_table_type, self.checked_value
+            ),
             inds[0],
         )
 
     @Slot()
     def delete_clicked(self) -> None:
+        """
+        handle delete clicked
+        """
         inds: List[int] = self._get_selected_indices()
+        inds.sort()
+        inds.reverse()
         for ind in inds:
-            self.model.insert_rule(
-                self.ip_table_type,
-                self.__convert_to_chain(self.checked_value),
-                Rule("", []),
-                ind,
-            )
+            self.model.delete_rule(self.ip_table_type, self.checked_value, ind)
 
 
 if __name__ == "__main__":

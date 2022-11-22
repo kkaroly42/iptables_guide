@@ -20,7 +20,7 @@ from IPTables_Guide.view.iptable_window import IPTableWindow
 from IPTables_Guide.view.persistence import PersistenceWindow
 from IPTables_Guide.view.gui_utils import open_window, log_gui
 
-from IPTables_Guide.model.iptables import Iptables
+from IPTables_Guide.model.rule_system import RuleSystem
 from IPTables_Guide.model.rule_system import Table
 
 
@@ -34,7 +34,8 @@ class MainWindow(QMainWindow):
 
         self.setCentralWidget(QWidget(self))
 
-        self.model = Iptables()
+        # TODO param ???
+        self.model = RuleSystem([])
 
         self.resize(300, 300)
         self.setWindowTitle("iptables guide")

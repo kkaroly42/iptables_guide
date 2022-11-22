@@ -2,7 +2,7 @@ from typing import Dict, List, Any, Optional
 
 from PySide6.QtCore import QObject, Signal
 
-from IPTables_Guide.model.rule_system import Rule
+from IPTables_Guide.model.rule_generator import Rule
 from IPTables_Guide.model.rule_system import RuleSystem, Table, Chain
 
 
