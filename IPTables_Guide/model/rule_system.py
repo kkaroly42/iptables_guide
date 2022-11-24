@@ -52,7 +52,7 @@ class RuleSystem:
 
         return tables
     
-    def create_rule_from_raw_str(self, raw: str, table: Table, chain: Chain) -> Rule:
+    def create_rule_from_raw_str(self, raw: str, table: Table, chain: Chain) -> Optional[Rule]:
         return Rule(raw, self._rule_signatures, table, chain)
 
     def run_on_packet(self, packet: Packet) -> Packet:
@@ -64,7 +64,15 @@ class RuleSystem:
         except IndexError:
             return None
 
-    def update_rule(self, table: Table, chain: Chain, id, rule: Rule) -> bool:
+    def update_rule(self, table: Table, chain: Chain, id: int, rule_as_str: str) -> bool:
+        table_str = table.value.lower()
+        chain_str = chain.value.upper()
+        rule = self.create_rule_from_raw_str(rule_as_str, table, chain)
+        if not rule:
+            return False
+        return self.overwrite_rule(table, chain, id, rule)
+
+    def overwrite_rule(self, table: Table, chain: Chain, id: int, rule: Rule) -> bool:
         table_str = table.value.lower()
         chain_str = chain.value.upper()
         if table_str == rule.table.lower() and chain_str == rule.chain.upper():
