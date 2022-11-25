@@ -85,9 +85,12 @@ class IPTableWindow(AbstractTableWindow):
             )
             self.menu_line.layout().addWidget(self.buttons[k])
 
-        self.buttons["new"].clicked.connect(self.append_clicked)  # type: ignore
-        self.buttons["delete"].clicked.connect(self.delete_clicked)  # type: ignore
-        self.buttons["insert"].clicked.connect(self.insert_clicked)  # type: ignore
+        self.buttons["new"].clicked.connect(
+            self.append_clicked)  # type: ignore
+        self.buttons["delete"].clicked.connect(
+            self.delete_clicked)  # type: ignore
+        self.buttons["insert"].clicked.connect(
+            self.insert_clicked)  # type: ignore
         self.buttons["help"].clicked.connect(display_help)  # type: ignore
 
         self.chain_widget.setLayout(QVBoxLayout(self.chain_widget))
@@ -117,7 +120,7 @@ class IPTableWindow(AbstractTableWindow):
         self.model.rule_deleted.connect(self.rule_deleted)
 
     @Slot(str, str)
-    def rule_appended(self, table_str, chain_str) -> None:
+    def rule_appended(self, table_str: str, chain_str: str) -> None:
         """
         handle model rule_appended
         """
@@ -128,7 +131,7 @@ class IPTableWindow(AbstractTableWindow):
             assert False
 
     @Slot(str, str, int)
-    def rule_inserted(self, table_str, chain_str, ind) -> None:
+    def rule_inserted(self, table_str: str, chain_str: str, ind: int) -> None:
         """
         handle model rule_inserted
         """
@@ -139,13 +142,13 @@ class IPTableWindow(AbstractTableWindow):
             assert False
 
     @Slot(str, str, int)
-    def rule_deleted(self, table_str, chain_str, ind) -> None:
+    def rule_deleted(self, table_str: str, chain_str: str, ind: int) -> None:
         """
         handle model rule_deleted
         """
         assert log_gui(f"Rule inserted recived: {table_str} {chain_str} {ind}")
         if self.ip_table_type.value == table_str and self.checked_value == chain_str:
-            self.insert_row(ind)
+            self.delete_row(ind)
         else:
             assert False
 
@@ -156,7 +159,8 @@ class IPTableWindow(AbstractTableWindow):
         """
         # TODO API call instead of setting attribute
         self.table[ind, "rule"].setText(  # type: ignore
-            self.model.get_rule(self.ip_table_type, self.checked_value, ind).raw_form
+            self.model.get_rule(self.ip_table_type,
+                                self.checked_value, ind).raw_form
         )
         self.table[ind, "check"].setText("")  # type: ignore
         self.table[ind, "rule"].textEdited.connect(  # type: ignore
@@ -164,9 +168,7 @@ class IPTableWindow(AbstractTableWindow):
                 self.ip_table_type,
                 self.checked_value,
                 ind,
-                self.model.create_rule_from_raw_str(
-                    text, self.ip_table_type, self.checked_value
-                ),
+                text,
             )
         )
         # TODO set label based on checks
@@ -210,7 +212,8 @@ class IPTableWindow(AbstractTableWindow):
         if len(inds) != 1:
             msg_box = QMessageBox()
             msg_box.setWindowTitle("Message")
-            msg_box.setText("Insert is only enabled for exactly one row selected")
+            msg_box.setText(
+                "Insert is only enabled for exactly one row selected")
             msg_box.exec()
             return
         self.model.insert_rule(

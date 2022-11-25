@@ -117,6 +117,7 @@ class Rule:
         ],
         table: str,
         chain: str,
+        allow_partial_rule=False
     ):
         self.table = table
         self.signatures = signatures
@@ -125,7 +126,7 @@ class Rule:
         self.components: List[Any] = []
         self.possible_elements: List[Any] = []
         if self.raw_form:
-            parsed_components = self.parse_raw_form()
+            parsed_components = self.parse_raw_form(allow_partial_rule)
             if parsed_components:
                 self.components = parsed_components
 

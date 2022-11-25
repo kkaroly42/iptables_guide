@@ -55,9 +55,9 @@ class Packet:  # Remove once the original module can be included!
 
 
 class RuleSystem(QObject):
-    rule_appended = Signal(Table, Chain)
-    rule_inserted = Signal(int, Table, Chain)
-    rule_deleted = Signal(int, Table, Chain)
+    rule_appended = Signal(str, str)
+    rule_inserted = Signal(str, str, int)
+    rule_deleted = Signal(str, str, int)
 
     def __init__(self, rule_signatures):
         super().__init__()
@@ -109,15 +109,18 @@ class RuleSystem(QObject):
         except IndexError:
             assert False
 
-    def update_rule(
-        self, table: Union[Table, str], chain: Union[Chain, str], id: int, rule: Rule
-    ) -> bool:
+    def update_rule(self, table: Union[Table, str], chain: Union[Chain, str], id: int, rule_as_str: str) -> bool:
         table_str = table_to_str(table).upper()
         chain_str = chain_to_str(chain).upper()
-        if (
-            table_str == table_to_str(rule.table).upper()
-            and chain_str == chain_to_str(rule.chain).upper()
-        ):
+        rule = self.create_rule_from_raw_str(rule_as_str, table, chain)
+        if not rule:
+            return False
+        return self.overwrite_rule(table, chain, id, rule)
+
+    def overwrite_rule(self, table: Union[Table, str], chain: Union[Chain, str], id: int, rule: Rule) -> bool:
+        table_str = table_to_str(table).upper()
+        chain_str = chain_to_str(chain).upper()
+        if table_str == table_to_str(rule.table).upper() and chain_str == chain_to_str(rule.chain).upper():
             try:
                 self._tables[table_str][chain_str][id] = rule
                 return True
@@ -161,7 +164,7 @@ class RuleSystem(QObject):
                     + [rule]
                     + self._tables[table_str][chain_str][rule_num:]
                 )
-                self.rule_inserted.emit(table, chain, rule_num)
+                self.rule_inserted.emit(table_str, chain_str, rule_num)
                 return True
             except (IndexError, KeyError):
                 return False
@@ -174,7 +177,7 @@ class RuleSystem(QObject):
         chain_str = chain_to_str(chain).upper()
         try:
             del self._tables[table_str][chain_str][rule_num]
-            self.rule_deleted.emit(table, chain, rule_num)
+            self.rule_deleted.emit(table_str, chain_str, rule_num)
             return True
         except (IndexError, KeyError):
             return False
