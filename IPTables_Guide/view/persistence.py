@@ -2,6 +2,8 @@
     Persistence window
 """
 
+import os
+
 from PySide6.QtCore import Slot  # pylint: disable=import-error
 from PySide6.QtWidgets import (  # pylint: disable=import-error
     QWidget,
@@ -9,9 +11,12 @@ from PySide6.QtWidgets import (  # pylint: disable=import-error
     QPushButton,
     QLineEdit,
     QGridLayout,
+    QMessageBox,
 )
 
 from IPTables_Guide.view.gui_utils import log_gui
+
+from IPTables_Guide.model.rule_system import RuleSystem
 
 
 class PersistenceWindow(QMainWindow):
@@ -19,9 +24,13 @@ class PersistenceWindow(QMainWindow):
     Persistence Window
     """
 
-    def __init__(self, parent: QWidget) -> None:
+    def __init__(self, parent: QWidget, **kwargs) -> None:
         """ """
         super().__init__(parent)
+
+        kwargs = kwargs.get("kwargs", kwargs)
+
+        self.model: RuleSystem = kwargs["model"]
 
         self.setCentralWidget(QWidget(self))
         self.resize(600, 400)
@@ -49,6 +58,19 @@ class PersistenceWindow(QMainWindow):
         Handle save
         """
         assert log_gui("Save clicked")
+        file_name = self.file_name_edit.text()
+        if (
+            sum(
+                file_name.count(c)
+                for c in ["/", "\\", "|", "<", ">", ":", '"', "?", "*"]
+            )
+            == 0
+        ):
+            self.model.write_to_file(file_name)
+        else:
+            msg_box = QMessageBox()
+            msg_box.setText(f"A megadott fájlnév nem valid: {file_name}")
+            msg_box.exec()
 
     @Slot()
     def load_clicked(self):
@@ -56,3 +78,10 @@ class PersistenceWindow(QMainWindow):
         Handle load
         """
         assert log_gui("Load clicked")
+        file_name = self.file_name_edit.text()
+        if os.path.isfile(file_name):
+            self.model.read_from_file(file_name)
+        else:
+            msg_box = QMessageBox()
+            msg_box.setText(f"A megadott fájlnév nem valid: {file_name}")
+            msg_box.exec()

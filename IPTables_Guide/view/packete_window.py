@@ -144,8 +144,9 @@ class PacketWindow(AbstractTableWindow):
                 ("open", QPushButton),
             ],
         )
-        if "kwargs" in kwargs:
-            kwargs = kwargs["kwargs"]
+
+        kwargs = kwargs.get("kwargs", kwargs)
+
         self.packet_manager = (
             kwargs["packet_manager"] if "packet_manager" in kwargs else None
         )

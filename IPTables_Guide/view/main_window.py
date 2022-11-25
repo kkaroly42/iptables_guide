@@ -78,8 +78,7 @@ class MainWindow(QMainWindow):
             lambda: get_packet_window(None)
         )
         self.buttons["persistence"].clicked.connect(  # type: ignore
-            # TODO API call
-            lambda: open_window(PersistenceWindow, self)
+            lambda: open_window(PersistenceWindow, self, model=self.model)
         )
         self.buttons["help"].clicked.connect(display_help)  # type: ignore
 

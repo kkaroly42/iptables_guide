@@ -111,7 +111,6 @@ class IPTableWindow(AbstractTableWindow):
         for _ in self.model.get_rules_in_chain(self.ip_table_type, self.checked_value):
             self.append_row()
 
-        # TODO check Table and Chain
         self.model.rule_appended.connect(self.rule_appended)
         self.model.rule_inserted.connect(self.rule_inserted)
         self.model.rule_deleted.connect(self.rule_deleted)

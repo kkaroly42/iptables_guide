@@ -82,7 +82,6 @@ class AbstractTableWindow(QMainWindow):
         """
         Append a row to the end of the table
         """
-        # TODO call API first and wait for its signal
         self.table.add_row()
         self._set_row(len(self.table) - 1)
 
@@ -91,31 +90,14 @@ class AbstractTableWindow(QMainWindow):
         """
         Append a row to the end of the table
         """
-        # TODO call API first and wait for its signal
-        #     inds: List[int] = self._get_selected_indices()
-        #     if len(inds) != 1:
-        #         msg_box = QMessageBox()
-        #         msg_box.setWindowTitle("Message")
-        #         msg_box.setText("Insert is only enabled for exactly one row selected")
-        #         msg_box.exec()
-        #         return
         self.table.insert_row(ind)
         self._set_row(ind)
 
     @Slot(int)
     def delete_row(self, ind: int):
         """
-        remove rows from table
+        remove a row from table
         """
-        # inds: List[int] = self._get_selected_indices()
-        # if len(inds) == 0:
-        #     msg_box = QMessageBox()
-        #     msg_box.setWindowTitle("Message")
-        #     msg_box.setText("No selected items")
-        #     msg_box.exec()
-        #     return
-        # TODO call API first and wait for its signal
-        # del self.table[self._get_selected_indices()]
         del self.table[ind]
 
     def _set_row(self, ind: int) -> None:  # pylint: disable-all
