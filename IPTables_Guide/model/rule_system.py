@@ -109,7 +109,13 @@ class RuleSystem(QObject):
         except IndexError:
             assert False
 
-    def update_rule(self, table: Union[Table, str], chain: Union[Chain, str], id: int, rule_as_str: str) -> bool:
+    def update_rule(
+        self,
+        table: Union[Table, str],
+        chain: Union[Chain, str],
+        id: int,
+        rule_as_str: str,
+    ) -> bool:
         table_str = table_to_str(table).upper()
         chain_str = chain_to_str(chain).upper()
         rule = self.create_rule_from_raw_str(rule_as_str, table, chain)
@@ -117,10 +123,15 @@ class RuleSystem(QObject):
             return False
         return self.overwrite_rule(table, chain, id, rule)
 
-    def overwrite_rule(self, table: Union[Table, str], chain: Union[Chain, str], id: int, rule: Rule) -> bool:
+    def overwrite_rule(
+        self, table: Union[Table, str], chain: Union[Chain, str], id: int, rule: Rule
+    ) -> bool:
         table_str = table_to_str(table).upper()
         chain_str = chain_to_str(chain).upper()
-        if table_str == table_to_str(rule.table).upper() and chain_str == chain_to_str(rule.chain).upper():
+        if (
+            table_str == table_to_str(rule.table).upper()
+            and chain_str == chain_to_str(rule.chain).upper()
+        ):
             try:
                 self._tables[table_str][chain_str][id] = rule
                 return True

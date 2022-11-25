@@ -117,7 +117,7 @@ class Rule:
         ],
         table: str,
         chain: str,
-        allow_partial_rule=False
+        allow_partial_rule=False,
     ):
         self.table = table
         self.signatures = signatures

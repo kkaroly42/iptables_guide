@@ -85,12 +85,9 @@ class IPTableWindow(AbstractTableWindow):
             )
             self.menu_line.layout().addWidget(self.buttons[k])
 
-        self.buttons["new"].clicked.connect(
-            self.append_clicked)  # type: ignore
-        self.buttons["delete"].clicked.connect(
-            self.delete_clicked)  # type: ignore
-        self.buttons["insert"].clicked.connect(
-            self.insert_clicked)  # type: ignore
+        self.buttons["new"].clicked.connect(self.append_clicked)  # type: ignore
+        self.buttons["delete"].clicked.connect(self.delete_clicked)  # type: ignore
+        self.buttons["insert"].clicked.connect(self.insert_clicked)  # type: ignore
         self.buttons["help"].clicked.connect(display_help)  # type: ignore
 
         self.chain_widget.setLayout(QVBoxLayout(self.chain_widget))
@@ -159,8 +156,7 @@ class IPTableWindow(AbstractTableWindow):
         """
         # TODO API call instead of setting attribute
         self.table[ind, "rule"].setText(  # type: ignore
-            self.model.get_rule(self.ip_table_type,
-                                self.checked_value, ind).raw_form
+            self.model.get_rule(self.ip_table_type, self.checked_value, ind).raw_form
         )
         self.table[ind, "check"].setText("")  # type: ignore
         self.table[ind, "rule"].textEdited.connect(  # type: ignore
@@ -212,8 +208,7 @@ class IPTableWindow(AbstractTableWindow):
         if len(inds) != 1:
             msg_box = QMessageBox()
             msg_box.setWindowTitle("Message")
-            msg_box.setText(
-                "Insert is only enabled for exactly one row selected")
+            msg_box.setText("Insert is only enabled for exactly one row selected")
             msg_box.exec()
             return
         self.model.insert_rule(
