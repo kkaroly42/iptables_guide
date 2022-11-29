@@ -33,7 +33,6 @@ class MainWindow(QMainWindow):
 
         self.setCentralWidget(QWidget(self))
 
-        # TODO param ???
         self.model = RuleSystem()
 
         self.resize(300, 300)
@@ -73,7 +72,7 @@ class MainWindow(QMainWindow):
             )
         )
         self.buttons["packages"].clicked.connect(  # type: ignore
-            # TODO give the package manager as parameter
+            # TODO handle packages
             lambda: get_packet_window(None)
         )
         self.buttons["persistence"].clicked.connect(  # type: ignore

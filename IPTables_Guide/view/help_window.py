@@ -1,6 +1,7 @@
 """
     HelpWindow class
 """
+import os
 from typing import Optional  # type: ignore
 from overrides import override  # pylint: disable=import-error
 from PySide6.QtWebEngineWidgets import QWebEngineView  # pylint: disable=import-error
@@ -9,8 +10,6 @@ from PySide6.QtCore import QUrl, Slot  # pylint: disable=import-error
 from PySide6.QtWidgets import QMainWindow  # pylint: disable=import-error
 
 from IPTables_Guide.view.gui_utils import log_gui
-
-import os
 
 
 class HelpWindow(QMainWindow):

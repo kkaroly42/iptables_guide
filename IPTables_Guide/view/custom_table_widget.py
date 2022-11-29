@@ -41,8 +41,6 @@ class CustomTableWidget(QWidget):
         self.main_layout.setHorizontalSpacing(0)
         self.main_layout.setVerticalSpacing(0)
 
-    # TODO indexing with string return column
-    # TODO Column type as List of QWidgets
     def __getitem__(
         self, ind_id: Union[int, slice, List[int], Tuple[int, str]]
     ) -> Union[QWidget, List[Row], Row]:
@@ -205,5 +203,8 @@ class CustomTableWidget(QWidget):
             func(row[col_id])
 
     def clear_table(self) -> None:
+        """
+        delete all rows
+        """
         while len(self.rows) != 0:
             del self[0]

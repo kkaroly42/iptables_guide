@@ -33,7 +33,7 @@ class IPTableWindow(AbstractTableWindow):
 
     def __init__(self, parent: Optional[QWidget] = None, **kwargs) -> None:
         """
-        kwargs: ip_table
+        kwargs: model, ip_table_type
         """
         super().__init__(
             "",
@@ -153,21 +153,31 @@ class IPTableWindow(AbstractTableWindow):
         """
         config new row's behaviour
         """
-        # TODO API call instead of setting attribute
         self.table[ind, "rule"].setText(  # type: ignore
             self.model.get_rule(
                 self.ip_table_type, self.checked_value, ind
             ).get_str_form()
         )
         self.table[ind, "check"].setText("")  # type: ignore
-        self.table[ind, "rule"].textEdited.connect(  # type: ignore
-            lambda text: self.model.update_rule(
+
+        @Slot(str)
+        def text_edited(text: str) -> None:
+            self.model.update_rule(
                 self.ip_table_type,
                 self.checked_value,
                 ind,
                 text,
             )
-        )
+            if self.model.get_rule(
+                self.ip_table_type,
+                self.checked_value,
+                ind,
+            ).check_partial_correctness():
+                self.table[ind, "check"].setText("")  # type: ignore
+            else:
+                self.table[ind, "check"].setText("Invalid format")  # type: ignore
+
+        self.table[ind, "rule"].textEdited.connect(text_edited)  # type: ignore
         # TODO set label based on checks
 
     @Slot()
