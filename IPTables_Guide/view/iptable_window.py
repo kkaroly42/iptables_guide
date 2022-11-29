@@ -155,7 +155,9 @@ class IPTableWindow(AbstractTableWindow):
         """
         # TODO API call instead of setting attribute
         self.table[ind, "rule"].setText(  # type: ignore
-            self.model.get_rule(self.ip_table_type, self.checked_value, ind).raw_form
+            self.model.get_rule(
+                self.ip_table_type, self.checked_value, ind
+            ).get_str_form()
         )
         self.table[ind, "check"].setText("")  # type: ignore
         self.table[ind, "rule"].textEdited.connect(  # type: ignore

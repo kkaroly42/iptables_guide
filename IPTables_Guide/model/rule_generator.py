@@ -144,11 +144,11 @@ class Rule:
                 result: Any = ()
                 # print(substr)
                 if type(part) == ChainComponent:
-                    result = part.find_fit(substr, self.table)
+                    result = part.find_fit(substr, self.table)  # type: ignore
                     if result:
                         self.chain = result[0]["value"]
                 else:
-                    result = part.find_fit(substr)
+                    result = part.find_fit(substr)  # type: ignore
                 if result:
                     if type(part) == TableComponent and self.table == "":
                         self.table = result[0]["value"]

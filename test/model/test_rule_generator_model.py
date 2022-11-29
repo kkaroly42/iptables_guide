@@ -75,7 +75,7 @@ def test_RuleSpecification():
     spec_components = [MockRuleSpec(1), MockRuleSpec(2)]
     component = RuleSpecification(spec_components)
     assert component.find_fit(["hello", "123", "testing", "apple"]) == (
-        [{"test": "value"}, {"test": "value"}],
+        [[{"test": "value"}], [{"test": "value"}]],
         ["apple"],
     )
 

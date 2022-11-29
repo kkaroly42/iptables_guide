@@ -3,7 +3,21 @@ from typing import List, Dict, Optional, Union
 
 from PySide6.QtCore import QObject, Signal
 
-from IPTables_Guide.model.rule_generator import Rule
+from IPTables_Guide.model.rule_generator import (
+    Rule,
+    StartComponent,
+    TableComponent,
+    CommandComponent,
+    ChainComponent,
+    RuleSpecification,
+)
+from IPTables_Guide.model.parser_entries import (
+    start_strs,
+    possible_chains,
+    possible_commands,
+    possible_tables,
+    JumpParser,
+)
 
 
 class Table(Enum):
@@ -54,12 +68,29 @@ class Packet:  # Remove once the original module can be included!
     pass
 
 
+default_sigantures: List[List] = [
+    [
+        StartComponent(start_strs),
+        TableComponent(possible_tables),
+        CommandComponent(possible_commands),
+        ChainComponent(possible_chains),
+        RuleSpecification([JumpParser({"DROP": {"str_form": "-j DROP"}})]),
+    ],
+    [
+        StartComponent(start_strs),
+        TableComponent(possible_tables),
+        CommandComponent(possible_commands),
+        ChainComponent(possible_chains),
+    ],
+]
+
+
 class RuleSystem(QObject):
     rule_appended = Signal(str, str)
     rule_inserted = Signal(str, str, int)
     rule_deleted = Signal(str, str, int)
 
-    def __init__(self, rule_signatures):
+    def __init__(self, rule_signatures: List[List] = default_sigantures):
         super().__init__()
         self._tables: Dict[str, Dict[str, List[Rule]]] = RuleSystem.empty_tables()
         self._rule_signatures = rule_signatures
@@ -242,7 +273,7 @@ class RuleSystem(QObject):
             for line in lines:
                 line = line.strip()
                 print(line)
-                if line[0] == "#":
+                if len(line) > 0 and line[0] == "#":
                     table, chain = line[1:].split(".")
                 else:
                     rule = self.create_rule_from_raw_str(line, table, chain)
