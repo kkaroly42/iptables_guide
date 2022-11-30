@@ -146,7 +146,6 @@ class RuleSystem:
                 for chain in self._tables[table]:
                     if self._tables[table][chain]:
                         f.write("#{}.{}\n".format(table,chain))
-                    print("hey",self._tables[table][chain])
                     rules = [rule.get_str_form() + "\n" for rule in self._tables[table][chain]]
                     f.writelines(rules)
 
