@@ -56,8 +56,12 @@ class RuleSpecification:
         while i < len(self.possible_components) and substr:
             result = self.possible_components[i].find_fit(substr)
             if result:
-                specs.append(result[0])
-                substr = result[1]
+                if type(result[0]) == list:
+                    specs += result[0]
+                    substr = result[1]
+                else:
+                    specs.append(result[0])
+                    substr = result[1]
             i += 1
         return (specs, substr) if len(specs) > 0 else None
 

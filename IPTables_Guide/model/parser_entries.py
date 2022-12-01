@@ -54,6 +54,42 @@ possible_chains = {
     },
 }
 
+def src_port(substr: List[str]):
+    pairs = pair_iterator(substr)
+    value = 0
+    for pair in pairs:
+        if pair[0] == "--sport":
+            try:
+                value = int(pair[1])
+            except ValueError:
+                return None
+            substr.remove("--sport")
+            substr.remove(pair[1])
+            return {"src_form" : "--sport {}".format(value), "value" : value}, substr
+
+def dst_port(substr: List[str]):
+    pairs = pair_iterator(substr)
+    value = 0
+    for pair in pairs:
+        if pair[0] == "--dport":
+            try:
+                value = int(pair[1])
+            except ValueError:
+                return None
+            substr.remove("--dport")
+            substr.remove(pair[1])
+            return {"src_form" : "--dport {}".format(value), "value" : value}, substr
+
+possible_tcp_options = [
+    {"str_form": "--sport", "parser_method": src_port},
+    {"str_form": "--dport", "parser_method": dst_port}
+]
+
+def pair_iterator(substr: List[str]):
+    i = 0
+    while i < len(substr)-1:
+        yield substr[i], substr[i+1]
+        i += 1
 
 def validate_ip(ip: str):
     try:
@@ -69,8 +105,33 @@ class TCPParser:
         self.possible_options = possible_options
 
     def find_fit(self, substr: List[str]):
-        return {"protcol filter": {"str_form": "-p tcp"}}, substr[2:]
-
+        specs = []
+        pairs = pair_iterator(substr)
+        for pair in pairs:
+            unified_pair = " ".join(pair)
+            if unified_pair in self.start_string:
+                specs.append(self.start_string[unified_pair])
+                substr.remove(pair[0])
+                substr.remove(pair[1])
+                pairs.close()
+        if specs:
+            for option in self.possible_options:
+                for element in substr:
+                    print(option)
+                    if option["str_form"] == element:
+                        if "parser_method" in option:
+                            result, substr = option["parser_method"](substr)
+                            spec = option.copy()
+                            spec["value"] = result["value"]
+                            spec["str_form"] = result["src_form"]
+                        else:
+                            spec = option
+                            substr.remove(element)
+                    specs.append(spec)
+            print("returning:", specs)
+            return specs, substr
+        else:
+            return None
 
 class JumpParser:
     def __init__(self, actions):
