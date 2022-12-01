@@ -4,9 +4,7 @@
 import sys
 from typing import Optional, List
 from overrides import override  # pylint: disable=import-error
-from PySide6.QtCore import Slot  # pylint: disable=import-error
-
-
+from PySide6.QtCore import Slot, Qt  # pylint: disable=import-error
 from PySide6.QtWidgets import (  # pylint: disable=import-error
     QApplication,
     QWidget,
@@ -22,6 +20,7 @@ from PySide6.QtWidgets import (  # pylint: disable=import-error
 from IPTables_Guide.view.abstract_table_window import AbstractTableWindow
 from IPTables_Guide.view.gui_utils import log_gui
 from IPTables_Guide.view.help_window import display_help
+from IPTables_Guide.view.custom_widgets import CustomLineEdit
 
 from IPTables_Guide.model.rule_system import Table, RuleSystem
 
@@ -37,7 +36,7 @@ class IPTableWindow(AbstractTableWindow):
         """
         super().__init__(
             "",
-            [("select", QCheckBox), ("rule", QLineEdit), ("check", QLabel)],
+            [("select", QCheckBox), ("rule", CustomLineEdit), ("check", QLabel)],
             parent,
         )
 
