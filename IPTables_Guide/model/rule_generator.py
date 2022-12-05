@@ -4,7 +4,6 @@ from abc import abstractmethod
 from IPTables_Guide.model.parser_entries import *
 
 
-
 class SignatureComponent:
     @abstractmethod
     def possible_elements(self, rule):
@@ -21,7 +20,7 @@ class StartComponent(SignatureComponent):
             return self.start_strs[to_find], substr[1:]
         else:
             return None
-    
+
     def possible_elements(self, rule):
         if len(rule.components) == 0:
             return self.start_strs
@@ -38,7 +37,7 @@ class TableComponent(SignatureComponent):
             return self.possible_tables[to_find], substr[2:]
         else:
             return None
-    
+
     def possible_elements(self, rule):
         for component in rule.components:
             for table in self.possible_tables:
@@ -65,7 +64,7 @@ class RuleSpecification:
                     substr = result[1]
             i += 1
         return (specs, substr) if len(specs) > 0 else None
-    
+
     def possible_elements(self, rule):
         pass
 
@@ -80,7 +79,7 @@ class CommandComponent(SignatureComponent):
             return self.possible_commands[to_find], substr[1:]
         else:
             return None
-    
+
     def possible_elements(self, rule):
         for component in rule.components:
             for command in self.possible_commands:
@@ -104,13 +103,14 @@ class ChainComponent:
             return self.possible_chains[to_find], substr[1:]
         else:
             return None
-    
+
     def possible_elements(self, rule):
         for component in rule.components:
             for command in self.possible_chains:
                 if component == self.possible_chains[command]:
                     return None
         return self.possible_chains
+
 
 class Rule:
     def __init__(
@@ -121,22 +121,25 @@ class Rule:
         ],
         table: Optional[str],
         chain: Optional[str],
-        allow_partial_rule=False
+        allow_partial_rule=True,
     ):
         self.table = table
         self.signatures = signatures
         self.chain = chain
         self.raw_form = raw_form
-        self.components : List[Any] = []
-        self.possible_elements : List[Any] = []
+        self.components: List[Any] = []
+        self.possible_elements: List[Any] = []
         if self.raw_form:
-            parsed_components = self.parse_raw_form(allow_partial_rule)
+            if allow_partial_rule:
+                parsed_components, substr, possible_elements = self.parse_raw_form(
+                    allow_partial_rule
+                )
+            else:
+                parsed_components = self.parse_raw_form(allow_partial_rule)
             if parsed_components:
                 self.components = parsed_components
 
-    def parse_raw_form(
-        self, keep_best_estimate=False
-    ) -> Optional[List[Any]]:
+    def parse_raw_form(self, keep_best_estimate=True) -> Optional[List[Any]]:
         best_components = []
         best_components_length = 0
         possible_elements = []
@@ -148,7 +151,6 @@ class Rule:
             while i < len(signature) and substr:
                 part = signature[i]
                 result: Any = ()
-                #print(substr)
                 if type(part) == ChainComponent:
                     result = part.find_fit(substr, self.table)
                     if result:
@@ -160,19 +162,22 @@ class Rule:
                         self.table = result[0]["value"]
                     if type(part) == RuleSpecification:
                         components += result[0]
-                    else:    
+                    else:
                         components.append(result[0])
                     substr = result[1]
                 i += 1
-            if (i < len(signature)-1 and len(substr) == 0):
+            if i < len(signature) - 1 and len(substr) == 0:
                 possible_elements.append(signature[i].possible_elements(self))
-                possible_elements.append(signature[i+1].possible_elements(self))
+                possible_elements.append(signature[i + 1].possible_elements(self))
             if i == len(signature) and len(substr) == 0:
-                return components
+                if keep_best_estimate:
+                    return [components, [], []]
             if keep_best_estimate and len(components) > best_components_length:
                 best_components = components
                 best_components_length = len(components)
-        return [best_components, substr, possible_elements] if keep_best_estimate else None
+        return (
+            [best_components, substr, possible_elements] if keep_best_estimate else None
+        )
 
     def check_total_correctness(self) -> bool:
         raw_parts = [component["str_form"] for component in self.components]
@@ -204,7 +209,7 @@ class Rule:
 
     def get_elements(self):
         return self.components
-    
+
     def get_str_form(self):
         raw_parts = [component["str_form"] for component in self.components]
         self.raw_form = " ".join(raw_parts)
