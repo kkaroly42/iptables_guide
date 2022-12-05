@@ -105,7 +105,7 @@ class IPTableWindow(AbstractTableWindow):
         self.checked_value = self.chain_types[0]
 
         self.table_label.setText(
-            "sudo iptables -L " + self.checked_value + " -t " + self.ip_table_type.value
+            "sudo iptables -t " + self.ip_table_type.value + " -A " + self.checked_value
         )
         for _ in self.model.get_rules_in_chain(self.ip_table_type, self.checked_value):
             self.append_row()
@@ -161,18 +161,24 @@ class IPTableWindow(AbstractTableWindow):
 
         @Slot(str)
         def text_edited(text: str) -> None:
+            text = " ".join(filter(lambda x: len(x), text.split(" ")))
             assert self.model.update_rule(
                 self.ip_table_type,
                 self.checked_value,
                 ind,
                 text,
             )
-            if self.model.get_rule(
+            rule = self.model.get_rule(
                 self.ip_table_type,
                 self.checked_value,
                 ind,
-            ).check_partial_correctness():
-                self.table[ind, "check"].setText("")  # type: ignore
+            )
+            if rule.check_partial_correctness():
+                rule_text = rule.get_str_form()
+                if rule_text == text:
+                    self.table[ind, "check"].setText("")  # type: ignore
+                else:
+                    self.table[ind, "check"].setText(text[len(rule_text) :])  # type: ignore
             else:
                 self.table[ind, "check"].setText("Invalid format")  # type: ignore
 
@@ -193,7 +199,7 @@ class IPTableWindow(AbstractTableWindow):
         for _ in self.model.get_rules_in_chain(self.ip_table_type, self.checked_value):
             self.append_row()
         self.table_label.setText(
-            "sudo iptables -L " + self.checked_value + " -t " + self.ip_table_type.value
+            "sudo iptables -t " + self.ip_table_type.value + " -A " + self.checked_value
         )
 
     @Slot()

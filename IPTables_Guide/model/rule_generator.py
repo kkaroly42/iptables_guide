@@ -1,7 +1,6 @@
 from enum import Enum
 from typing import Dict, List, Optional, Tuple, Union, Any
 from abc import abstractmethod
-from IPTables_Guide.model.parser_entries import *
 
 
 class SignatureComponent:

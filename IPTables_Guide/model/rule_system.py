@@ -1,5 +1,5 @@
 from enum import Enum
-from typing import List, Dict, Optional, Union
+from typing import List, Dict, Union
 
 from PySide6.QtCore import QObject, Signal
 
@@ -16,11 +16,13 @@ from IPTables_Guide.model.parser_entries import (
     possible_chains,
     possible_commands,
     possible_tables,
+    possible_tcp_options,
+    possible_udp_options,
     JumpParser,
+    TCPParser,
+    UDPParser,
+    SourceParser,
 )
-
-# from IPTables_Guide.model.packets import *
-from IPTables_Guide.model.rule_generator import *
 
 
 class Table(Enum):
@@ -77,7 +79,13 @@ default_sigantures: List[List] = [
         TableComponent(possible_tables),
         CommandComponent(possible_commands),
         ChainComponent(possible_chains),
-        RuleSpecification([JumpParser({"DROP": {"str_form": "-j DROP"}})]),
+        RuleSpecification(
+            [
+                JumpParser({"DROP": {"str_form": "-j DROP"}}),
+                TCPParser({"-p tcp": {"str_form": "-p tcp"}}, possible_tcp_options),
+                SourceParser(),
+            ]
+        ),
     ],
     [
         StartComponent(start_strs),
