@@ -161,7 +161,7 @@ class IPTableWindow(AbstractTableWindow):
 
         @Slot(str)
         def text_edited(text: str) -> None:
-            self.model.update_rule(
+            assert self.model.update_rule(
                 self.ip_table_type,
                 self.checked_value,
                 ind,

@@ -24,10 +24,10 @@ def test_tcp():
     rule = system.create_rule_from_raw_str(
         "iptables -t FILTER -A INPUT -p tcp --sport 80", "", ""
     )
-    system.append_rule(Table("filter"), Chain("input"), rule)
-    read_rule = system.get_rule(Table("filter"), Chain("input"), 0)
+    system.append_rule(Table("FILTER"), Chain("INPUT"), rule)
+    read_rule = system.get_rule(Table("FILTER"), Chain("INPUT"), 0)
     assert read_rule.get_str_form() == "iptables -t FILTER -A INPUT -p tcp --sport 80"
-    rule_list = system.get_rules_in_chain(Table("filter"), Chain("input"))
+    rule_list = system.get_rules_in_chain(Table("FILTER"), Chain("INPUT"))
     assert (
         rule_list[0].get_str_form() == "iptables -t FILTER -A INPUT -p tcp --sport 80"
     )
@@ -58,8 +58,8 @@ def test_ip():
         "",
         "",
     )
-    system.append_rule(Table("filter"), Chain("input"), rule)
-    read_rule = system.get_rule(Table("filter"), Chain("input"), 0)
+    system.append_rule(Table("FILTER"), Chain("INPUT"), rule)
+    read_rule = system.get_rule(Table("FILTER"), Chain("INPUT"), 0)
     assert (
         read_rule.get_str_form()
         == "iptables -t FILTER -A INPUT -j DROP -p tcp --sport 80 -s 192.168.56.1/24"
@@ -86,22 +86,22 @@ def test_simple_rule():
     ]
     system = RuleSystem(signatures)
     rule = system.create_rule_from_raw_str("iptables -t FILTER -A INPUT", "", "")
-    system.append_rule(Table("filter"), Chain("input"), rule)
-    read_rule = system.get_rule(Table("filter"), Chain("input"), 0)
+    system.append_rule(Table("FILTER"), Chain("INPUT"), rule)
+    read_rule = system.get_rule(Table("FILTER"), Chain("INPUT"), 0)
     assert read_rule.get_str_form() == "iptables -t FILTER -A INPUT"
-    rule_list = system.get_rules_in_chain(Table("filter"), Chain("input"))
+    rule_list = system.get_rules_in_chain(Table("FILTER"), Chain("INPUT"))
     assert rule_list[0].get_str_form() == "iptables -t FILTER -A INPUT"
     rule_b = system.create_rule_from_raw_str(
         "iptables -t FILTER -A INPUT -j DROP", "", ""
     )
-    system.insert_rule(Table("filter"), Chain("input"), rule_b, 0)
-    read_rule = system.get_rule(Table("filter"), Chain("input"), 0)
+    system.insert_rule(Table("FILTER"), Chain("INPUT"), rule_b, 0)
+    read_rule = system.get_rule(Table("FILTER"), Chain("INPUT"), 0)
     assert read_rule.get_str_form() == "iptables -t FILTER -A INPUT -j DROP"
-    system.delete_rule(Table("filter"), Chain("input"), 0)
-    read_rule = system.get_rule(Table("filter"), Chain("input"), 0)
+    system.delete_rule(Table("FILTER"), Chain("INPUT"), 0)
+    read_rule = system.get_rule(Table("FILTER"), Chain("INPUT"), 0)
     assert read_rule.get_str_form() == "iptables -t FILTER -A INPUT"
-    system.overwrite_rule(Table("filter"), Chain("input"), 0, rule_b)
-    read_rule = system.get_rule(Table("filter"), Chain("input"), 0)
+    system.overwrite_rule(Table("FILTER"), Chain("INPUT"), 0, rule_b)
+    read_rule = system.get_rule(Table("FILTER"), Chain("INPUT"), 0)
     assert read_rule.get_str_form() == "iptables -t FILTER -A INPUT -j DROP"
 
 
@@ -128,12 +128,12 @@ def test_file_operation():
     rule_b = system.create_rule_from_raw_str(
         "iptables -t FILTER -A INPUT -j DROP", "", ""
     )
-    system.append_rule(Table("filter"), Chain("input"), rule)
-    system.append_rule(Table("filter"), Chain("input"), rule_b)
+    system.append_rule(Table("FILTER"), Chain("INPUT"), rule)
+    system.append_rule(Table("FILTER"), Chain("INPUT"), rule_b)
     system.write_to_file("test_a.txt")
     system_b = RuleSystem(signatures)
     system_b.read_from_file("test_a.txt")
-    read_rule = system.get_rule(Table("filter"), Chain("input"), 0)
+    read_rule = system.get_rule(Table("FILTER"), Chain("INPUT"), 0)
     assert read_rule.get_str_form() == "iptables -t FILTER -A INPUT"
-    read_rule = system.get_rule(Table("filter"), Chain("input"), 1)
+    read_rule = system.get_rule(Table("FILTER"), Chain("INPUT"), 1)
     assert read_rule.get_str_form() == "iptables -t FILTER -A INPUT -j DROP"

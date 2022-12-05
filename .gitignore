@@ -76,3 +76,4 @@ Thumbs.db
 .coverage
 
 *.pyc
+**/*.txt
