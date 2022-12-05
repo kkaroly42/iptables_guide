@@ -97,14 +97,57 @@ def pair_iterator(substr: List[str]):
 
 
 def validate_ip(ip: str):
+    ip_and_mask = ip.split("/")
     try:
-        inet_aton(ip)
-        return True
+        inet_aton(ip_and_mask[0])
+        if len(ip_and_mask) == 2:
+            return ip_and_mask[1].isdigit()
+        elif len(ip_and_mask) == 1:
+            return True
+        return False
     except OSError:
         return False
 
 
 class TCPParser:
+    def __init__(self, start_string, possible_options):
+        self.start_string = start_string
+        self.possible_options = possible_options
+
+    def find_fit(self, substr: List[str]):
+        specs = []
+        pairs = pair_iterator(substr)
+        for pair in pairs:
+            unified_pair = " ".join(pair)
+            if unified_pair in self.start_string:
+                specs.append(self.start_string[unified_pair])
+                substr.remove(pair[0])
+                substr.remove(pair[1])
+                pairs.close()
+        if specs:
+            for option in self.possible_options:
+                for element in substr:
+                    if option["str_form"] == element:
+                        spec = option.copy()
+                        if "parser_method" in option:
+                            result, substr = option["parser_method"](substr)
+                            spec["value"] = result["value"]
+                            spec["str_form"] = result["src_form"]
+                        else:
+                            substr.remove(element)
+                        specs.append(spec)
+            return specs, substr
+        else:
+            return None
+
+
+possible_udp_options = [
+    {"str_form": "--sport", "parser_method": src_port},
+    {"str_form": "--dport", "parser_method": dst_port},
+]
+
+
+class UDPParser:
     def __init__(self, start_string, possible_options):
         self.start_string = start_string
         self.possible_options = possible_options
@@ -149,4 +192,76 @@ class JumpParser:
             for action in self.actions:
                 if start == self.actions[action]["str_form"]:
                     return self.actions[action], substr[2:]
+        return None
+
+
+class SourceParser:
+    def __init__(self):
+        self.start_strings = ["-s", "--source"]
+        self.repr_dict = {"str_form": "-s", "explanation": ""}
+
+    def find_fit(self, substr: List[str]):
+        if len(substr) > 1:
+            if substr[0] in self.start_strings and validate_ip(substr[1]):
+                to_return = self.repr_dict.copy()
+                to_return["str_form"] = to_return["str_form"] + " " + substr[1]
+                to_return["value"] = substr[1]
+                return to_return, substr[2:]
+        return None
+
+
+class DestinationParser:
+    def __init__(self):
+        self.start_strings = ["-d", "--destination"]
+        self.repr_dict = ({"str_form": "-d", "explanation": ""},)
+
+    def find_fit(self, substr: List[str]):
+        if len(substr) > 1:
+            if substr[0] in self.start_strings and validate_ip(substr[1]):
+                to_return = self.repr_dict.copy()
+                to_return["value"] = substr[1]
+                return to_return, substr[2:]
+        return None
+
+
+class InputInterfaceParser:
+    def __init__(self):
+        self.start_strings = ["-i", "--in-interface"]
+        self.repr_dict = ({"str_form": "-i", "explanation": ""},)
+
+    def find_fit(self, substr: List[str]):
+        if len(substr) > 1:
+            if substr[0] in self.start_strings:
+                to_return = self.repr_dict.copy()
+                to_return["value"] = substr[1]
+                return to_return, substr[2:]
+        return None
+
+
+class OutputInterfaceParser:
+    def __init__(self):
+        self.start_strings = ["-o", "--out-interface"]
+        self.repr_dict = ({"str_form": "-o", "explanation": ""},)
+
+    def find_fit(self, substr: List[str]):
+        if len(substr) > 1:
+            if substr[0] in self.start_strings:
+                to_return = self.repr_dict.copy()
+                to_return["value"] = substr[1]
+                return to_return, substr[2:]
+        return None
+
+
+class StateParser:
+    def __init__(self):
+        self.start_string = "--state"
+        self.possible_states = ["INVALID", "ESTABLISHED", "NEW", "RELATED"]
+        self.repr_dict = ({"str_form": "--state", "explanation": ""},)
+
+    def find_fit(self, substr: List[str]):
+        if len(substr) > 1:
+            if substr[0] == self.start_string and substr[1] in self.possible_states:
+                to_return = self.repr_dict.copy()
+                to_return["value"] = substr[1]
+                return to_return, substr[2:]
         return None

@@ -130,11 +130,16 @@ class Rule:
         self.components: List[Any] = []
         self.possible_elements: List[Any] = []
         if self.raw_form:
-            parsed_components = self.parse_raw_form(allow_partial_rule)
+            if allow_partial_rule:
+                parsed_components, substr, possible_elements = self.parse_raw_form(
+                    allow_partial_rule
+                )
+            else:
+                parsed_components = self.parse_raw_form(allow_partial_rule)
             if parsed_components:
                 self.components = parsed_components
 
-    def parse_raw_form(self, keep_best_estimate=False) -> Optional[List[Any]]:
+    def parse_raw_form(self, keep_best_estimate=True) -> Optional[List[Any]]:
         best_components = []
         best_components_length = 0
         possible_elements = []
@@ -146,7 +151,6 @@ class Rule:
             while i < len(signature) and substr:
                 part = signature[i]
                 result: Any = ()
-                # print(substr)
                 if type(part) == ChainComponent:
                     result = part.find_fit(substr, self.table)  # type: ignore
                     if result:
@@ -166,7 +170,8 @@ class Rule:
                 possible_elements.append(signature[i].possible_elements(self))
                 possible_elements.append(signature[i + 1].possible_elements(self))
             if i == len(signature) and len(substr) == 0:
-                return components
+                if keep_best_estimate:
+                    return [components, [], []]
             if keep_best_estimate and len(components) > best_components_length:
                 best_components = components
                 best_components_length = len(components)

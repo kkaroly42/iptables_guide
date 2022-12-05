@@ -19,6 +19,9 @@ from IPTables_Guide.model.parser_entries import (
     JumpParser,
 )
 
+# from IPTables_Guide.model.packets import *
+from IPTables_Guide.model.rule_generator import *
+
 
 class Table(Enum):
     FILTER = "FILTER"

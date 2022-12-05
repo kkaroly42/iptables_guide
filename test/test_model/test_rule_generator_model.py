@@ -123,7 +123,7 @@ def test_Rule():
             MockComponent(["filter"]),
         ]
     ]
-    rule = Rule("iptables -t filter FORWARD -p tcp -j DROP", signatures, "", "")
+    rule = Rule("iptables -t filter FORWARD -p tcp -j DROP", signatures, "", "", False)
     assert rule.get_elements() == []
     assert rule.parse_raw_form(True) == [
         [
