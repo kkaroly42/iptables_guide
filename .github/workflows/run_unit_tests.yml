@@ -1,0 +1,28 @@
+name: Run unit tests
+run-name: Run unit tests triggered by ${{ github.event_name }}
+
+on: workflow_dispatch # lets trigger the job manually
+# other trigger methods can be set later
+
+jobs:
+  setup_env_and_test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v3
+      - name: Set up Python 3.x
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.x' # setting up the latest python version
+          architecture: 'x64'
+      - name: Display Python version
+        run: python -c "import sys; print(sys.version)"
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install pytest
+          if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+      - name: Test with pytest
+        run: |
+          pytest ./test/test_model
+          pytest ./test/test_gui
