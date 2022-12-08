@@ -1,10 +1,12 @@
 from IPTables_Guide.model.rule_system import *
 import IPTables_Guide.model.parser_entries as parser_entries
+import os
+import scapy.all
 
 
 def test_tcp():
-    tcp = TCPParser({"-p tcp": {"str_form": "-p tcp"}}, possible_tcp_options)
-    j_drop = JumpParser({"DROP": {"str_form": "-j DROP"}})
+    tcp = TCPParser()
+    j_drop = JumpParser()
     signatures = [
         [
             StartComponent(start_strs),
@@ -20,7 +22,7 @@ def test_tcp():
             ChainComponent(possible_chains),
         ],
     ]
-    system = RuleSystem(signatures)
+    system = RuleSystem()
     rule = system.create_rule_from_raw_str(
         "iptables -t FILTER -A INPUT -p tcp --sport 80", "", ""
     )
@@ -34,8 +36,8 @@ def test_tcp():
 
 
 def test_ip():
-    tcp = TCPParser({"-p tcp": {"str_form": "-p tcp"}}, possible_tcp_options)
-    j_drop = JumpParser({"DROP": {"str_form": "-j DROP"}})
+    tcp = TCPParser()
+    j_drop = JumpParser()
     source_parser = SourceParser()
     signatures = [
         [
@@ -52,7 +54,7 @@ def test_ip():
             ChainComponent(possible_chains),
         ],
     ]
-    system = RuleSystem(signatures)
+    system = RuleSystem()
     rule = system.create_rule_from_raw_str(
         "iptables -t FILTER -A INPUT -j DROP -s 192.168.56.1/24 -p tcp --sport 80 -j DROP",
         "",
@@ -62,13 +64,13 @@ def test_ip():
     read_rule = system.get_rule(Table("FILTER"), Chain("INPUT"), 0)
     assert (
         read_rule.get_str_form()
-        == "iptables -t FILTER -A INPUT -j DROP -p tcp --sport 80 -s 192.168.56.1/24"
+        == "iptables -t FILTER -A INPUT -p tcp --sport 80 -j DROP -s 192.168.56.1/24"
     )
 
 
 def test_simple_rule():
-    tcp = TCPParser({"-p tcp": {"str_form": ["-p", "tcp"]}}, [])
-    j_drop = JumpParser({"DROP": {"str_form": "-j DROP"}})
+    tcp = TCPParser()
+    j_drop = JumpParser()
     signatures = [
         [
             StartComponent(start_strs),
@@ -106,8 +108,8 @@ def test_simple_rule():
 
 
 def test_file_operation():
-    tcp = TCPParser({"-p tcp": {"str_form": ["-p", "tcp"]}}, [])
-    j_drop = JumpParser({"DROP": {"str_form": "-j DROP"}})
+    tcp = TCPParser()
+    j_drop = JumpParser()
     signatures = [
         [
             StartComponent(start_strs),
@@ -137,3 +139,22 @@ def test_file_operation():
     assert read_rule.get_str_form() == "iptables -t FILTER -A INPUT"
     read_rule = system.get_rule(Table("FILTER"), Chain("INPUT"), 1)
     assert read_rule.get_str_form() == "iptables -t FILTER -A INPUT -j DROP"
+
+
+def test_pcap_operation():
+    os.remove(os.path.join("pcaps", "out.pcap"))
+    system = RuleSystem()
+    rule = system.create_rule_from_raw_str(
+        "iptables -t FILTER -A FORWARD -p tcp -j DROP", "", ""
+    )
+    # rule_b = system.create_rule_from_raw_str("iptables -t nat -A POSTROUTING -p udp -j SNAT --to-source 10.0.0.1", "", "")
+    system.append_rule(Table("filter"), Chain("forward"), rule)
+    system.run_chain_on_raw_packets(
+        os.path.join("pcaps", "example.pcap"),
+        os.path.join("pcaps", "out.pcap"),
+        Table("filter"),
+        Chain("forward"),
+    )
+    with open(os.path.join("pcaps", "out.pcap"), "rb") as f_1:
+        with open(os.path.join("pcaps", "expected.pcap"), "rb") as f_2:
+            assert f_1.read() == f_2.read()

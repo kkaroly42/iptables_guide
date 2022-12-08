@@ -1,5 +1,6 @@
-from socket import inet_aton
+import ipaddress
 from typing import Dict, List, Optional, Tuple, Union, Any
+import scapy.all as all
 
 start_strs = {
     "iptables": {
@@ -66,7 +67,11 @@ def src_port(substr: List[str]):
                 return None
             substr.remove("--sport")
             substr.remove(pair[1])
-            return {"src_form": "--sport {}".format(value), "value": value}, substr
+            return {
+                "src_form": "--sport {}".format(value),
+                "value": value,
+                "type": "condition",
+            }, substr
 
 
 def dst_port(substr: List[str]):
@@ -80,12 +85,100 @@ def dst_port(substr: List[str]):
                 return None
             substr.remove("--dport")
             substr.remove(pair[1])
-            return {"src_form": "--dport {}".format(value), "value": value}, substr
+            return {
+                "src_form": "--dport {}".format(value),
+                "value": value,
+                "type": "condition",
+            }, substr
+
+
+def check_tcp(packet: Any, value: str):
+    return packet.haslayer(all.TCP)
+
+
+def check_udp(packet: Any, value: str):
+    return packet.haslayer(all.UDP)
+
+
+def check_tcp_src_port(packet: Any, value: str):
+    if packet.haslayer(all.TCP):
+        try:
+            port_as_int = int(value)
+            return packet[all.TCP][sport] == port_as_int
+        except ValueError:
+            return False
+    return False
+
+
+def check_tcp_dport(packet: Any, value: str):
+    if packet.haslayer(all.TCP):
+        try:
+            port_as_int = int(value)
+            return packet[all.TCP][dport] == port_as_int
+        except ValueError:
+            return False
+    return False
+
+
+def check_udp_src_port(packet: Any, value: str):
+    if packet.haslayer(all.UDP):
+        try:
+            port_as_int = int(value)
+            return packet[all.UDP][sport] == port_as_int
+        except ValueError:
+            return False
+    return False
+
+
+def check_udp_dport(packet: Any, value: str):
+    if packet.haslayer(all.UDP):
+        try:
+            port_as_int = int(value)
+            return packet[all.UDP][dport] == port_as_int
+        except ValueError:
+            return False
+    return False
+
+
+def check_source_ip(packet: Any, value: str):
+    if packet.haslayer(all.IP):
+        if packet[all.IP].src == value:
+            return True
+        else:
+            try:
+                network = ipaddress.ip_network(value)
+                ip = ipaddress.ip_address(packet[all.IP.src])
+                return ip in network
+            except ValueError:
+                return False
+
+
+def check_destination_ip(packet: Any, value: str):
+    if packet.haslayer(all.IP):
+        if packet[all.IP].dst == value:
+            return True
+        else:
+            try:
+                network = ipaddress.ip_network(value)
+                ip = ipaddress.ip_address(packet[all.IP.dst])
+                return ip in network
+            except ValueError:
+                return False
 
 
 possible_tcp_options = [
-    {"str_form": "--sport", "parser_method": src_port},
-    {"str_form": "--dport", "parser_method": dst_port},
+    {
+        "str_form": "--sport",
+        "parser_method": src_port,
+        "type": "condition",
+        "condition_method": check_tcp_src_port,
+    },
+    {
+        "str_form": "--dport",
+        "parser_method": dst_port,
+        "type": "condition",
+        "condition_method": check_tcp_dport,
+    },
 ]
 
 
@@ -96,23 +189,47 @@ def pair_iterator(substr: List[str]):
         i += 1
 
 
-def validate_ip(ip: str):
-    ip_and_mask = ip.split("/")
-    try:
-        inet_aton(ip_and_mask[0])
-        if len(ip_and_mask) == 2:
-            return ip_and_mask[1].isdigit()
-        elif len(ip_and_mask) == 1:
+def validate_ip(ip: str, delimiter="/") -> bool:
+    print(ip)
+    print(delimiter)
+    if delimiter == "/":
+        try:
+            ipaddress.ip_address(ip)
             return True
-        return False
-    except OSError:
-        return False
+        except ValueError:
+            try:
+                ipaddress.ip_network(ip, strict=False)
+                return True
+            except ValueError:
+                return False
+    else:
+        parts = ip.split(":")
+        try:
+            ipaddress.ip_address(parts[0])
+            if len(parts) == 3:
+                int(parts[2])
+            return True
+        except ValueError:
+            return False
+
 
 
 class TCPParser:
-    def __init__(self, start_string, possible_options):
-        self.start_string = start_string
-        self.possible_options = possible_options
+    def __init__(self, start_string={}, possible_options=[]):
+        if start_string:
+            self.start_string = start_string
+        else:
+            self.start_string = {
+                "-p tcp": {
+                    "str_form": "-p tcp",
+                    "type": "condition",
+                    "condition_method": check_tcp,
+                }
+            }
+        if possible_options:
+            self.possible_options = possible_options
+        else:
+            self.possible_options = possible_tcp_options
 
     def find_fit(self, substr: List[str]):
         specs = []
@@ -142,15 +259,37 @@ class TCPParser:
 
 
 possible_udp_options = [
-    {"str_form": "--sport", "parser_method": src_port},
-    {"str_form": "--dport", "parser_method": dst_port},
+    {
+        "str_form": "--sport",
+        "parser_method": src_port,
+        "type": "condition",
+        "condition_method": check_udp_src_port,
+    },
+    {
+        "str_form": "--dport",
+        "parser_method": dst_port,
+        "type": "condition",
+        "condition_method": check_udp_dport,
+    },
 ]
 
 
 class UDPParser:
-    def __init__(self, start_string, possible_options):
-        self.start_string = start_string
-        self.possible_options = possible_options
+    def __init__(self, start_string="", possible_options=[]):
+        if start_string:
+            self.start_string = start_string
+        else:
+            self.start_string = {
+                "-p udp": {
+                    "str_form": "-p udp",
+                    "type": "condition",
+                    "condition_method": check_udp,
+                }
+            }
+        if possible_options:
+            self.possible_options = possible_options
+        else:
+            self.possible_options = possible_tcp_options
 
     def find_fit(self, substr: List[str]):
         specs = []
@@ -165,7 +304,6 @@ class UDPParser:
         if specs:
             for option in self.possible_options:
                 for element in substr:
-                    print(option)
                     if option["str_form"] == element:
                         if "parser_method" in option:
                             result, substr = option["parser_method"](substr)
@@ -175,34 +313,113 @@ class UDPParser:
                         else:
                             spec = option
                             substr.remove(element)
-                    specs.append(spec)
+                        specs.append(spec)
             print("returning:", specs)
             return specs, substr
         else:
             return None
 
 
+def drop_action(packet: Any, value: str):
+    return "DROP"
+
+
+def accept_action(packet: Any, value: str):
+    return packet
+
+
+def snat_action(packet: Any, value: str):
+    parts = value.split(":")
+    if packet.haslayer(all.IP):
+        packet[all.IP].src = parts[0]
+        if len(parts) == 2 and parts[1].isdigit():
+            if packet.haslayer(all.TCP):
+                packet[all.TCP].sport = int(parts[1])
+                return packet
+            elif packet.haslayer(all.UDP):
+                packet[all.UDP].sport = int(parts[1])
+                return packet
+    return None
+
+
+def dnat_action(packet: Any, value: str):
+    parts = value.split(":")
+    if packet.haslayer(all.IP):
+        packet[all.IP].dst = parts[0]
+        if len(parts) == 2 and parts[1].isdigit():
+            if packet.haslayer(all.TCP):
+                packet[all.TCP].dport = int(parts[1])
+                return packet
+            elif packet.haslayer(all.UDP):
+                packet[all.UDP].dport = int(parts[1])
+                return packet
+    return None
+
+
 class JumpParser:
-    def __init__(self, actions):
-        self.actions = actions
+    def __init__(self):
+        self.actions = {
+            "DROP": {
+                "str_form": "-j DROP",
+                "type": "action",
+                "action_method": drop_action,
+                "explanation": "",
+            },
+            "ACCEPT": {
+                "str_form": "-j ACCEPT",
+                "type": "action",
+                "action_method": accept_action,
+                "explanation": "",
+            },
+            "SNAT": {
+                "str_form": "-j SNAT --to-source",
+                "type": "action",
+                "action_method": snat_action,
+                "explanation": "",
+            },
+            "DNAT": {
+                "str_form": "-j DNAT --to-destination",
+                "type": "action",
+                "action_method": dnat_action,
+                "explanation": "",
+            },
+        }
 
     def find_fit(self, substr: List[str]):
         if len(substr) > 1:
             start = substr[0] + " " + substr[1]
             for action in self.actions:
-                if start == self.actions[action]["str_form"]:
-                    return self.actions[action], substr[2:]
+                if action in ["DROP", "ACCEPT"]:
+                    if start == self.actions[action]["str_form"]:
+                        return self.actions[action], substr[2:]
+                else:
+                    if len(substr) > 2:
+                        start = " ".join(substr[:3])
+                        if start == self.actions[action]["str_form"] and validate_ip(
+                            substr[4], ":"
+                        ):
+                            to_return = self.actions[action].copy()
+                            to_return["value"] = substr[3]
+                            return to_return, substr[4:]
         return None
 
 
 class SourceParser:
     def __init__(self):
         self.start_strings = ["-s", "--source"]
-        self.repr_dict = {"str_form": "-s", "explanation": ""}
+        self.repr_dict = {
+            "str_form": "-s",
+            "explanation": "",
+            "type": "condition",
+            "condition_method": check_source_ip,
+        }
 
     def find_fit(self, substr: List[str]):
         if len(substr) > 1:
+            print("hello")
+            print(validate_ip(substr[1]))
             if substr[0] in self.start_strings and validate_ip(substr[1]):
+                print(substr)
                 to_return = self.repr_dict.copy()
                 to_return["str_form"] = to_return["str_form"] + " " + substr[1]
                 to_return["value"] = substr[1]
@@ -213,7 +430,14 @@ class SourceParser:
 class DestinationParser:
     def __init__(self):
         self.start_strings = ["-d", "--destination"]
-        self.repr_dict = ({"str_form": "-d", "explanation": ""},)
+        self.repr_dict = (
+            {
+                "str_form": "-d",
+                "explanation": "",
+                "type": "condition",
+                "condition_method": check_destination_ip,
+            },
+        )
 
     def find_fit(self, substr: List[str]):
         if len(substr) > 1:
@@ -256,7 +480,9 @@ class StateParser:
     def __init__(self):
         self.start_string = "--state"
         self.possible_states = ["INVALID", "ESTABLISHED", "NEW", "RELATED"]
-        self.repr_dict = ({"str_form": "--state", "explanation": ""},)
+        self.repr_dict = (
+            {"str_form": "--state", "explanation": "", "type": "condition"},
+        )
 
     def find_fit(self, substr: List[str]):
         if len(substr) > 1:

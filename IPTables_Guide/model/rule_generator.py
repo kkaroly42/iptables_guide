@@ -52,15 +52,19 @@ class RuleSpecification:
     def find_fit(self, substr: List[str]) -> Optional[Tuple[List[Any], List[str]]]:
         specs = []
         i = 0
+        already_seen = []
         while i < len(self.possible_components) and substr:
-            result = self.possible_components[i].find_fit(substr)
-            if result:
-                if type(result[0]) == list:
-                    specs += result[0]
-                    substr = result[1]
-                else:
-                    specs.append(result[0])
-                    substr = result[1]
+            if i not in already_seen:
+                result = self.possible_components[i].find_fit(substr)
+                if result:
+                    if type(result[0]) == list:
+                        specs += result[0]
+                        substr = result[1]
+                    else:
+                        specs.append(result[0])
+                        substr = result[1]
+                    already_seen.append(i)
+                    i = 0
             i += 1
         return (specs, substr) if len(specs) > 0 else None
 
@@ -190,6 +194,28 @@ class Rule:
         if result:
             self.possible_elements = result[2]
         return self.parse_raw_form(True) != None
+
+    def run_on_packet(self, packet) -> Tuple[bool, Optional[Any]]:
+        conditions_met = True
+        run_method = None
+        for component in self.components:
+            if "type" in component:
+                if component["type"] == "condition":
+                    if "value" not in component:
+                        component["value"] = ""
+                    conditions_met = conditions_met and component["condition_method"](
+                        packet, component["value"]
+                    )
+                    if not conditions_met:
+                        return False, None
+                elif component["type"] == "action":
+                    print(component)
+                    run_method = component["action_method"]
+                    method_value = ""
+                    if "value" in component:
+                        method_value = component["value"]
+        if conditions_met and run_method:
+            return True, run_method(packet, method_value)
 
     def delete_element(self, id: int) -> bool:
         if len(self.components) > id:
