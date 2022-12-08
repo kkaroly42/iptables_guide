@@ -213,7 +213,6 @@ def validate_ip(ip: str, delimiter="/") -> bool:
             return False
 
 
-
 class TCPParser:
     def __init__(self, start_string={}, possible_options=[]):
         if start_string:

@@ -81,6 +81,7 @@ class RuleSystem(QObject):
     rule_deleted = Signal(str, str, int)
 
     def __init__(self, rule_signatures=[]):
+        super().__init__()
         self._tables: Dict[str, Dict[str, List[Rule]]] = RuleSystem.empty_tables()
         if rule_signatures:
             self._rule_signatures = rule_signatures
@@ -169,7 +170,7 @@ class RuleSystem(QObject):
                     break
             if not rule_transformed_it:
                 all.wrpcap(outputFileName, packet, append=True)
-                
+
     def get_rule(
         self, table: Union[Table, str], chain: Union[Chain, str], id: int
     ) -> Rule:

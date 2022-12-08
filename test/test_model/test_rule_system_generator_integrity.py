@@ -18,8 +18,8 @@ from IPTables_Guide.model.parser_entries import TCPParser, possible_tcp_options
 
 
 def test_tcp():
-    tcp = TCPParser({"-p tcp": {"str_form": "-p tcp"}}, possible_tcp_options)
-    j_drop = JumpParser({"DROP": {"str_form": "-j DROP"}})
+    tcp = TCPParser()
+    j_drop = JumpParser()
     signatures = [
         [
             StartComponent(start_strs),
@@ -49,8 +49,8 @@ def test_tcp():
 
 
 def test_simple_rule():
-    tcp = TCPParser({"-p tcp": {"str_form": ["-p", "tcp"]}}, [])
-    j_drop = JumpParser({"DROP": {"str_form": "-j DROP"}})
+    tcp = TCPParser()
+    j_drop = JumpParser()
     signatures = [
         [
             StartComponent(start_strs),
@@ -88,8 +88,8 @@ def test_simple_rule():
 
 
 def test_file_operation():
-    tcp = TCPParser({"-p tcp": {"str_form": ["-p", "tcp"]}}, [])
-    j_drop = JumpParser({"DROP": {"str_form": "-j DROP"}})
+    tcp = TCPParser()
+    j_drop = JumpParser()
     signatures = [
         [
             StartComponent(start_strs),

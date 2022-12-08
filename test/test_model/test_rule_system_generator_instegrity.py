@@ -4,7 +4,7 @@ import IPTables_Guide.model.parser_entries as parser_entries
 
 def test_simple_rule():
     # tcp = TCPParser({"-p tcp": {"str_form": ["-p", "tcp"]}}, [])
-    j_drop = JumpParser({"DROP": {"str_form": "-j DROP"}})
+    j_drop = JumpParser()
     signatures = [
         [
             StartComponent(start_strs),
@@ -43,7 +43,7 @@ def test_simple_rule():
 
 def test_file_operation():
     # tcp = TCPParser({"-p tcp": {"str_form": ["-p", "tcp"]}}, [])
-    j_drop = JumpParser({"DROP": {"str_form": "-j DROP"}})
+    j_drop = JumpParser()
     signatures = [
         [
             StartComponent(start_strs),

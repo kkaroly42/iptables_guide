@@ -142,18 +142,21 @@ def test_file_operation():
 
 
 def test_pcap_operation():
-    os.remove(os.path.join("pcaps", "out.pcap"))
+    try:
+        os.remove(os.path.join("pcaps", "out.pcap"))
+    except FileNotFoundError:
+        pass
     system = RuleSystem()
     rule = system.create_rule_from_raw_str(
         "iptables -t FILTER -A FORWARD -p tcp -j DROP", "", ""
     )
     # rule_b = system.create_rule_from_raw_str("iptables -t nat -A POSTROUTING -p udp -j SNAT --to-source 10.0.0.1", "", "")
-    system.append_rule(Table("filter"), Chain("forward"), rule)
+    system.append_rule(Table("FILTER"), Chain("FORWARD"), rule)
     system.run_chain_on_raw_packets(
         os.path.join("pcaps", "example.pcap"),
         os.path.join("pcaps", "out.pcap"),
-        Table("filter"),
-        Chain("forward"),
+        Table("FILTER"),
+        Chain("FORWARD"),
     )
     with open(os.path.join("pcaps", "out.pcap"), "rb") as f_1:
         with open(os.path.join("pcaps", "expected.pcap"), "rb") as f_2:
