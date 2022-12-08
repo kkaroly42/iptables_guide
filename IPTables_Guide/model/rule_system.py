@@ -1,5 +1,7 @@
 from enum import Enum
 from typing import List, Dict, Optional
+import scapy.all as all
+from IPTables_Guide.model.parser_entries import *
 
 # from IPTables_Guide.model.packets import *
 from IPTables_Guide.model.rule_generator import *
@@ -24,9 +26,43 @@ class Packet:  # Remove once the original module can be included!
 
 
 class RuleSystem:
-    def __init__(self, rule_signatures):
+    def __init__(self, rule_signatures=[]):
         self._tables: Dict[str, Dict[str, List[Rule]]] = RuleSystem.empty_tables()
-        self._rule_signatures = rule_signatures
+        if rule_signatures:
+            self._rule_signatures = rule_signatures
+        else:
+            self._rule_signatures = [
+                [
+                    StartComponent(start_strs),
+                    TableComponent(possible_tables),
+                    CommandComponent(possible_commands),
+                    ChainComponent(possible_chains),
+                    RuleSpecification(
+                        [
+                            TCPParser(),
+                            SourceParser(),
+                            DestinationParser(),
+                            StateParser(),
+                            JumpParser(),
+                        ]
+                    ),
+                ],
+                [
+                    StartComponent(start_strs),
+                    TableComponent(possible_tables),
+                    CommandComponent(possible_commands),
+                    ChainComponent(possible_chains),
+                    RuleSpecification(
+                        [
+                            UDPParser(),
+                            SourceParser(),
+                            DestinationParser(),
+                            StateParser(),
+                            JumpParser(),
+                        ]
+                    ),
+                ],
+            ]
 
     #    def __init__(self, table: Table, chain: Chain, rules: List[Rule]):
     #        self._tables: Dict[str, Dict[str, List[Rule]]] = RuleSystem.empty_tables()
@@ -60,6 +96,23 @@ class RuleSystem:
 
     def run_on_packet(self, packet: Packet) -> Packet:
         pass
+
+    def run_chain_on_raw_packets(
+        self, inputFileName: str, outputFileName: str, table: Table, chain: Chain
+    ):
+        input = all.rdpcap(inputFileName)
+        rules = self.get_rules_in_chain(table, chain)
+        for packet in input:
+            rule_transformed_it = False
+            for rule in rules:
+                result = rule.run_on_packet(packet)
+                if result[0] and result[1]:
+                    rule_transformed_it = True
+                    if result[1] != "DROP":
+                        wrpcap(outputFileName, result[1], append=True)
+                    break
+            if not rule_transformed_it:
+                all.wrpcap(outputFileName, packet, append=True)
 
     def get_rule(self, table: Table, chain: Chain, id: int) -> Optional[Rule]:
         try:
