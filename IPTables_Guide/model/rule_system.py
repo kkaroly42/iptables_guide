@@ -155,8 +155,10 @@ class RuleSystem(QObject):
         pass
 
     def run_chain_on_raw_packets(
-        self, inputFileName: str, outputFileName: str, table: Table, chain: Chain
+        self, inputFileName: str, outputFileName: str, table: Union[Table, str], chain: Union[Chain, str]
     ):
+        table = table_to_value(table)
+        chain = chain_to_value(chain)
         input = all.rdpcap(inputFileName)
         rules = self.get_rules_in_chain(table, chain)
         for packet in input:
@@ -166,7 +168,7 @@ class RuleSystem(QObject):
                 if result[0] and result[1]:
                     rule_transformed_it = True
                     if result[1] != "DROP":
-                        wrpcap(outputFileName, result[1], append=True)
+                        all.wrpcap(outputFileName, result[1], append=True)
                     break
             if not rule_transformed_it:
                 all.wrpcap(outputFileName, packet, append=True)

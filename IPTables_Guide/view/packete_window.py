@@ -1,7 +1,7 @@
 """
     Packet manager window
 """
-
+import os
 from typing import Optional, Any, List
 from overrides import override  # pylint: disable=import-error
 
@@ -15,17 +15,18 @@ from PySide6.QtWidgets import (  # pylint: disable=import-error
     QLineEdit,
     QCheckBox,
     QDialog,
-    QPlainTextEdit,
-    QVBoxLayout,
-    QHBoxLayout,
+    QComboBox,
+    QLabel,
+    QGridLayout,
 )
 
 from IPTables_Guide.view.abstract_table_window import AbstractTableWindow
 from IPTables_Guide.view.gui_utils import log_gui
 
 from IPTables_Guide.model.packets import PacketType, Packet
+from IPTables_Guide.model.rule_system import RuleSystem
 
-
+'''
 class CreatorDialog(QDialog):
     """
     dialog for creating a packet
@@ -94,7 +95,8 @@ class CreatorDialog(QDialog):
         handling close event
         """
         msg_box = QMessageBox()
-        msg_box.setStandardButtons(QMessageBox.Ok | QMessageBox.Cancel)  # type: ignore
+        msg_box.setStandardButtons(
+            QMessageBox.Ok | QMessageBox.Cancel)  # type: ignore
         msg_box.setText("Your changes wont be saved.")
         ret: int = msg_box.exec()
         if ret == QMessageBox.Cancel:  # type: ignore
@@ -124,35 +126,21 @@ class CreatorDialog(QDialog):
             # TODO set preferences
             pass
         self.accept()
+'''
 
 
-class PacketWindow(AbstractTableWindow):
-    """
-    Window managing packets
-    """
+class PacketWindow(QWidget):
+    """"""
 
     _instance: Optional["PacketWindow"] = None
 
-    def __init__(self, **kwargs) -> None:
-        """ """
+    def __init__(self, model: RuleSystem) -> None:
         assert PacketWindow._instance is None
-        super().__init__(
-            "Packets",
-            [
-                ("select", QCheckBox),
-                ("name", QLineEdit),
-                ("open", QPushButton),
-            ],
-        )
+        super().__init__()
 
-        kwargs = kwargs.get("kwargs", kwargs)
-
-        self.packet_manager = (
-            kwargs["packet_manager"] if "packet_manager" in kwargs else None
-        )
+        self.model: RuleSystem = model
         self.resize(600, 400)
 
-        self.buttons = {}
         self.setWindowTitle("Csomagküldés")
 
         self.setStyleSheet(
@@ -163,70 +151,62 @@ class PacketWindow(AbstractTableWindow):
             font-size: 16px;
         """
         )
+        self.run_button = QPushButton("Futtatás", self)
+        self.input_label = QLabel("Bemeneti fájl:", self)
+        self.output_label = QLabel("Kimeneti fájl:", self)
+        self.input_text = QLineEdit(self)
+        self.output_text = QLineEdit(self)
+        self.table = QComboBox(self)
+        self.chain = QComboBox(self)
 
-        self.buttons["tcp"] = QPushButton("TCP template", self.centralWidget())
-        self.buttons["udp"] = QPushButton("UDP template", self.centralWidget())
-        self.buttons["delete"] = QPushButton("Delete", self.centralWidget())
+        self.main_layout = QGridLayout()
 
-        for key in ["tcp", "udp", "delete"]:
-            self.menu_line.layout().addWidget(self.buttons[key])
+        self.main_layout.addWidget(self.input_label, 0, 0)
+        self.main_layout.addWidget(self.input_text, 1, 0, 1, 2)
+        self.main_layout.addWidget(self.output_label, 2, 0)
+        self.main_layout.addWidget(self.output_text, 3, 0, 1, 2)
+        self.main_layout.addWidget(self.table, 4, 0)
+        self.main_layout.addWidget(self.chain, 4, 1)
+        self.main_layout.addWidget(self.run_button, 5, 1)
 
-        self.menu_line.layout().insertStretch(-1)  # type: ignore
+        self.setLayout(self.main_layout)
 
-        self.menu_line.setStyleSheet(
-            """
-            background-color: #2F2F32;
-            color: #BABABE;
-        """
+        self.table.addItems(["Válassz"] + list(self.model._tables.keys()))
+        self.chain.addItems(["Válassz"])
+
+        @Slot(str)
+        def reinit_chain_values(text: str)-> None:
+            if text in self.model._tables:
+                self.chain.clear()
+                self.chain.addItems(["Válassz"] + list(self.model.get_chain_names(text)))
+            else:
+                self.chain.clear()
+                self.chain.addItems(["Válassz"])
+        self.table.currentTextChanged.connect( #type: ignore
+            reinit_chain_values
         )
 
-        self.buttons["tcp"].clicked.connect(  # type: ignore
-            lambda: self.create_packet(PacketType.TCP)
-        )
-        self.buttons["udp"].clicked.connect(  # type: ignore
-            lambda: self.create_packet(PacketType.UDP)
-        )
-        self.buttons["delete"].clicked.connect(self.delete_clicked)  # type: ignore
+        @Slot()
+        def run_packet():
+            if self.table.currentText() in self.model._tables:
+                table = self.table.currentText()
+                if self.chain.currentText() in self.model.get_chain_names(table):
+                    input_file = self.input_text.text()
+                    output_file = self.output_text.text()
+                    if (
+                        sum(
+                            output_file.count(c)
+                            for c in ["|", "<", ">", ":", '"', "?", "*"]
+                        )
+                        == 0
+                    ) and os.path.isfile(input_file):
+                        self.model.run_chain_on_raw_packets(
+                            input_file, output_file, table, self.chain.currentText())
+
+        self.run_button.clicked.connect(run_packet)  # type: ignore
 
         PacketWindow._instance = self
         assert log_gui("PacketWindow opened")
-
-    @Slot()
-    def create_packet(self, packet_type: PacketType):
-        """
-        open a dialog with TCP template
-        """
-        dialog = CreatorDialog(self, packet_type=packet_type)
-        dialog.accepted.connect(  # type: ignore
-            lambda: self.add_packet(packet_type, dialog.preferences.toPlainText())
-        )
-        dialog.exec()
-
-    @Slot()
-    def modify_packet(self, packet: Packet):  # TODO modify if necessary
-        """
-        open a dialog with TCP template
-        """
-        dialog = CreatorDialog(self, packet=packet)
-        # TODO handle packet modified
-        dialog.accepted.connect()  # type: ignore
-        dialog.exec()
-
-    def add_packet(self, packet_type: PacketType, preferences: str) -> None:
-        """
-        add packet to table
-        """
-        # TODO API calls
-        self.append_row()
-
-    @override
-    def _set_row(self, ind: int) -> None:
-        packet = None
-        self.table[ind, "open"].clicked.connect(  # type: ignore
-            # TODO handle packet
-            lambda: self.modify_packet(packet)
-        )
-        self.table[ind, "open"].setText("Modify")  # type: ignore
 
     @staticmethod
     def __instance_deleted():
@@ -246,14 +226,14 @@ class PacketWindow(AbstractTableWindow):
         self.deleteLater()
 
     @staticmethod
-    def get_instance(packet_manager: Optional[Any] = None) -> "PacketWindow":
+    def get_instance(model: Optional[Any] = None) -> "PacketWindow":
         """
         Returns the instance of this class
 
         If no intance is created, creates one
         """
-        assert (packet_manager is None) or (PacketWindow._instance is None)
-        return PacketWindow._instance or PacketWindow(packet_manager=packet_manager)
+        assert (model is None) or (PacketWindow._instance is None)
+        return PacketWindow._instance or PacketWindow(model=model)
 
     @staticmethod
     def delete_instance() -> None:
@@ -280,10 +260,10 @@ class PacketWindow(AbstractTableWindow):
 
 
 @Slot()
-def get_packet_window(packet_manager) -> None:
+def get_packet_window(model) -> None:
     """
     Display the packet manager
     """
-    packet_manager = packet_manager if PacketWindow._instance is None else None
-    PacketWindow.get_instance(packet_manager).show()
+    model = model if PacketWindow._instance is None else None
+    PacketWindow.get_instance(model).show()
     PacketWindow.get_instance().activateWindow()
