@@ -155,7 +155,11 @@ class RuleSystem(QObject):
         pass
 
     def run_chain_on_raw_packets(
-        self, inputFileName: str, outputFileName: str, table: Union[Table, str], chain: Union[Chain, str]
+        self,
+        inputFileName: str,
+        outputFileName: str,
+        table: Union[Table, str],
+        chain: Union[Chain, str],
     ):
         table = table_to_value(table)
         chain = chain_to_value(chain)

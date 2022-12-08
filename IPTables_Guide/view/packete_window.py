@@ -175,16 +175,17 @@ class PacketWindow(QWidget):
         self.chain.addItems(["Válassz"])
 
         @Slot(str)
-        def reinit_chain_values(text: str)-> None:
+        def reinit_chain_values(text: str) -> None:
             if text in self.model._tables:
                 self.chain.clear()
-                self.chain.addItems(["Válassz"] + list(self.model.get_chain_names(text)))
+                self.chain.addItems(
+                    ["Válassz"] + list(self.model.get_chain_names(text))
+                )
             else:
                 self.chain.clear()
                 self.chain.addItems(["Válassz"])
-        self.table.currentTextChanged.connect( #type: ignore
-            reinit_chain_values
-        )
+
+        self.table.currentTextChanged.connect(reinit_chain_values)  # type: ignore
 
         @Slot()
         def run_packet():
@@ -201,7 +202,8 @@ class PacketWindow(QWidget):
                         == 0
                     ) and os.path.isfile(input_file):
                         self.model.run_chain_on_raw_packets(
-                            input_file, output_file, table, self.chain.currentText())
+                            input_file, output_file, table, self.chain.currentText()
+                        )
 
         self.run_button.clicked.connect(run_packet)  # type: ignore
 

@@ -73,7 +73,7 @@ class MainWindow(QMainWindow):
         )
         self.buttons["packages"].clicked.connect(  # type: ignore
             # TODO handle packages
-            lambda: get_packet_window(model = self.model)
+            lambda: get_packet_window(model=self.model)
         )
         self.buttons["persistence"].clicked.connect(  # type: ignore
             lambda: open_window(PersistenceWindow, self, model=self.model)
