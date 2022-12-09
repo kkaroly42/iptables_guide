@@ -26,7 +26,7 @@ def test_initializing(qtbot):
     assert ctw1.rows == []
     assert isinstance(ctw1.main_layout, QGridLayout)
     assert ctw1.layout() == ctw1.main_layout
-    assert ctw1.main_layout.horizontalSpacing() == 0
+    assert ctw1.main_layout.horizontalSpacing() == 5
     assert ctw1.main_layout.verticalSpacing() == 0
     ctw1.deleteLater()
 
@@ -36,7 +36,7 @@ def test_initializing(qtbot):
     assert ctw2.rows == []
     assert isinstance(ctw2.main_layout, QGridLayout)
     assert ctw2.layout() == ctw2.main_layout
-    assert ctw2.main_layout.horizontalSpacing() == 0
+    assert ctw2.main_layout.horizontalSpacing() == 5
     assert ctw2.main_layout.verticalSpacing() == 0
     ctw2.deleteLater()
 
@@ -46,7 +46,7 @@ def test_initializing(qtbot):
     assert ctw3.rows == []
     assert ctw3.layout() == ctw3.main_layout
     assert isinstance(ctw3.main_layout, QGridLayout)
-    assert ctw3.main_layout.horizontalSpacing() == 0
+    assert ctw3.main_layout.horizontalSpacing() == 5
     assert ctw3.main_layout.verticalSpacing() == 0
     ctw3.deleteLater()
 

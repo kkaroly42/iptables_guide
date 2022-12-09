@@ -190,8 +190,6 @@ def pair_iterator(substr: List[str]):
 
 
 def validate_ip(ip: str, delimiter="/") -> bool:
-    print(ip)
-    print(delimiter)
     if delimiter == "/":
         try:
             ipaddress.ip_address(ip)
@@ -313,7 +311,6 @@ class UDPParser:
                             spec = option
                             substr.remove(element)
                         specs.append(spec)
-            print("returning:", specs)
             return specs, substr
         else:
             return None
@@ -360,24 +357,28 @@ class JumpParser:
         self.actions = {
             "DROP": {
                 "str_form": "-j DROP",
+                "forms": ["--jump DROP"],
                 "type": "action",
                 "action_method": drop_action,
                 "explanation": "",
             },
             "ACCEPT": {
                 "str_form": "-j ACCEPT",
+                "forms": ["--jump ACCEPT", "--jump ACCEPT"],
                 "type": "action",
                 "action_method": accept_action,
                 "explanation": "",
             },
             "SNAT": {
                 "str_form": "-j SNAT --to-source",
+                "forms": ["--jump SNAT --to-source"],
                 "type": "action",
                 "action_method": snat_action,
                 "explanation": "",
             },
             "DNAT": {
                 "str_form": "-j DNAT --to-destination",
+                "forms": "--jump DNAT --to-destination",
                 "type": "action",
                 "action_method": dnat_action,
                 "explanation": "",
@@ -389,14 +390,20 @@ class JumpParser:
             start = substr[0] + " " + substr[1]
             for action in self.actions:
                 if action in ["DROP", "ACCEPT"]:
-                    if start == self.actions[action]["str_form"]:
-                        return self.actions[action], substr[2:]
+                    if (
+                        start == self.actions[action]["str_form"]
+                        or start in self.actions[action]["forms"]
+                    ):
+                        to_return = self.actions[action].copy()
+                        to_return["str_form"] = start
+                        return to_return, substr[2:]
                 else:
                     if len(substr) > 2:
                         start = " ".join(substr[:3])
-                        if start == self.actions[action]["str_form"] and validate_ip(
-                            substr[4], ":"
-                        ):
+                        if (
+                            start == self.actions[action]["str_form"]
+                            or start in self.actions[action]["forms"]
+                        ) and validate_ip(substr[4], ":"):
                             to_return = self.actions[action].copy()
                             to_return["value"] = substr[3]
                             return to_return, substr[4:]
@@ -415,10 +422,7 @@ class SourceParser:
 
     def find_fit(self, substr: List[str]):
         if len(substr) > 1:
-            print("hello")
-            print(validate_ip(substr[1]))
             if substr[0] in self.start_strings and validate_ip(substr[1]):
-                print(substr)
                 to_return = self.repr_dict.copy()
                 to_return["str_form"] = to_return["str_form"] + " " + substr[1]
                 to_return["value"] = substr[1]

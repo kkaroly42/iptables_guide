@@ -16,7 +16,7 @@ from PySide6.QtWidgets import (  # pylint: disable=import-error
 )
 
 from IPTables_Guide.view.help_window import HelpWindow, display_help
-from IPTables_Guide.view.packete_window import PacketWindow, get_packet_window
+from IPTables_Guide.view.packet_window import PacketWindow, get_packet_window
 from IPTables_Guide.view.iptable_window import IPTableWindow
 from IPTables_Guide.view.persistence import PersistenceWindow
 from IPTables_Guide.view.gui_utils import open_window, log_gui
