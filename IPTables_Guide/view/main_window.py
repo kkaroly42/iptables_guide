@@ -107,7 +107,9 @@ class MainWindow(QMainWindow):
         msgBox = QMessageBox()
         msgBox.setText("Menti kilépés előtt a módosításokat?")
         msgBox.setInformativeText("A nem mentett információk elvesznek")
-        msgBox.setStandardButtons(QMessageBox.Save | QMessageBox.Discard | QMessageBox.Cancel)
+        msgBox.setStandardButtons(
+            QMessageBox.Save | QMessageBox.Discard | QMessageBox.Cancel
+        )
         msgBox.setDefaultButton(QMessageBox.Save)
         ret = msgBox.exec()
 
@@ -127,7 +129,6 @@ class MainWindow(QMainWindow):
         else:
             # should never be reached
             pass
-
 
 
 if __name__ == "__main__":
