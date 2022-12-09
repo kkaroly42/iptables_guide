@@ -89,8 +89,7 @@ class PersistenceWindow(QMainWindow):
                 for c in ["/", "\\", "|", "<", ">", ":", '"', "?", "*"]
             )
             == 0
-            and 
-            len(file_name) > 0
+            and len(file_name) > 0
         ):
             self.model.write_to_file(file_name)
         else:
