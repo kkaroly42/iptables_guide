@@ -12,6 +12,7 @@ from PySide6.QtWidgets import (  # pylint: disable=import-error
     QWidget,
     QVBoxLayout,
     QPushButton,
+    QMessageBox,
 )
 
 from IPTables_Guide.view.help_window import HelpWindow, display_help
@@ -48,10 +49,28 @@ class MainWindow(QMainWindow):
 
         self.setStyleSheet(
             """
-            background-color: #1C1C1E;
-            color: #BABBBE;
-            font-family: Consolas;
-            font-size: 20px;
+            QMainWindow{
+                background-color: #1C1C1E;
+            }
+            
+                QPushButton {
+                    background-color: #1C1C1E;
+                    color: #BABBBE;
+                    font-family: Consolas;
+                    font-size: 20px;
+                    padding: 6px 3px 6px 3px;
+                    border: 1px solid #505054;
+                    margin: 0px;
+                }
+                QPushButton:pressed{
+                    background-color: #28282B;
+                    color: #BABBBE;
+                    border: 1px solid #28282B;
+                }
+                QPushButton:hover:!pressed {
+                    background-color: #505054;
+                    color: white;
+                }
         """
         )
 
@@ -85,10 +104,30 @@ class MainWindow(QMainWindow):
         """
         handling close event
         """
-        assert log_gui("Main Window close")
-        HelpWindow.delete_instance()
-        PacketWindow.delete_instance()
-        super().closeEvent(event)
+        msgBox = QMessageBox()
+        msgBox.setText("Menti kilépés előtt a módosításokat?")
+        msgBox.setInformativeText("A nem mentett információk elvesznek")
+        msgBox.setStandardButtons(QMessageBox.Save | QMessageBox.Discard | QMessageBox.Cancel)
+        msgBox.setDefaultButton(QMessageBox.Save)
+        ret = msgBox.exec()
+
+        if ret == QMessageBox.Save:
+            # Save was clicked
+            open_window(PersistenceWindow, self, model=self.model)
+        elif ret == QMessageBox.Discard:
+            # Don't Save was clicked
+            assert log_gui("Main Window close")
+            HelpWindow.delete_instance()
+            PacketWindow.delete_instance()
+            super().closeEvent(event)
+            event.accept()
+        elif ret == QMessageBox.Cancel:
+            # Cancel was clicked
+            event.ignore()
+        else:
+            # should never be reached
+            pass
+
 
 
 if __name__ == "__main__":

@@ -39,6 +39,7 @@ class CustomLineEdit(QLineEdit):
             font-size: 16px;
             width: 250px;
             padding: 0 5px;
+            margin: 2px;
         """
         )
 

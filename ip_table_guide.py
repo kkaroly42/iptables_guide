@@ -161,16 +161,11 @@ if __name__ == "__main__":
             border-width: 0 3px 3px 0;
             display: inline-block;
             padding: 3px;
-            transform: rotate(45deg);
             margin: 2px;
         }
 
         QComboBox::down-arrow:on {
-            border: solid grey;
             border-width: 3px 3px 0px 0px;
-            display: inline-block;
-            padding: 3px;
-            margin: 2px;
         }
     """
     )

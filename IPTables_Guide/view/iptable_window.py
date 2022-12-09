@@ -79,7 +79,24 @@ class IPTableWindow(AbstractTableWindow):
         for k in ["new", "delete", "insert", "help"]:
             self.buttons[k].setStyleSheet(
                 """
-                color: #BABABE;
+                QPushButton {
+                    background-color: #2F2F32;
+                    color: #BABBBE;
+                    font-family: Consolas;
+                    font-size: 16px;
+                    padding: 6px 3px 6px 3px;
+                    border: 1px solid #505054;
+                    margin: 0px;
+                }
+                QPushButton:pressed{
+                    background-color: #28282B;
+                    color: #BABBBE;
+                    border: 1px solid #28282B;
+                }
+                QPushButton:hover:!pressed {
+                    background-color: #505054;
+                    color: white;
+                }
             """
             )
             self.menu_line.layout().addWidget(self.buttons[k])
@@ -224,6 +241,7 @@ class IPTableWindow(AbstractTableWindow):
         if len(inds) != 1:
             msg_box = QMessageBox()
             msg_box.setWindowTitle("Beszúrás hiba")
+            msg_box.setIcon(QMessageBox.Warning)
             msg_box.setText("Beszúrás csak egy kijelölt sorral lehetséges!")
             msg_box.exec()
             return
@@ -244,6 +262,7 @@ class IPTableWindow(AbstractTableWindow):
         inds: List[int] = self._get_selected_indices()
         if len(inds) < 1:
             msg_box = QMessageBox()
+            msg_box.setIcon(QMessageBox.Warning)
             msg_box.setWindowTitle("Törlés hiba")
             msg_box.setText("Nincsenek kiválasztott törlendő elemek.")
             msg_box.exec()
