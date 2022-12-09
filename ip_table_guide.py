@@ -47,6 +47,39 @@ if __name__ == "__main__":
             background: none;
         }
 
+        QScrollBar:horizontal {
+            border: 0px solid grey;
+            background: #1C1C1E;
+            height: 10px;
+            margin: 0px 0 0px 0;
+        }
+        QScrollBar::handle:horizontal {
+            background: #2F2F32;
+            border-radius: 5px;
+            min-width: 20px;
+        }
+        QScrollBar::add-line:horizontal {
+            border: 0px solid grey;
+            height: 0px;
+            subcontrol-position: right;
+            subcontrol-origin: margin;
+        }
+
+        QScrollBar::sub-line:horizontal {
+            border: 0px;
+            height: 0px;
+            subcontrol-position: left;
+            subcontrol-origin: margin;
+        }
+        QScrollBar::up-arrow:horizontal, QScrollBar::down-arrow:horizontal {
+            border: 0px;
+            width: 0px;
+            height: 0px;
+        }
+        QScrollBar::add-page:horizontal, QScrollBar::sub-page:horizontal {
+            background: none;
+        }
+
         QRadioButton::indicator {
             width: 12px;
             height: 12px;
@@ -88,6 +121,56 @@ if __name__ == "__main__":
         }
         QCheckBox::indicator:checked:pressed {
             background-color: #707070;
+        }
+
+        QLineEdit {
+            border: 2px solid gray;
+            border-radius: 0px;
+            padding: 3 5px;
+            selection-background-color: #707070;
+        }
+
+        QComboBox {
+            border: 1px solid gray;
+            color: #BABBBE;
+            font-family: Consolas;
+            font-size: 16px;
+            border-radius: 0px;
+            padding: 1px 18px 1px 3px;
+            min-width: 6em;
+            margin: 5px 2px;
+        }
+        
+        QComboBox:on {
+            padding-top: 3px;
+            padding-left: 4px;
+            padding-right: 4px;
+        }
+
+        QComboBox::drop-down {
+            subcontrol-origin: padding;
+            subcontrol-position: top right;
+            width: 15px;
+            border-left-width: 1px;
+            border-left-color: darkgray;
+            border-left-style: solid;
+        }
+
+        QComboBox::down-arrow {
+            border: solid grey;
+            border-width: 0 3px 3px 0;
+            display: inline-block;
+            padding: 3px;
+            transform: rotate(45deg);
+            margin: 2px;
+        }
+
+        QComboBox::down-arrow:on {
+            border: solid grey;
+            border-width: 3px 3px 0px 0px;
+            display: inline-block;
+            padding: 3px;
+            margin: 2px;
         }
     """
     )

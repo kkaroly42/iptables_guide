@@ -38,7 +38,7 @@ class CustomTableWidget(QWidget):
         self.rows: List[Row] = []
         self.main_layout: QGridLayout = QGridLayout()
         self.setLayout(self.main_layout)
-        self.main_layout.setHorizontalSpacing(0)
+        self.main_layout.setHorizontalSpacing(5)
         self.main_layout.setVerticalSpacing(0)
 
     def __getitem__(

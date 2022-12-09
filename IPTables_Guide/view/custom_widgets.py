@@ -30,6 +30,18 @@ class CustomLineEdit(QLineEdit):
         """
         super().__init__(parent)
 
+        self.setStyleSheet(
+            """
+            background-color: #2F2F32;
+            border-color: #2F2F32;
+            color: #BABBBE;
+            font-family: Consolas;
+            font-size: 16px;
+            width: 250px;
+            padding: 0 5px;
+        """
+        )
+
     @override
     def mousePressEvent(self, arg__1: QMouseEvent) -> None:
         """

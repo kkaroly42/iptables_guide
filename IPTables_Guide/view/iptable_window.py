@@ -223,8 +223,8 @@ class IPTableWindow(AbstractTableWindow):
         inds: List[int] = self._get_selected_indices()
         if len(inds) != 1:
             msg_box = QMessageBox()
-            msg_box.setWindowTitle("Message")
-            msg_box.setText("Insert is only enabled for exactly one row selected")
+            msg_box.setWindowTitle("Beszúrás hiba")
+            msg_box.setText("Beszúrás csak egy kijelölt sorral lehetséges!")
             msg_box.exec()
             return
         self.model.insert_rule(
@@ -242,6 +242,12 @@ class IPTableWindow(AbstractTableWindow):
         handle delete clicked
         """
         inds: List[int] = self._get_selected_indices()
+        if len(inds) < 1:
+            msg_box = QMessageBox()
+            msg_box.setWindowTitle("Törlés hiba")
+            msg_box.setText("Nincsenek kiválasztott törlendő elemek.")
+            msg_box.exec()
+            return
         inds.sort()
         inds.reverse()
         for ind in inds:

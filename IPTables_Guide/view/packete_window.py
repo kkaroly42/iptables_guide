@@ -253,8 +253,8 @@ class PacketWindow(QWidget):
         inds: List[int] = self._get_selected_indices()
         if len(inds) == 0:
             msg_box = QMessageBox()
-            msg_box.setWindowTitle("Message")
-            msg_box.setText("No selected items")
+            msg_box.setWindowTitle("Törlés hiba")
+            msg_box.setText("Nincsenek kiválasztott törlendő elemek.")
             msg_box.exec()
             return
         for ind in inds:

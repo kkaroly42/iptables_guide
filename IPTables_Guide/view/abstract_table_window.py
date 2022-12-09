@@ -14,7 +14,6 @@ from PySide6.QtWidgets import (  # pylint: disable=import-error
     QHBoxLayout,
     QVBoxLayout,
     QLabel,
-    QMessageBox,
     QScrollArea,
 )
 
