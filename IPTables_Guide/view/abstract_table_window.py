@@ -4,11 +4,11 @@
 
 from typing import Optional, List, Tuple
 
-from overrides import override
+from overrides import override  # type: ignore
 
-from PySide6.QtCore import Slot, Qt  # pylint: disable=import-error
-from PySide6.QtGui import QCloseEvent  # pylint: disable=import-error
-from PySide6.QtWidgets import (  # pylint: disable=import-error
+from PySide6.QtCore import Slot, Qt  # type: ignore # pylint: disable=import-error
+from PySide6.QtGui import QCloseEvent  # type: ignore # pylint: disable=import-error
+from PySide6.QtWidgets import (  # type: ignore # pylint: disable=import-error
     QMainWindow,
     QWidget,
     QHBoxLayout,

@@ -326,3 +326,7 @@ class RuleSystem(QObject):
                     self.append_rule(
                         Table(rule.table.upper()), Chain(rule.chain.upper()), rule
                     )
+
+    @property
+    def tables(self):
+        return self._tables
