@@ -1,43 +1,46 @@
 import unittest
 
-import IPTables_Guide.model.packets as packets
+from IPTables_Guide.model.packets import PacketManager, PacketType
 
 
-class TCP(unittest.TestCase):
-    def test_1(self):
-        pk = packets.create_packet(packets.PacketType.TCP, {"ttl": 128}, {"ack": 1})
-        self.assertIsNotNone(pk)
-        self.assertEqual(pk.get_type(), packets.PacketType.TCP)
-        fields = pk.get_fields()
-        self.assertEqual(fields["IP"]["ttl"], 128)
-        self.assertEqual(fields["TCP"]["ack"], 1)
+def test_tcp():
+    pm = PacketManager()
+    pk = PacketManager.create_packet(PacketType.TCP, {}, {"ttl": 128}, {"ack": 1})
+    pm.add_packet(pk)
+    assert pk is not None
+    assert pk.get_type() == PacketType.TCP
+    assert pk.get_type() == pm.get(0).get_type()
+    fields = pk.get_fields()
+    assert fields["IP"]["ttl"].value == 128
+    assert fields["TCP"]["ack"].value == 1
 
 
-class UDP(unittest.TestCase):
-    def test_1(self):
-        port = 60
-        pk = packets.create_packet(
-            packets.PacketType.UDP, {"flags": 1}, {"sport": port, "dport": port}
-        )
-        self.assertIsNotNone(pk)
-        self.assertEqual(pk.get_type(), packets.PacketType.UDP)
-        fields = pk.get_fields()
-        self.assertEqual(fields["IP"]["flags"], 1)
-        self.assertEqual(fields["UDP"]["sport"], port)
-        self.assertEqual(fields["UDP"]["dport"], port)
+def test_udp():
+    pm = PacketManager()
+    port = 60
+    dport = 61
+    pk = PacketManager.create_packet(PacketType.UDP, {}, {"flags": 1}, {"sport": port, "dport": dport})
+    pm.add_packet(pk)
+    assert pk is not None
+    assert pk.get_type() == PacketType.UDP
+    assert pk.get_type() == pm.get(0).get_type()
+    fields = pk.get_fields()
+    assert fields["IP"]["flags"].value == 1
+    assert fields["UDP"]["sport"].value == port
+    assert fields["UDP"]["dport"].value == dport
 
-
-class ICMP(unittest.TestCase):
-    def test_1(self):
-        pk = packets.create_packet(
-            packets.PacketType.ICMP, {"flags": 1, "ttl": 128}, {"type": 0}
-        )
-        self.assertIsNotNone(pk)
-        self.assertEqual(pk.get_type(), packets.PacketType.ICMP)
-        fields = pk.get_fields()
-        self.assertEqual(fields["IP"]["flags"], 1)
-        self.assertEqual(fields["IP"]["ttl"], 128)
-        self.assertEqual(fields["ICMP"]["type"], 0)
+# the model currently does not suppoer icmp
+# def test_icmp():
+#     pm = PacketManager()
+#     pk = PacketManager.create_packet(PacketType.ICMP, {}, {"flags": 1, "ttl": 128}, {"type": 0})
+#     pm.add_packet(pk)
+#     assert pk is not None
+#     assert pk.get_type() == PacketType.ICMP
+#     assert pk.get_type() == pm.get(0).get_type()
+#     fields = pk.get_fields()
+#     assert fields["IP"]["flags"].value == 1
+#     assert fields["IP"]["ttl"].value == 128
+#     assert fields["ICMP"]["type"].value == 0
 
 
 if __name__ == "__main__":
