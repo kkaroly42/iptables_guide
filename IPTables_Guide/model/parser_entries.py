@@ -419,7 +419,6 @@ class JumpParser:
                             to_return = self.actions[action].copy()
                             to_return["value"] = substr[3]
                             to_return["str_form"] += " {}".format(substr[3])
-                            print(to_return)
                             return to_return, substr[4:]
         return None
 
