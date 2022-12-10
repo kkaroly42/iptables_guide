@@ -53,6 +53,18 @@ possible_chains = {
         "value": "OUTPUT",
         "tables": ["FILTER", "NAT"],
     },
+    "PREROUTING": {
+        "str_form": "PREROUTING",
+        "explanation": "",
+        "value": "PREROUTING",
+        "tables": ["NAT"],
+    },
+    "POSTROUTING": {
+        "str_form": "POSTROUTING",
+        "explanation": "",
+        "value": "POSTROUTING",
+        "tables": ["NAT"],
+    },
 }
 
 
@@ -398,12 +410,12 @@ class JumpParser:
                         to_return["str_form"] = start
                         return to_return, substr[2:]
                 else:
-                    if len(substr) > 2:
+                    if len(substr) > 3:
                         start = " ".join(substr[:3])
                         if (
                             start == self.actions[action]["str_form"]
                             or start in self.actions[action]["forms"]
-                        ) and validate_ip(substr[4], ":"):
+                        ) and validate_ip(substr[3], ":"):
                             to_return = self.actions[action].copy()
                             to_return["value"] = substr[3]
                             return to_return, substr[4:]
