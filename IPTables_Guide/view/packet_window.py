@@ -42,10 +42,38 @@ class PacketWindow(QWidget):
 
         self.setStyleSheet(
             """
-            background-color: #1C1C1E;
-            color: #BABBBE;
-            font-family: Consolas;
-            font-size: 16px;
+            QWidget{
+                background-color: #1C1C1E;
+                color: #BABBBE;
+                font-family: Consolas;
+                font-size: 16px;
+            }
+
+            QLineEdit {
+                border: 2px solid gray;
+                border-radius: 0px;
+                padding: 3 5px;
+                selection-background-color: #707070;
+                margin: 0px 2px 20px 2px;
+            }
+
+            QPushButton {
+                    background-color: #1C1C1E;
+                    color: #BABBBE;
+                    font-family: Consolas;
+                    padding: 6px 3px 6px 3px;
+                    border: 1px solid #505054;
+                    margin: 0px;
+                }
+                QPushButton:pressed{
+                    background-color: #28282B;
+                    color: #BABBBE;
+                    border: 1px solid #28282B;
+                }
+                QPushButton:hover:!pressed {
+                    background-color: #505054;
+                    color: white;
+                }
         """
         )
         self.run_button = QPushButton("Futtatás", self)
@@ -150,8 +178,9 @@ class PacketWindow(QWidget):
         inds: List[int] = self._get_selected_indices()
         if len(inds) == 0:
             msg_box = QMessageBox()
-            msg_box.setWindowTitle("Message")
-            msg_box.setText("No selected items")
+            msg_box.setIcon(QMessageBox.Warning)
+            msg_box.setWindowTitle("Törlés hiba")
+            msg_box.setText("Nincsenek kiválasztott törlendő elemek.")
             msg_box.exec()
             return
         for ind in inds:

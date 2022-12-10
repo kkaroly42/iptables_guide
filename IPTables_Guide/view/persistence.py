@@ -41,6 +41,26 @@ class PersistenceWindow(QMainWindow):
 
         self.file_name_edit = QLineEdit(self.centralWidget())
 
+        self.setStyleSheet(
+            """
+            QLabel{
+                color: #BABBBE;
+                font-family: Consolas;
+                font-size: 16px;
+            }
+            QLineEdit {
+                border: 2px solid gray;
+                border-radius: 0px;
+                padding: 3 5px;
+                selection-background-color: #707070;
+                background: #1C1C1E;
+                color: #BABBBE;
+                font-family: Consolas;
+                font-size: 16px;
+            }
+            """
+        )
+
         self.save_button = QPushButton("Mentés", self.centralWidget())
         self.load_button = QPushButton("Betöltés", self.centralWidget())
 
@@ -69,10 +89,12 @@ class PersistenceWindow(QMainWindow):
                 for c in ["/", "\\", "|", "<", ">", ":", '"', "?", "*"]
             )
             == 0
+            and len(file_name) > 0
         ):
             self.model.write_to_file(file_name)
         else:
             msg_box = QMessageBox()
+            msg_box.setIcon(QMessageBox.Warning)
             msg_box.setText(f"A megadott fájlnév nem valid: {file_name}")
             msg_box.exec()
 
@@ -87,5 +109,6 @@ class PersistenceWindow(QMainWindow):
             self.model.read_from_file(file_name)
         else:
             msg_box = QMessageBox()
+            msg_box.setIcon(QMessageBox.Warning)
             msg_box.setText(f"A megadott fájlnév nem valid: {file_name}")
             msg_box.exec()

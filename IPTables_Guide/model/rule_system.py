@@ -30,7 +30,6 @@ from IPTables_Guide.model.parser_entries import (
 class Table(Enum):
     FILTER = "FILTER"
     NAT = "NAT"
-    MANGLE = "MANGLE"
 
 
 def table_to_str(table: Union[Table, str]) -> str:
@@ -130,14 +129,6 @@ class RuleSystem(QObject):
             Table.NAT.value: {
                 "PREROUTING": [],
                 "INPUT": [],
-                "FORWARD": [],
-                "POSTROUTING": [],
-            },
-            Table.MANGLE.value: {
-                "PREROUTING": [],
-                "INPUT": [],
-                "FORWARD": [],
-                "OUTPUT": [],
                 "POSTROUTING": [],
             },
         }
@@ -318,7 +309,6 @@ class RuleSystem(QObject):
             lines = f.readlines()
             for line in lines:
                 line = line.strip()
-                print(line)
                 if len(line) > 0 and line[0] == "#":
                     table, chain = line[1:].split(".")
                 else:

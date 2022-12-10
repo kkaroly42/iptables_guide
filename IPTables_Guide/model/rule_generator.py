@@ -209,7 +209,6 @@ class Rule:
                     if not conditions_met:
                         return False, None
                 elif component["type"] == "action":
-                    print(component)
                     run_method = component["action_method"]
                     method_value = ""
                     if "value" in component:
