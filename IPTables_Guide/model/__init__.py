@@ -2,8 +2,12 @@ from .packets import Packet, PacketType, PacketManager
 
 from typing import Dict, Optional
 
-DUMMY_TCP_PACKET: Optional[Packet] = PacketManager.create_packet(PacketType.TCP, {}, {}, {})
-DUMMY_UDP_PACKET: Optional[Packet] = PacketManager.create_packet(PacketType.UDP, {}, {}, {})
+DUMMY_TCP_PACKET: Optional[Packet] = PacketManager.create_packet(
+    PacketType.TCP, {}, {}, {}
+)
+DUMMY_UDP_PACKET: Optional[Packet] = PacketManager.create_packet(
+    PacketType.UDP, {}, {}, {}
+)
 
 assert DUMMY_TCP_PACKET
 assert DUMMY_UDP_PACKET

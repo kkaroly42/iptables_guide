@@ -186,10 +186,10 @@ class PacketManager:
 
     @staticmethod
     def create_packet(
-            type_: PacketType,
-            ethernet_args: Dict[str, Any],
-            internet_layer_args: Dict[str, Any],
-            transmission_layer_args: Dict[str, Any],
+        type_: PacketType,
+        ethernet_args: Dict[str, Any],
+        internet_layer_args: Dict[str, Any],
+        transmission_layer_args: Dict[str, Any],
     ) -> Optional[Packet]:
         if type_ not in Packet.SCAPY_TYPES:
             return None

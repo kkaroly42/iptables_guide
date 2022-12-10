@@ -230,14 +230,18 @@ class PacketCreationWindow(AbstractTableWindow):
         open a dialog with TCP template
         """
         dialog = CreatorDialog(self, packet_type=packet_type)
-        dialog.accepted.connect(lambda: self.add_packet(dialog.packet) if dialog.packet else None)
+        dialog.accepted.connect(
+            lambda: self.add_packet(dialog.packet) if dialog.packet else None
+        )
         dialog.exec()
 
     @Slot()
     def view_packet(self, id_: int):
         dialog = CreatorDialog(self, packet=self._packet_manager.get(id_))
         dialog.accepted.connect(
-            lambda: self.maybe_modify_packet(id_, dialog.packet, dialog.modified) if dialog.packet else None
+            lambda: self.maybe_modify_packet(id_, dialog.packet, dialog.modified)
+            if dialog.packet
+            else None
         )
         dialog.exec()
 
@@ -337,7 +341,9 @@ class PacketCreationWindow(AbstractTableWindow):
 
         for i in range(len(self._packet_manager)):
             self.table[i, "name"].setText(
-                PacketCreationWindow._build_packet_text(i, self._packet_manager.get(i).get_type())
+                PacketCreationWindow._build_packet_text(
+                    i, self._packet_manager.get(i).get_type()
+                )
             )
 
     @staticmethod

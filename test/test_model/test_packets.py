@@ -19,7 +19,9 @@ def test_udp():
     pm = PacketManager()
     port = 60
     dport = 61
-    pk = PacketManager.create_packet(PacketType.UDP, {}, {"flags": 1}, {"sport": port, "dport": dport})
+    pk = PacketManager.create_packet(
+        PacketType.UDP, {}, {"flags": 1}, {"sport": port, "dport": dport}
+    )
     pm.add_packet(pk)
     assert pk is not None
     assert pk.get_type() == PacketType.UDP
@@ -28,6 +30,7 @@ def test_udp():
     assert fields["IP"]["flags"].value == 1
     assert fields["UDP"]["sport"].value == port
     assert fields["UDP"]["dport"].value == dport
+
 
 # the model currently does not suppoer icmp
 # def test_icmp():
