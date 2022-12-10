@@ -161,3 +161,21 @@ def test_pcap_operation():
     with open(os.path.join("pcaps", "out.pcap"), "rb") as f_1:
         with open(os.path.join("pcaps", "expected.pcap"), "rb") as f_2:
             assert f_1.read() == f_2.read()
+
+
+def test_nat():
+    tcp = TCPParser()
+    j_drop = JumpParser()
+    source_parser = SourceParser()
+    system = RuleSystem()
+    rule = system.create_rule_from_raw_str(
+        "iptables -t NAT -A PREROUTING -j SNAT --to-source 192.168.56.1",
+        "",
+        "",
+    )
+    system.append_rule(Table("NAT"), Chain("PREROUTING"), rule)
+    read_rule = system.get_rule(Table("NAT"), Chain("PREROUTING"), 0)
+    assert (
+        read_rule.get_str_form()
+        == "iptables -t NAT -A PREROUTING -j SNAT --to-source 192.168.56.1"
+    )
