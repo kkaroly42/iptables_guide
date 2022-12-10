@@ -9,3 +9,4 @@ Our goal is to create a safe, practical, well-designed application that can be u
 - [Qt for Python](https://www.qt.io/qt-for-python)
 - [Scapy](https://scapy.net/)
 
+- pytest, pytest-qt
