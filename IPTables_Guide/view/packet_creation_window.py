@@ -21,6 +21,7 @@ from PySide6.QtWidgets import (  # type: ignore # pylint: disable=import-error
     QTreeWidget,
     QTreeWidgetItem,
     QFileDialog,
+    QMainWindow,
 )
 
 from pathlib import Path
@@ -151,19 +152,23 @@ class PacketCreationWindow(AbstractTableWindow):
     Window managing packets
     """
 
-    instance: Optional[PacketCreationWindow] = None
-
-    def __init__(self, packet_manager: PacketManager) -> None:
+    def __init__(self, parent: Optional[QMainWindow], **kwargs) -> None:
         """ """
-        assert PacketCreationWindow.instance is None
         super().__init__(
             "Packets",
             [
                 ("select", QCheckBox),
                 ("name", QPushButton),
             ],
+            parent,
         )
-        self._packet_manager = packet_manager
+        kwargs = kwargs.get("kwargs", kwargs)
+
+        assert "packet_manager" in kwargs
+
+        self._packet_manager: PacketManager = kwargs["packet_manager"]
+
+        self._parent = parent
         self.resize(600, 400)
 
         self.buttons: Dict[str, Button] = {
@@ -201,7 +206,6 @@ class PacketCreationWindow(AbstractTableWindow):
             font-size: 16px;
             """
         )
-
         for _, v in self.buttons.items():
             btn = v.btn
             self.menu_line.layout().addWidget(btn)
@@ -220,7 +224,6 @@ class PacketCreationWindow(AbstractTableWindow):
             """
         )
 
-        PacketCreationWindow.instance = self
         self.update_table()
         assert log_gui("PacketWindow opened")
 
@@ -286,43 +289,6 @@ class PacketCreationWindow(AbstractTableWindow):
             PacketCreationWindow._build_packet_text(ind, packet_type)
         )
 
-    @staticmethod
-    def __instance_deleted():
-        """
-        Set instance to None
-        """
-        PacketCreationWindow.instance = None
-
-    @override
-    def closeEvent(self, event: QCloseEvent) -> None:  # pylint: disable=invalid-name
-        """
-        handling close event
-        """
-        assert log_gui("PacketWindow closed")
-        super().closeEvent(event)
-        PacketCreationWindow.__instance_deleted()
-        self.deleteLater()
-
-    @staticmethod
-    def get_instance(packet_manager: PacketManager) -> PacketCreationWindow:
-        """
-        Returns the instance of this class
-
-        If no intance is created, creates one
-        """
-        assert PacketCreationWindow.instance is None
-        if PacketCreationWindow.instance is not None:
-            return PacketCreationWindow.instance
-        return PacketCreationWindow(packet_manager=packet_manager)
-
-    @staticmethod
-    def delete_instance() -> None:
-        """
-        Deletes the only instance if exists
-        """
-        if PacketCreationWindow.instance is not None:
-            PacketCreationWindow.instance.close()
-
     @Slot()
     def delete_clicked(self) -> None:
         """
@@ -352,14 +318,3 @@ class PacketCreationWindow(AbstractTableWindow):
             return f"packet id {i} ({type_} packet)"
         else:
             return f"packet id {i}"
-
-
-@Slot()
-def get_packet_creation_window(packet_manager) -> None:
-    """
-    Display the packet manager
-    """
-    packet_manager = packet_manager if PacketCreationWindow.instance is None else None
-    instance = PacketCreationWindow.get_instance(packet_manager)
-    instance.show()
-    instance.activateWindow()
