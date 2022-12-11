@@ -11,13 +11,13 @@ start_strs = {
 }
 
 possible_tables = {
-    "-t NAT": {
-        "str_form": "-t NAT",
+    "-t nat": {
+        "str_form": "-t nat",
         "explanation": "Ezzel a kapcsolóval azt jelöljük meg, hogy a NAT(Network Address Translation) táblára fog vonatkozni az aktuális szabály.",
         "value": "NAT",
     },
-    "-t FILTER": {
-        "str_form": "-t FILTER",
+    "-t filter": {
+        "str_form": "-t filter",
         "explanation": "Ezzel a kapcsolóval azt jelöljük meg, hogy a FILTER táblára fog vonatkozni az aktuális szabály.",
         "value": "FILTER",
     },
