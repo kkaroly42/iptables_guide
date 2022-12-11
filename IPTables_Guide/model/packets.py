@@ -1,18 +1,15 @@
 from __future__ import annotations
+
+from dataclasses import dataclass
+from enum import Enum
 from pathlib import Path
+from typing import List, Dict, Any, Optional, Callable, Iterable
 
 import scapy  # type: ignore
-
 from scapy.all import rdpcap, wrpcap  # type: ignore
 from scapy.layers.inet import IP, TCP, UDP, ICMP  # type: ignore
 from scapy.layers.l2 import Ether  # type: ignore
 from scapy.packet import Packet as ScapyPacket  # type: ignore
-
-from enum import Enum
-
-from dataclasses import dataclass
-
-from typing import List, Dict, Any, Optional, NamedTuple, Callable, Iterable, TypedDict
 
 
 class PacketIndexError(Exception):

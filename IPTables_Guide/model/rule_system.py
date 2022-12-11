@@ -1,53 +1,48 @@
 from enum import Enum
-from typing import List, Dict, Optional
-import scapy.all as all
-from IPTables_Guide.model.parser_entries import *
+from typing import List, Dict, Union, Optional
 
+import scapy.all
 from PySide6.QtCore import QObject, Signal
 
+from IPTables_Guide.model.rule_generator import Rule
+from IPTables_Guide.model.parser_entries import (
+    SignatureComponent,
+    TCPParser,
+    UDPParser,
+    DestinationParser,
+    JumpParser,
+    SourceParser,
+    StateParser,
+    start_strs,
+    possible_tables,
+    possible_commands,
+    possible_chains,
+)
+
 from IPTables_Guide.model.rule_generator import (
-    Rule,
-    StartComponent,
     TableComponent,
+    StartComponent,
     CommandComponent,
     ChainComponent,
     RuleSpecification,
 )
-from IPTables_Guide.model.parser_entries import (
-    start_strs,
-    possible_chains,
-    possible_commands,
-    possible_tables,
-    possible_tcp_options,
-    possible_udp_options,
-    JumpParser,
-    TCPParser,
-    UDPParser,
-    SourceParser,
-)
 
 
-class Table(Enum):
+# TODO find better solution
+
+
+class DefaultTableType(Enum):
+    def __str__(self):
+        return str(self.value)
+
     FILTER = "FILTER"
     NAT = "NAT"
 
 
-def table_to_str(table: Union[Table, str]) -> str:
-    return table if isinstance(table, str) else table.value
+class DefaultChainType(Enum):
+    def __str__(self):
+        return str(self.value)
 
-
-def table_to_value(table: Union[Table, str]) -> Table:
-    if isinstance(table, Table):
-        return table
-    table = table.upper()
-    assert table in [e.value.upper() for e in Table]
-    for e in Table:
-        if e.value.upper() == table:
-            return e
-    assert False
-
-
-class Chain(Enum):
     INPUT = "INPUT"
     OUTPUT = "OUTPUT"
     PREROUTING = "PREROUTING"
@@ -55,23 +50,12 @@ class Chain(Enum):
     FORWARD = "FORWARD"
 
 
-def chain_to_str(chain: Union[Chain, str]) -> str:
-    return chain if isinstance(chain, str) else chain.value
+# TODO create custom classes that can handle adding chains to tables etc.
+# For now just alias these types to Dict, but later we should create a
+# custom class to allow adding user defined chains and tables
+Chain = Dict[str, List[Rule]]
 
-
-def chain_to_value(chain: Union[Chain, str]) -> Chain:
-    if isinstance(chain, Chain):
-        return chain
-    chain = chain.upper()
-    assert chain in [e.value.upper() for e in Chain]
-    for e in Chain:
-        if e.value.upper() == chain:
-            return e
-    assert False
-
-
-class Packet:  # Remove once the original module can be included!
-    pass
+Table = Dict[str, Chain]
 
 
 class RuleSystem(QObject):
@@ -79,10 +63,12 @@ class RuleSystem(QObject):
     rule_inserted = Signal(str, str, int)
     rule_deleted = Signal(str, str, int)
 
-    def __init__(self, rule_signatures=[]):
+    def __init__(
+        self, rule_signatures: Optional[List[List[SignatureComponent]]] = None
+    ) -> None:
         super().__init__()
-        self._tables: Dict[str, Dict[str, List[Rule]]] = RuleSystem.empty_tables()
-        if rule_signatures:
+        self._tables: Table = RuleSystem.empty_tables()
+        if rule_signatures is not None:
             self._rule_signatures = rule_signatures
         else:
             self._rule_signatures = [
@@ -118,43 +104,30 @@ class RuleSystem(QObject):
                 ],
             ]
 
-    #    def __init__(self, table: Table, chain: Chain, rules: List[Rule]):
-    #        self._tables: Dict[str, Dict[str, List[Rule]]] = RuleSystem.empty_tables()
-    #        self._tables[table.value][chain.value] = rules
-
     @staticmethod
-    def empty_tables() -> Dict[str, Dict[str, List[Rule]]]:
-        tables = {
-            Table.FILTER.value: {"INPUT": [], "FORWARD": []},
-            Table.NAT.value: {
-                "PREROUTING": [],
-                "INPUT": [],
-                "POSTROUTING": [],
-            },
+    def empty_tables() -> Table:
+        return {
+            "FILTER": {"INPUT": [], "FORWARD": []},
+            "NAT": {"PREROUTING": [], "INPUT": [], "POSTROUTING": []},
         }
 
-        return tables
-
     def create_rule_from_raw_str(
-        self, raw: str, table: Union[Table, str], chain: Union[Chain, str]
+        self,
+        raw: str,
+        table: Union[DefaultTableType, str],
+        chain: Union[DefaultChainType, str],
     ) -> Rule:
-        return Rule(
-            raw, self._rule_signatures, table_to_str(table), chain_to_str(chain)
-        )
+        return Rule(raw, self._rule_signatures, str(table), str(chain))
 
-    def run_on_packet(self, packet: Packet) -> Packet:
-        pass
-
+    # TODO use packets module
     def run_chain_on_raw_packets(
         self,
-        inputFileName: str,
-        outputFileName: str,
-        table: Union[Table, str],
-        chain: Union[Chain, str],
-    ):
-        table = table_to_value(table)
-        chain = chain_to_value(chain)
-        input = all.rdpcap(inputFileName)
+        input_file_name: str,
+        output_file_name: str,
+        table: Union[DefaultTableType, str],
+        chain: Union[DefaultChainType, str],
+    ) -> None:
+        input = scapy.all.rdpcap(input_file_name)
         rules = self.get_rules_in_chain(table, chain)
         for packet in input:
             rule_transformed_it = False
@@ -163,44 +136,46 @@ class RuleSystem(QObject):
                 if result[0] and result[1]:
                     rule_transformed_it = True
                     if result[1] != "DROP":
-                        all.wrpcap(outputFileName, result[1], append=True)
+                        scapy.all.wrpcap(output_file_name, result[1], append=True)
                     break
             if not rule_transformed_it:
-                all.wrpcap(outputFileName, packet, append=True)
+                scapy.all.wrpcap(output_file_name, packet, append=True)
 
     def get_rule(
-        self, table: Union[Table, str], chain: Union[Chain, str], id: int
+        self,
+        table: Union[DefaultTableType, str],
+        chain: Union[DefaultChainType, str],
+        id_: int,
     ) -> Rule:
         try:
-            return self._tables[table_to_str(table).upper()][
-                chain_to_str(chain).upper()
-            ][id]
+            return self._tables[str(table)][str(chain)][id_]
         except IndexError:
             assert False
 
     def update_rule(
         self,
-        table: Union[Table, str],
-        chain: Union[Chain, str],
+        table: Union[DefaultTableType, str],
+        chain: Union[DefaultChainType, str],
         id: int,
         rule_as_str: str,
     ) -> bool:
-        table_str = table_to_str(table).upper()
-        chain_str = chain_to_str(chain).upper()
+        table_str = str(table)
+        chain_str = str(chain)
         rule = self.create_rule_from_raw_str(rule_as_str, table, chain)
         if not rule:
             return False
         return self.overwrite_rule(table, chain, id, rule)
 
     def overwrite_rule(
-        self, table: Union[Table, str], chain: Union[Chain, str], id: int, rule: Rule
+        self,
+        table: Union[DefaultTableType, str],
+        chain: Union[DefaultChainType, str],
+        id: int,
+        rule: Rule,
     ) -> bool:
-        table_str = table_to_str(table).upper()
-        chain_str = chain_to_str(chain).upper()
-        if (
-            table_str == table_to_str(rule.table).upper()
-            and chain_str == chain_to_str(rule.chain).upper()
-        ):
+        table_str = str(table)
+        chain_str = str(chain)
+        if table_str == str(rule.table) and chain_str == str(rule.chain):
             try:
                 self._tables[table_str][chain_str][id] = rule
                 return True
@@ -209,13 +184,16 @@ class RuleSystem(QObject):
         return False
 
     def append_rule(
-        self, table: Union[Table, str], chain: Union[Chain, str], rule: Rule
+        self,
+        table: Union[DefaultTableType, str],
+        chain: Union[DefaultChainType, str],
+        rule: Rule,
     ) -> bool:
-        table_str = table_to_str(table).upper()
-        chain_str = chain_to_str(chain).upper()
+        table_str = str(table).upper()
+        chain_str = str(chain).upper()
         if (
-            table_str == table_to_str(rule.table).upper()
-            and chain_str == chain_to_str(rule.chain).upper()
+            table_str == str(rule.table).upper()
+            and chain_str == str(rule.chain).upper()
         ):
             try:
                 self._tables[table_str][chain_str].append(rule)
@@ -227,17 +205,14 @@ class RuleSystem(QObject):
 
     def insert_rule(
         self,
-        table: Union[Table, str],
-        chain: Union[Chain, str],
+        table: Union[DefaultTableType, str],
+        chain: Union[DefaultChainType, str],
         rule: Rule,
         rule_num: int,
     ) -> bool:
-        table_str = table_to_str(table).upper()
-        chain_str = chain_to_str(chain).upper()
-        if (
-            table_str == table_to_str(rule.table).upper()
-            and chain_str == chain_to_str(rule.chain).upper()
-        ):
+        table_str = str(table)
+        chain_str = str(chain)
+        if table_str == str(rule.table) and chain_str == str(rule.chain):
             try:
                 self._tables[table_str][chain_str] = (
                     self._tables[table_str][chain_str][0:rule_num]
@@ -251,10 +226,13 @@ class RuleSystem(QObject):
         return False
 
     def delete_rule(
-        self, table: Union[Table, str], chain: Union[Chain, str], rule_num: int
+        self,
+        table: Union[DefaultTableType, str],
+        chain: Union[DefaultChainType, str],
+        rule_num: int,
     ) -> bool:
-        table_str = table_to_str(table).upper()
-        chain_str = chain_to_str(chain).upper()
+        table_str = str(table)
+        chain_str = str(chain)
         try:
             del self._tables[table_str][chain_str][rule_num]
             self.rule_deleted.emit(table_str, chain_str, rule_num)
@@ -263,31 +241,31 @@ class RuleSystem(QObject):
             return False
 
     def get_rules_in_chain(
-        self, table: Union[Table, str], chain: Union[Chain, str]
+        self, table: Union[DefaultTableType, str], chain: Union[DefaultChainType, str]
     ) -> List[Rule]:
-        table_str = table_to_str(table).upper()
-        chain_str = chain_to_str(chain).upper()
+        table_str = str(table)
+        chain_str = str(chain)
         try:
             return self._tables[table_str][chain_str]
         except KeyError:
             return []
 
-    def get_chain_names(self, table: Union[Table, str]) -> List[str]:
-        return list(self._tables[table_to_str(table)].keys())
+    def get_chain_names(self, table: Union[DefaultTableType, str]) -> List[str]:
+        return list(self._tables[str(table)].keys())
 
-    def flush(self, table: Table, chain: str):
+    def flush(self, table: DefaultTableType, chain: str):
         pass
 
-    def new_chain(self, table: Table, chain: str):
+    def new_chain(self, table: DefaultTableType, chain: str):
         pass
 
-    def delete_chain(self, table: Table, chain: str):
+    def delete_chain(self, table: DefaultTableType, chain: str):
         pass
 
-    def policy(self, table: Table, chain: str, target: str):
+    def policy(self, table: DefaultTableType, chain: str, target: str):
         pass
 
-    def rename_chain(self, table: Table, old_chain: str, new_chain: str):
+    def rename_chain(self, table: DefaultTableType, old_chain: str, new_chain: str):
         pass
 
     def write_to_file(self, file_name):
@@ -314,7 +292,9 @@ class RuleSystem(QObject):
                 else:
                     rule = self.create_rule_from_raw_str(line, table, chain)
                     self.append_rule(
-                        Table(rule.table.upper()), Chain(rule.chain.upper()), rule
+                        DefaultTableType(rule.table.upper()),
+                        DefaultChainType(rule.chain.upper()),
+                        rule,
                     )
 
     @property

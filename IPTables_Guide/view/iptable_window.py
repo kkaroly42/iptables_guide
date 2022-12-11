@@ -22,7 +22,7 @@ from IPTables_Guide.view.gui_utils import log_gui
 from IPTables_Guide.view.help_window import display_help
 from IPTables_Guide.view.custom_widgets import CustomLineEdit
 
-from IPTables_Guide.model.rule_system import Table, RuleSystem
+from IPTables_Guide.model.rule_system import DefaultTableType, RuleSystem
 
 
 class IPTableWindow(AbstractTableWindow):
@@ -45,7 +45,7 @@ class IPTableWindow(AbstractTableWindow):
         assert "model" in kwargs
         assert "ip_table_type" in kwargs
 
-        self.ip_table_type: Table = kwargs["ip_table_type"]
+        self.ip_table_type: DefaultTableType = kwargs["ip_table_type"]
         self.model: RuleSystem = kwargs["model"]
 
         self.setWindowTitle(self.ip_table_type.value.upper())

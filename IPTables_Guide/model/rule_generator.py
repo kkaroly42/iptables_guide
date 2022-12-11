@@ -1,58 +1,70 @@
-from enum import Enum
-from typing import Dict, List, Optional, Tuple, Union, Any
+from __future__ import annotations
+
+from typing import List, Optional, Tuple, Any, Dict
+
+from overrides import override
+
 from abc import abstractmethod
+
+from IPTables_Guide.model.utils import ParserHelper, FlagDetail
 
 
 class SignatureComponent:
     @abstractmethod
-    def possible_elements(self, rule):
-        pass
+    def possible_elements(self, components: List[Any]) -> Any:
+        raise NotImplementedError
+
+    @abstractmethod
+    def find_fit(self, substr: List[str]) -> Optional[ParserHelper]:
+        raise NotImplementedError
 
 
 class StartComponent(SignatureComponent):
-    def __init__(self, start_strs):
+    def __init__(self, start_strs: Dict[str, FlagDetail]) -> None:
         self.start_strs = start_strs
 
-    def find_fit(self, substr: List[str]) -> Optional[Tuple[Dict[str, str], List[str]]]:
+    @override
+    def find_fit(self, substr: List[str]) -> Optional[ParserHelper]:
         to_find = substr[0]
         if to_find in self.start_strs:
-            return self.start_strs[to_find], substr[1:]
+            return ParserHelper(parsed=self.start_strs[to_find], others=substr[1:])
         else:
             return None
 
-    def possible_elements(self, rule):
-        if len(rule.components) == 0:
+    @override
+    def possible_elements(self, components: List[Any]) -> Any:
+        if len(components) == 0:
             return self.start_strs
         return None
 
 
 class TableComponent(SignatureComponent):
-    def __init__(self, tables: Dict[str, Dict[str, str]]):
+    def __init__(self, tables: Dict[str, FlagDetail]):
         self.possible_tables = tables
 
-    def find_fit(self, substr: List[str]) -> Optional[Tuple[Dict[str, str], List[str]]]:
+    def find_fit(self, substr: List[str]) -> Optional[ParserHelper]:
         to_find = " ".join(substr[:2])
         if to_find in self.possible_tables:
-            return self.possible_tables[to_find], substr[2:]
-        else:
-            return None
+            return ParserHelper(parsed=self.possible_tables[to_find], others=substr[2:])
+        return None
 
-    def possible_elements(self, rule):
-        for component in rule.components:
+    def possible_elements(self, components: List[Any]) -> Any:
+        for component in components:
             for table in self.possible_tables:
                 if component == self.possible_tables[table]:
                     return None
         return self.possible_tables
 
 
-class RuleSpecification:
-    def __init__(self, spec_components):
+class RuleSpecification(SignatureComponent):
+    def __init__(self, spec_components: List[SignatureComponent]):
         self.possible_components = spec_components
 
-    def find_fit(self, substr: List[str]) -> Optional[Tuple[List[Any], List[str]]]:
+    @override
+    def find_fit(self, substr: List[str]) -> Optional[ParserHelper]:
         specs = []
         i = 0
-        already_seen = []
+        already_seen = set()
         while i < len(self.possible_components) and substr:
             if i not in already_seen:
                 result = self.possible_components[i].find_fit(substr)
@@ -61,14 +73,15 @@ class RuleSpecification:
                         specs += result[0]
                         substr = result[1]
                     else:
+                        assert isinstance(result[0], dict)
                         specs.append(result[0])
                         substr = result[1]
-                    already_seen.append(i)
+                    already_seen.add(i)
                     i = 0
             i += 1
-        return (specs, substr) if len(specs) > 0 else None
+        return ParserHelper(specs, substr) if len(specs) > 0 else None
 
-    def possible_elements(self, rule):
+    def possible_elements(self, components: List[Any]) -> Any:
         pass
 
 
@@ -76,39 +89,40 @@ class CommandComponent(SignatureComponent):
     def __init__(self, commands):
         self.possible_commands = commands
 
-    def find_fit(self, substr: List[str]) -> Optional[Tuple[Dict[str, str], List[str]]]:
+    def find_fit(self, substr: List[str]) -> Optional[ParserHelper]:
         to_find = substr[0]
         if to_find in self.possible_commands:
-            return self.possible_commands[to_find], substr[1:]
-        else:
-            return None
+            return ParserHelper(self.possible_commands[to_find], substr[1:])
+        return None
 
-    def possible_elements(self, rule):
-        for component in rule.components:
+    def possible_elements(self, components: List[Any]) -> Any:
+        for component in components:
             for command in self.possible_commands:
                 if component == self.possible_commands[command]:
                     return None
         return self.possible_commands
 
 
-class ChainComponent:
-    def __init__(self, chains):
+class ChainComponent(SignatureComponent):
+    def __init__(self, chains: Dict[str, FlagDetail]):
         self.possible_chains = chains
+        self._table = ""
 
-    def find_fit(
-        self, substr: List[str], table: Optional[str] = ""
-    ) -> Optional[Tuple[Dict[str, str], List[str]]]:
+    def table(self, table: str) -> ChainComponent:
+        self._table = table
+        return self
+
+    def find_fit(self, substr: List[str]) -> Optional[ParserHelper]:
         to_find = substr[0]
         if (
             to_find in self.possible_chains
-            and table in self.possible_chains[to_find]["tables"]
+            and self._table in self.possible_chains[to_find]["tables"]
         ):
-            return self.possible_chains[to_find], substr[1:]
-        else:
-            return None
+            return ParserHelper(self.possible_chains[to_find], substr[1:])
+        return None
 
-    def possible_elements(self, rule):
-        for component in rule.components:
+    def possible_elements(self, components: List[Any]) -> Any:
+        for component in components:
             for command in self.possible_chains:
                 if component == self.possible_chains[command]:
                     return None
@@ -119,9 +133,7 @@ class Rule:
     def __init__(
         self,
         raw_form: str,
-        signatures: List[
-            List[Union[SignatureComponent, ChainComponent, RuleSpecification]]
-        ],
+        signatures: List[List[SignatureComponent]],
         table: str,
         chain: str,
         allow_partial_rule=True,
@@ -134,15 +146,15 @@ class Rule:
         self.possible_elements: List[Any] = []
         if self.raw_form:
             if allow_partial_rule:
-                parsed_components, substr, possible_elements = self.parse_raw_form(
-                    allow_partial_rule
-                )
+                tmp = self.parse_raw_form(allow_partial_rule)
+                assert tmp is not None
+                parsed_components, substr, possible_elements = tmp
             else:
                 parsed_components = self.parse_raw_form(allow_partial_rule)
             if parsed_components:
                 self.components = parsed_components
 
-    def parse_raw_form(self, keep_best_estimate=True) -> Optional[List[Any]]:
+    def parse_raw_form(self, keep_best_estimate: bool = True) -> Optional[List[Any]]:
         best_components = []
         best_components_length = 0
         possible_elements = []
@@ -154,8 +166,9 @@ class Rule:
             while i < len(signature) and substr:
                 part = signature[i]
                 result: Any = ()
-                if type(part) == ChainComponent:
-                    result = part.find_fit(substr, self.table)  # type: ignore
+                if isinstance(part, ChainComponent):
+                    part.table(self.table)
+                    result = part.find_fit(substr)
                     if result:
                         self.chain = result[0]["value"]
                 else:
@@ -170,8 +183,12 @@ class Rule:
                     substr = result[1]
                 i += 1
             if i < len(signature) - 1 and len(substr) == 0:
-                possible_elements.append(signature[i].possible_elements(self))
-                possible_elements.append(signature[i + 1].possible_elements(self))
+                possible_elements.append(
+                    signature[i].possible_elements(self.components)
+                )
+                possible_elements.append(
+                    signature[i + 1].possible_elements(self.components)
+                )
             if i == len(signature) and len(substr) == 0:
                 if keep_best_estimate:
                     return [components, [], []]
@@ -184,8 +201,8 @@ class Rule:
 
     def check_total_correctness(self) -> bool:
         raw_parts = [component["str_form"] for component in self.components]
-        actual_raw_form = " ".join(raw_parts)
-        return self.parse_raw_form(actual_raw_form) != None
+        self.raw_form = " ".join(raw_parts)
+        return self.parse_raw_form(True) is not None
 
     def check_partial_correctness(self) -> bool:
         raw_parts = [component["str_form"] for component in self.components]
@@ -193,11 +210,12 @@ class Rule:
         result = self.parse_raw_form(True)
         if result:
             self.possible_elements = result[2]
-        return self.parse_raw_form(True) != None
+        return self.parse_raw_form(False) is not None
 
     def run_on_packet(self, packet) -> Tuple[bool, Optional[Any]]:
         conditions_met = True
         run_method = None
+        method_value = ""
         for component in self.components:
             if "type" in component:
                 if component["type"] == "condition":
@@ -215,23 +233,24 @@ class Rule:
                         method_value = component["value"]
         if conditions_met and run_method:
             return True, run_method(packet, method_value)
+        return False, None
 
-    def delete_element(self, id: int) -> bool:
-        if len(self.components) > id:
-            del self.components[id]
+    def delete_element(self, id_: int) -> bool:
+        if len(self.components) > id_:
+            del self.components[id_]
             return True
         return False
 
-    def get_possible_elements(self) -> List:
+    def get_possible_elements(self) -> List[Any]:
         return self.possible_elements
 
-    def set_value(self, id: int, value) -> bool:
-        if len(self.components) > id and "value" in self.components[id]:
-            self.components[id]["value"] = value
+    def set_value(self, id_: int, value) -> bool:
+        if len(self.components) > id_ and "value" in self.components[id_]:
+            self.components[id_]["value"] = value
             return True
         return False
 
-    def get_elements(self):
+    def get_elements(self) -> List[Any]:
         return self.components
 
     def get_str_form(self):

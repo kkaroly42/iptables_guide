@@ -1,4 +1,5 @@
 from IPTables_Guide.model.rule_generator import *
+from IPTables_Guide.model.parser_entries import *
 
 
 def test_CommandComponent():
@@ -9,15 +10,15 @@ def test_CommandComponent():
     }
 
     component = CommandComponent(commands)
-    assert component.find_fit(["hello"]) == None
+    assert component.find_fit(["hello"]) is None
     assert component.find_fit(["-A"]) == ({"str_form": "-A"}, [])
     assert component.find_fit(["-A", "hi"]) == ({"str_form": "-A"}, ["hi"])
 
     rule_a = MockRule([{"str_form": "-A"}])
     rule_b = MockRule([])
 
-    assert component.possible_elements(rule_a) == None
-    assert component.possible_elements(rule_b) == commands
+    assert component.possible_elements(rule_a.components) is None
+    assert component.possible_elements(rule_b.components) == commands
 
 
 class MockRule:
@@ -32,45 +33,51 @@ def test_StartComponent():
         {"str_form": "hi"},
         ["table", "..."],
     )
-    assert component.find_fit(["table", "..."]) == None
+    assert component.find_fit(["table", "..."]) is None
     rule_a = MockRule([{"str_form": "hi"}])
     rule_b = MockRule([])
 
-    assert component.possible_elements(rule_a) == None
-    assert component.possible_elements(rule_b) == {"hi": {"str_form": "hi"}}
+    assert component.possible_elements(rule_a.components) is None
+    assert component.possible_elements(rule_b.components) == {"hi": {"str_form": "hi"}}
 
 
 def test_ChainComponent():
     possible_chains = {"test_chain": {"tables": ["test_table"]}}
-    component = ChainComponent(possible_chains)
-    assert component.find_fit(["test_chain", "..."], "test_table") == (
+    component = ChainComponent(possible_chains).table("test_table")
+    assert component.find_fit(["test_chain", "..."]) == (
         {"tables": ["test_table"]},
         ["..."],
     )
-    assert component.find_fit(["test_chain", "..."], "not_existing_table") == None
-    assert component.find_fit(["not_existing_chain", "..."], "test_table") == None
+    component.table("not existing table")
+    assert component.find_fit(["test_chain", "..."]) is None
+    component.table("...")
+    assert component.find_fit(["not_existing_chain"]) == None
 
     rule_a = MockRule([{"tables": ["test_table"]}])
     rule_b = MockRule([])
 
-    assert component.possible_elements(rule_a) == None
-    assert component.possible_elements(rule_b) == possible_chains
+    assert component.possible_elements(rule_a.components) == None
+    assert component.possible_elements(rule_b.components) == possible_chains
 
 
-class MockRuleSpec:
+class MockRuleSpec(SignatureComponent):
     def __init__(self, consume_chars):
         self.consume_chars = consume_chars
 
+    @override
     def find_fit(self, substr):
         if self.consume_chars == 0:
             return None
-        return ([{"test": "value"}], substr[self.consume_chars :])
+        return [{"test": "value"}], substr[self.consume_chars :]
+
+    def possible_elements(self, components: List[Any]) -> Any:
+        pass
 
 
 def test_RuleSpecification():
     spec_components = [MockRuleSpec(0)]
     component = RuleSpecification(spec_components)
-    assert component.find_fit(["hello", "123", "testing"]) == None
+    assert component.find_fit(["hello", "123", "testing"]) is None
 
     spec_components = [MockRuleSpec(1), MockRuleSpec(2)]
     component = RuleSpecification(spec_components)
@@ -95,24 +102,29 @@ def test_TableComponent():
     assert result == (possible_tables["-t test_table"], ["Nobody", "expects"])
 
     result = component.find_fit(["Nobody", "expects", "the"])
-    assert result == None
+    assert result is None
 
     rule_a = MockRule([{"hello": "unit_test"}])
     rule_b = MockRule([])
 
-    assert component.possible_elements(rule_a) == None
-    assert component.possible_elements(rule_b) == possible_tables
+    assert component.possible_elements(rule_a.components) is None
+    assert component.possible_elements(rule_b.components) == possible_tables
 
 
 class MockComponent(SignatureComponent):
     def __init__(self, match):
         self.match = match
 
-    def find_fit(self, substr: List[str]) -> Optional[Tuple[Dict[str, str], List[str]]]:
+    def find_fit(self, substr: List[str]) -> Optional[ParserHelper]:
         if substr[0] in self.match:
-            return {"found": "test", "str_form": substr[0]}, substr[1:]
+            return ParserHelper(
+                FlagDetail(found="test", str_form=substr[0]), substr[1:]
+            )
         else:
             return None
+
+    def possible_elements(self, components: List[Any]) -> Any:
+        pass
 
 
 def test_Rule():

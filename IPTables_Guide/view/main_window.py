@@ -24,7 +24,7 @@ from IPTables_Guide.view.iptable_window import IPTableWindow
 from IPTables_Guide.view.persistence import PersistenceWindow
 from IPTables_Guide.view.gui_utils import open_window, log_gui, Button
 
-from IPTables_Guide.model.rule_system import RuleSystem, Table
+from IPTables_Guide.model.rule_system import RuleSystem, DefaultTableType
 
 
 class MainWindow(QMainWindow):
@@ -47,13 +47,19 @@ class MainWindow(QMainWindow):
             "filter": Button(
                 btn=QPushButton("Filter table", self.centralWidget()),
                 call=lambda: open_window(
-                    IPTableWindow, self, model=self.model, ip_table_type=Table.FILTER
+                    IPTableWindow,
+                    self,
+                    model=self.model,
+                    ip_table_type=DefaultTableType.FILTER,
                 ),
             ),
             "nat": Button(
                 btn=QPushButton("Nat table", self.centralWidget()),
                 call=lambda: open_window(
-                    IPTableWindow, self, model=self.model, ip_table_type=Table.NAT
+                    IPTableWindow,
+                    self,
+                    model=self.model,
+                    ip_table_type=DefaultTableType.NAT,
                 ),
             ),
             "packages": Button(
