@@ -4,7 +4,7 @@
 from typing import Callable, Dict, Iterator, List, Optional, TypeAlias, Union, Tuple
 
 # from PySide6.QtCore import Qt
-from PySide6.QtWidgets import (  # pylint: disable=import-error
+from PySide6.QtWidgets import (  # pylint: disable-import-error
     QWidget,
     QGridLayout,
 )  # pylint: disable=import-error
@@ -77,7 +77,7 @@ class CustomTableWidget(QWidget):
         delete the `ind`th row of the table
         """
 
-        def correct_layout(i):
+        def correct_layout(i: int) -> None:
             for r_ind in range(i + 1, len(self)):
                 for c_ind in range(len(self.row_types)):
                     item = self.main_layout.itemAtPosition(r_ind, c_ind)

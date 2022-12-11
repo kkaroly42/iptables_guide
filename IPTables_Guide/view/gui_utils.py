@@ -2,9 +2,16 @@
     Utils for GUI
 """
 import time
-from typing import Optional, Literal
-from PySide6.QtCore import Slot, QEventLoop, Qt  # pylint: disable=import-error
-from PySide6.QtWidgets import QMainWindow  # pylint: disable=import-error
+from dataclasses import dataclass
+from typing import Optional, Literal, Callable
+from PySide6.QtCore import Slot, QEventLoop, Qt  # type: ignore # pylint: disable=import-error type: ignore
+from PySide6.QtWidgets import QMainWindow, QPushButton  # type: ignore # pylint: disable=import-error
+
+
+@dataclass
+class Button:
+    btn: QPushButton
+    call: Callable
 
 
 @Slot()
@@ -29,7 +36,7 @@ def open_window(window_type: type, parent: Optional[QMainWindow], **kwargs) -> N
     assert log_gui(f"{type(window)} closed")
     # only the top window can be editable
     if parent is not None:
-        parent.setWindowModality(Qt.WindowModal)  #  type: ignore
+        parent.setWindowModality(Qt.WindowModal)  # type: ignore
 
 
 def log_gui(msg: str) -> Literal[True]:
