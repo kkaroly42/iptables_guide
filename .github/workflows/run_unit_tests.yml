@@ -1,8 +1,14 @@
 name: Run unit tests
 run-name: Run unit tests triggered by ${{ github.event_name }}
 
-on: workflow_dispatch # lets trigger the job manually
-# other trigger methods can be set later
+on: 
+  workflow_dispatch:
+  push:
+    branches:
+    - main  
+  pull_request:
+    branches:
+    - main
 
 jobs:
   setup_env_and_test:
@@ -19,10 +25,12 @@ jobs:
         run: python -c "import sys; print(sys.version)"
       - name: Install dependencies
         run: |
+          sudo apt update
+          sudo apt install libegl1
           python -m pip install --upgrade pip
-          pip install pytest
           if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+          pip list
       - name: Test with pytest
         run: |
           pytest ./test/test_model
-          pytest ./test/test_gui
+          
