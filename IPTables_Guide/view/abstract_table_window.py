@@ -52,6 +52,12 @@ class AbstractTableWindow(QMainWindow):
         self.scroll_layout.insertStretch(-1)
         self.scroll_widget.setLayout(self.scroll_layout)
 
+        self.scroll_widget.setStyleSheet(
+            """
+            background-color: #1C1C1E;
+            """
+        )
+
         self.scroll_area = QScrollArea(self.centralWidget())
         self.scroll_area.setWidget(self.scroll_widget)
         self.scroll_area.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOn)  # type: ignore
@@ -68,6 +74,38 @@ class AbstractTableWindow(QMainWindow):
         self.main_layout.addLayout(self.table_layout)
 
         self.menu_line.setLayout(QVBoxLayout())
+
+        self.setStyleSheet(
+            """
+                QPushButton {
+                    color: #BABBBE;
+                    font-family: Consolas;
+                    font-size: 16px;
+                    padding: 6px 3px 6px 3px;
+                    border: 1px solid #505054;
+                    margin: 3px 0px 3px 0px;
+                }
+                QPushButton:pressed{
+                    background-color: #28282B;
+                    color: #BABBBE;
+                    border: 1px solid #28282B;
+                }
+                QPushButton:hover:!pressed {
+                    background-color: #505054;
+                    color: white;
+                }
+                QLabel {
+                    background-color: #1C1C1E;
+                    color: #BABBBE;
+                    font-family: Consolas;
+                    font-size: 20px;
+                    margin: 5px;
+                }
+                QScrollArea{
+                    background-color: #1C1C1E;
+                }
+            """
+        )
 
     def _get_selected_indices(self) -> List[int]:
         return [

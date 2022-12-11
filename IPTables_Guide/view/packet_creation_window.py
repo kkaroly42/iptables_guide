@@ -105,7 +105,7 @@ class CreatorDialog(QDialog):
         """
         msg_box = QMessageBox()
         msg_box.setStandardButtons(QMessageBox.Ok | QMessageBox.Cancel)  # type: ignore
-        msg_box.setText("Your changes wont be saved.")
+        msg_box.setText("A változtatások nem lesznek mentve.")
         ret: int = msg_box.exec()
         if ret == QMessageBox.Cancel:  # type: ignore
             arg__1.ignore()
@@ -181,19 +181,19 @@ class PacketCreationWindow(AbstractTableWindow):
                 call=lambda: self.create_packet(PacketType.TCP),
             ),
             "delete": Button(
-                btn=QPushButton("Törlés", self.centralWidget()),
+                btn=QPushButton("törlés", self.centralWidget()),
                 call=self.delete_clicked,
             ),
             "clear": Button(
-                btn=QPushButton("Összes törlése", self.centralWidget()), call=self.clear
+                btn=QPushButton("összes törlése", self.centralWidget()), call=self.clear
             ),
         }
         self.menu_line_buttons: Dict[str, Button] = {
             "load": Button(
-                btn=QPushButton("Betöltés", self.centralWidget()), call=self.load_pcap
+                btn=QPushButton("betöltés", self.centralWidget()), call=self.load_pcap
             ),
             "write": Button(
-                btn=QPushButton("Mentés", self.centralWidget()), call=self.write_pcap
+                btn=QPushButton("mentés", self.centralWidget()), call=self.write_pcap
             ),
         }
         self.setWindowTitle("Csomagkészítés")
@@ -208,12 +208,56 @@ class PacketCreationWindow(AbstractTableWindow):
         )
         for _, v in self.buttons.items():
             btn = v.btn
+            btn.setStyleSheet(
+                """
+                 QPushButton {
+                    background-color: #2F2F32;
+                    color: #BABBBE;
+                    font-family: Consolas;
+                    font-size: 16px;
+                    padding: 6px 3px 6px 3px;
+                    border: 1px solid #505054;
+                    margin: 0px;
+                }
+                QPushButton:pressed{
+                    background-color: #28282B;
+                    color: #BABBBE;
+                    border: 1px solid #28282B;
+                }
+                QPushButton:hover:!pressed {
+                    background-color: #505054;
+                    color: white;
+                }
+                """
+            )
             self.menu_line.layout().addWidget(btn)
             btn.clicked.connect(v.call)  # type: ignore
 
         self.menu_line.layout().insertStretch(-1)  # type: ignore
         for _, v in self.menu_line_buttons.items():
             btn = v.btn
+            btn.setStyleSheet(
+                """
+                 QPushButton {
+                    background-color: #2F2F32;
+                    color: #BABBBE;
+                    font-family: Consolas;
+                    font-size: 16px;
+                    padding: 6px 3px 6px 3px;
+                    border: 1px solid #505054;
+                    margin: 0px;
+                }
+                QPushButton:pressed{
+                    background-color: #28282B;
+                    color: #BABBBE;
+                    border: 1px solid #28282B;
+                }
+                QPushButton:hover:!pressed {
+                    background-color: #505054;
+                    color: white;
+                }
+                """
+            )
             self.menu_line.layout().addWidget(btn)
             btn.clicked.connect(v.call)
 
@@ -297,8 +341,9 @@ class PacketCreationWindow(AbstractTableWindow):
         inds: List[int] = self._get_selected_indices()
         if len(inds) == 0:
             msg_box = QMessageBox()
-            msg_box.setWindowTitle("Message")
-            msg_box.setText("No selected items")
+            msg_box.setIcon(QMessageBox.Warning)
+            msg_box.setWindowTitle("Törlés hiba")
+            msg_box.setText("Nincsenek kiválasztott törlendő elemek.")
             msg_box.exec()
             return
         for ind in reversed(inds):

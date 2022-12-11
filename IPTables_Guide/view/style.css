@@ -105,6 +105,16 @@ h1 {
     padding-right: 5px;
 }
 
+.cc{
+    font-family: Consolas;
+    font-weight: lighter;
+    font-size: 1em;
+    letter-spacing: 2px;
+    background-color:#2f2e33;
+    padding-left: 5px;
+    padding-right: 5px;
+}
+
 .card{
     box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2);
     transition: 0.3s;
@@ -149,6 +159,16 @@ h1 {
     text-align: left;
 }
 
+.rulecard-head {
+    font-family: Consolas;
+    letter-spacing: 3px;
+    font-size: 1.2em;
+    padding: 10px 16px;
+    padding-top: 20px;
+    background-color:#2f2e33;
+    text-align: left;
+}
+
 ol{
     font-family: Corbel;
     font-weight: lighter;
@@ -171,4 +191,24 @@ ol{
     font-weight: lighter;
     font-size: 1.1em;
     background-color: #29282c;
+}
+
+.centerimg{
+    display: block;
+    width: 50%;
+    margin-left: auto;
+    margin-right: auto;
+    border-width: 15px;   
+    border-color: #2f2e33; 
+    border-style: solid;
+}
+
+.centerbigimg{
+    display: block;
+    width: 90%;
+    margin-left: auto;
+    margin-right: auto;
+    border-width: 15px;   
+    border-color: #2f2e33; 
+    border-style: solid;
 }
