@@ -210,7 +210,7 @@ class Rule:
         result = self.parse_raw_form(True)
         if result:
             self.possible_elements = result[2]
-        return self.parse_raw_form(False) is not None
+        return self.parse_raw_form(True) is not None
 
     def run_on_packet(self, packet) -> Tuple[bool, Optional[Any]]:
         conditions_met = True
