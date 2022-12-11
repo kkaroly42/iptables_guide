@@ -446,14 +446,12 @@ class SourceParser:
 class DestinationParser:
     def __init__(self):
         self.start_strings = ["-d", "--destination"]
-        self.repr_dict = (
-            {
+        self.repr_dict = {
                 "str_form": "-d",
                 "explanation": "",
                 "type": "condition",
                 "condition_method": check_destination_ip,
-            },
-        )
+            }
 
     def find_fit(self, substr: List[str]):
         if len(substr) > 1:

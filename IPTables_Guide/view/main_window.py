@@ -77,10 +77,6 @@ class MainWindow(QMainWindow):
 
         self.setStyleSheet(
             """
-            background-color: #1C1C1E;
-            color: #BABBBE;
-            font-family: Consolas;
-            font-size: 20px;
             QMainWindow{
                 background-color: #1C1C1E;
             }
