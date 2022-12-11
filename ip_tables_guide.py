@@ -167,6 +167,9 @@ if __name__ == "__main__":
         QComboBox::down-arrow:on {
             border-width: 3px 3px 0px 0px;
         }
+            QMainWindow{
+                background-color: #1C1C1E;
+            }
     """
     )
     window = MainWindow()

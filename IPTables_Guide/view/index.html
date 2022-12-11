@@ -20,10 +20,10 @@
         <a href="#section1">Iptables alapok</a><br />
         <a href="#section2">A program ismertetése</a><br />
         <a href="#section3">Rendszerkövetelmények</a><br />
-        <a href="#section4">Telepítés és indítás</a><br />
-        <a href="#section5">Kezdőoldal</a><br />
-        <a href="#section6">Láncok oldala</a><br />
-        <a href="#section7">Szabályok oldala</a><br />
+        <a href="#section4">Kezdőoldal</a><br />
+        <a href="#section5">Szabályok oldala</a><br />
+        <a href="#section6">Csomagkészítés</a><br />
+        <a href="#section7">Csomagküldés</a><br />
         <a href="#section8">Egyéb információk</a><br />
     </div>
 
@@ -172,34 +172,150 @@
             <li>célok (target/jump): ha egy csomag megfelel egy szabálynak, akkor ez mondja meg, mi lesz a következő lépés</li>
         </ol>
     </p>
-    <br/>
 
+    
     <br/><br/>
     <h2 id="section2"> A program ismertetése </h2>
     <p>A program iptables szabályok összeállítását teszi lehetővé a felhasználó számára grafikus felületen. A szabályok összeállításában magyarázó szövegek és példa szabályok segítenek. 
         A felhasználónak lehetősége van teszt forgalom futtatására a megalkotott szabályrendszeren, ezzel szemléltetve a szabályok alkalmazhatóságát.<br/></p>
     
-    <p>A program segítségével a <span class="cd">filter</span> és a <span class="cd">nat</span> táblákhoz adhatuk hozzá láncokat és szabályokat.<br/></p>
-    <br/>
+    <br/><br/>
 
+    <h3> Szabályok készítése </h3>
+
+    <p>A program a két leggyakrabban használt táblához (<span class="cd">filter</span> és <span class="cd">nat</span>) ad lehetőséget szabályok felvételére és szerkesztésére. A táblák láncaihoz adhatunk hozzá szabályokat a következő parancsok, feltételek és targetek felhasználásával. </p>
+    <p>A szabályokat mindig az <span class="ch">iptables</span> kulcsszóval kell kezdeni.</p>
+    <br/><br/>
+    <h3> Parancsok </h3>
+    <div class="cardd">
+        <header class="rulecard-head">-A (--append)</header>
+        <div class="container">
+            <ul>
+                <li> A szabályt beszúrja a megadott lánc végére. </li>
+                <li> FONTOS: Mindig az éppen kiválasztott lánc nevét kell megadni. </li>
+            </ul>
+        </div>
+    </div>
+    <br/>
+    <div class="cardd">
+        <header class="rulecard-head">-I (--insert)</header>
+        <div class="container">
+            <ul>
+                <li> A szabályt beszúrja a megadott lánc elejére. </li>
+                <li> FONTOS: Mindig az éppen kiválasztott lánc nevét kell megadni. </li>
+            </ul>
+        </div>
+    </div>
+
+    <br/><br/>
+    <h3> Feltételek </h3>
+    <div class="cardd">
+        <header class="rulecard-head">-s (--source)</header>
+        <div class="container">
+            <ul>
+                <li> A küldő ip-címe. </li>
+                <li> Helyes alak: xxx.x.x.x </li>
+            </ul>
+        </div>
+    </div>
+    <br/>
+    <div class="cardd">
+        <header class="rulecard-head">-d (--destination)</header>
+        <div class="container">
+            <ul>
+                <li> A címzett ip-címe (/maszk). </li>
+                <li> Helyes alak: xxx.x.x.x </li>
+            </ul>
+        </div>
+    </div>
+    <br/>
+    <div class="cardd">
+        <header class="rulecard-head">--sport</header>
+        <div class="container">
+            <ul>
+                <li> A küldő port. </li>
+                <li> Helyes alak: egy szám </li>
+            </ul>
+        </div>
+    </div>
+    <br/>
+    <div class="cardd">
+        <header class="rulecard-head">--dport</header>
+        <div class="container">
+            <ul>
+                <li> A címzett port. </li>
+                <li> Helyes alak: egy szám </li>
+            </ul>
+        </div>
+    </div>
+    <br/>
+    <div class="cardd">
+        <header class="rulecard-head">-p (--protocol)</header>
+        <div class="container">
+            <ul>
+                <li> A szabály vagy az ellenőrizendő csomag protokollja. </li>
+                <li> Megadható értékek: <span class="ch">tcp</span> vagy <span class="ch">udp</span> </li>
+            </ul>
+        </div>
+    </div>
+
+    <br/><br/>
+    <h3> Targetek </h3>
+    <div class="cardd">
+        <header class="rulecard-head">-j (--jump)</header>
+        <div class="container">
+            <ul>
+                <li> A csomag céljának megadására szolgál. </li>
+                <li> <b> Megadható értékek: </b></li>
+                    <ul> 
+                        <li> <span class="ch">ACCEPT</span> </li>
+                        <li> <span class="ch">DROP</span> </li>
+                    </ul>
+            </ul>
+        </div>
+    </div>
+
+    <br/><br/>
     <h2 id="section3"> Rendszerkövetelmények </h2>
     <p>A program platformfüggetlen, bármilyen operációs rendszeren futtatható.<br/></p>
     <br/>
 
-    <h2 id="section4"> Telepítés és indítás </h2>
-    <p><br/></p>
 
-    <h2 id="section5"> Kezdőoldal </h2>
-    <p><br/></p>
+    <h2 id="section4"> Kezdőoldal </h2>
+    <p>A kezdőoldalon navigálhatunk a program ablakai között. Megnyithatjuk a <span class="cc">Filter table</span> és a <span class="cc">Nat table</span> szabály szerkesztő ablakait, a <span class="cc">Csomagküldés</span> és  <span class="cc">Csomagkészítés</span> ablakokat, ahol csomagokal dolgozhatunk, emellett lehetőség van mentésre, korábbi munkák betöltésére, és a felhasználói súgó elérésére.<br/></p>
+    <img src="./img/kezdooldal.png" class="centerimg"/>
 
-    <h2 id="section6"> Láncok oldala </h2>
-    <p><br/></p>
+    <br/> <br/>
+    <h2 id="section5"> Szabályok oldala </h2>
+    <p>A táblákhoz tartozó szabályok szerkesztőablakán kiválaszthatjuk a táblában szereplő chainek közül azt, amihez szeretnénk szabályokat felvenni és szerkeszteni. A <span class="cc">hozzáadás</span> gombra kattintás után új szabály szerkesztője jelenik meg a jobb oldali részben. <br/></p>
 
-    <h2 id="section7"> Szabályok oldala </h2>
-    <p><br/></p>
+    <div class="cardd">
+        <header class="card-head">Szabályok megadása</header>
+        <div class="container">
+            <p>Begépelve tudjuk megadni a szabályokat. A helytelenül megadott rész piros színnel fog megjelenni a beviteli mező mellett. A helytelen részeket minden esetben javítai kell! A helyesen megadott szabályrészek csak a beviteli mezőben láthatók.</p>
+            <p>Egy szabályra <span class="cc">crtl + jobb egérgomb</span> kattintással megnyithatjuk a súgót, ahonnan segítséget kaphatunk a szabályok megírásában.</p>
+        </div>
+    </div>
+    <br/><br/>
+    <img src="./img/filter.png" class="centerbigimg"/>
+    <p> Egy vagy több szabály kijelölése után törölhetjük őket, pontosan egy kijelölt szabály elé pedig új szabályt szúrhatunk be.</p><br/>
+    <img src="./img/nat.png" class="centerbigimg"/>
+    
 
+    <br/><br/>
+    <h2 id="section6"> Csomagkészítés </h2>
+    <p>Az oldalon lehetőség van <span class="cd">pcap</span>-ből betölteni és <span class="cd">pcap</span>-be menteni csomagokat. UDP és TCP csomagokat lehet készíteni és szerkeszteni. A csomagok kijelölésével lehetőség van a törlésükre.<br/></p>
+    <p>A <span class="cc">TCP</span> és  <span class="cc">UDP</span> gombokra kattintva új csomagokat tudunk létrehozni az erre szolgáló szerkesztőablak segítségével. A csomagokra kattintva megnyílik a csomagok fejlécérenek szerkesztésére szolgáló külön szerkesztőablak. Ha a kulcs felé visszük a kurzort, az adott elemre vonatkozó információk jelennek meg.</p>
+    <img src="./img/csomagkeszit.png" class="centerbigimg"/>
+
+<br/><br/>
+    <h2 id="section7"> Csomagküldés </h2>
+    <p>A bemeneti fájlban adhatjuk meg a csomagokat, amikre szeretnénk  futtatni a létrehozott szabályainkat. A kimeneti fájlban a szabályokra futtatás után megmaradt csomagok jelennek meg. Megadhatjuk a tábla és a lánc nevét is, amire szeretnénk a futtatást elvégezni.<br/></p>
+    <img src="./img/csomagkuld.png" class="centerbigimg"/>
+
+<br/><br/>
     <h2 id="section8"> Egyéb információk </h2>
-    <p><br/></p>
+    <p>A létrehozott szabályok mentéséhez adjuk meg a fájl nevét a <span class="cc">Mentés/Betöltés</span> oldalon. Betöltéshez keressük meg és válasszuk ki a betölteni kívánt fájlt.<br/></p>
 </div>
 
 

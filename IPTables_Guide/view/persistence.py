@@ -61,8 +61,8 @@ class PersistenceWindow(QMainWindow):
             """
         )
 
-        self.save_button = QPushButton("Mentés", self.centralWidget())
-        self.load_button = QPushButton("Betöltés", self.centralWidget())
+        self.save_button = QPushButton("mentés", self.centralWidget())
+        self.load_button = QPushButton("betöltés", self.centralWidget())
 
         self.main_layout = QGridLayout()
 
