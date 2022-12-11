@@ -6,20 +6,20 @@ start_strs = {
     "iptables": {
         "str_form": "iptables",
         "explanation": "Ezzel a kapcsolóval azt jelöljük meg, hogy a NAT(Network Address Translation) táblára fog vonatkozni az aktuális szabály.",
-        "value": "NAT",
+        "value": "nat",
     }
 }
 
 possible_tables = {
-    "-t NAT": {
-        "str_form": "-t NAT",
+    "-t nat": {
+        "str_form": "-t nat",
         "explanation": "Ezzel a kapcsolóval azt jelöljük meg, hogy a NAT(Network Address Translation) táblára fog vonatkozni az aktuális szabály.",
-        "value": "NAT",
+        "value": "nat",
     },
-    "-t FILTER": {
-        "str_form": "-t FILTER",
+    "-t filter": {
+        "str_form": "-t filter",
         "explanation": "Ezzel a kapcsolóval azt jelöljük meg, hogy a FILTER táblára fog vonatkozni az aktuális szabály.",
-        "value": "FILTER",
+        "value": "filter",
     },
 }
 
@@ -39,31 +39,31 @@ possible_chains = {
         "str_form": "INPUT",
         "value": "INPUT",
         "explanation": "",
-        "tables": ["FILTER", "NAT"],
+        "tables": ["filter", "nat"],
     },
     "FORWARD": {
         "str_form": "FORWARD",
         "value": "FORWARD",
         "explanation": "",
-        "tables": ["FILTER"],
+        "tables": ["filter"],
     },
     "OUTPUT": {
         "str_form": "OUTPUT",
         "explanation": "",
         "value": "OUTPUT",
-        "tables": ["FILTER", "NAT"],
+        "tables": ["filter", "nat"],
     },
     "PREROUTING": {
         "str_form": "PREROUTING",
         "explanation": "",
         "value": "PREROUTING",
-        "tables": ["NAT"],
+        "tables": ["nat"],
     },
     "POSTROUTING": {
         "str_form": "POSTROUTING",
         "explanation": "",
         "value": "POSTROUTING",
-        "tables": ["NAT"],
+        "tables": ["nat"],
     },
 }
 

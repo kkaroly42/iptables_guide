@@ -24,14 +24,14 @@ def test_tcp():
     ]
     system = RuleSystem()
     rule = system.create_rule_from_raw_str(
-        "iptables -t FILTER -A INPUT -p tcp --sport 80", "", ""
+        "iptables -t filter -A INPUT -p tcp --sport 80", "", ""
     )
     system.append_rule(Table("FILTER"), Chain("INPUT"), rule)
     read_rule = system.get_rule(Table("FILTER"), Chain("INPUT"), 0)
-    assert read_rule.get_str_form() == "iptables -t FILTER -A INPUT -p tcp --sport 80"
+    assert read_rule.get_str_form() == "iptables -t filter -A INPUT -p tcp --sport 80"
     rule_list = system.get_rules_in_chain(Table("FILTER"), Chain("INPUT"))
     assert (
-        rule_list[0].get_str_form() == "iptables -t FILTER -A INPUT -p tcp --sport 80"
+        rule_list[0].get_str_form() == "iptables -t filter -A INPUT -p tcp --sport 80"
     )
 
 
@@ -56,7 +56,7 @@ def test_ip():
     ]
     system = RuleSystem()
     rule = system.create_rule_from_raw_str(
-        "iptables -t FILTER -A INPUT -j DROP -s 192.168.56.1/24 -p tcp --sport 80 -j DROP",
+        "iptables -t filter -A INPUT -j DROP -s 192.168.56.1/24 -p tcp --sport 80 -j DROP",
         "",
         "",
     )
@@ -64,7 +64,7 @@ def test_ip():
     read_rule = system.get_rule(Table("FILTER"), Chain("INPUT"), 0)
     assert (
         read_rule.get_str_form()
-        == "iptables -t FILTER -A INPUT -p tcp --sport 80 -j DROP -s 192.168.56.1/24"
+        == "iptables -t filter -A INPUT -p tcp --sport 80 -j DROP -s 192.168.56.1/24"
     )
 
 
@@ -87,24 +87,24 @@ def test_simple_rule():
         ],
     ]
     system = RuleSystem(signatures)
-    rule = system.create_rule_from_raw_str("iptables -t FILTER -A INPUT", "", "")
+    rule = system.create_rule_from_raw_str("iptables -t filter -A INPUT", "", "")
     system.append_rule(Table("FILTER"), Chain("INPUT"), rule)
     read_rule = system.get_rule(Table("FILTER"), Chain("INPUT"), 0)
-    assert read_rule.get_str_form() == "iptables -t FILTER -A INPUT"
+    assert read_rule.get_str_form() == "iptables -t filter -A INPUT"
     rule_list = system.get_rules_in_chain(Table("FILTER"), Chain("INPUT"))
-    assert rule_list[0].get_str_form() == "iptables -t FILTER -A INPUT"
+    assert rule_list[0].get_str_form() == "iptables -t filter -A INPUT"
     rule_b = system.create_rule_from_raw_str(
-        "iptables -t FILTER -A INPUT -j DROP", "", ""
+        "iptables -t filter -A INPUT -j DROP", "", ""
     )
     system.insert_rule(Table("FILTER"), Chain("INPUT"), rule_b, 0)
     read_rule = system.get_rule(Table("FILTER"), Chain("INPUT"), 0)
-    assert read_rule.get_str_form() == "iptables -t FILTER -A INPUT -j DROP"
+    assert read_rule.get_str_form() == "iptables -t filter -A INPUT -j DROP"
     system.delete_rule(Table("FILTER"), Chain("INPUT"), 0)
     read_rule = system.get_rule(Table("FILTER"), Chain("INPUT"), 0)
-    assert read_rule.get_str_form() == "iptables -t FILTER -A INPUT"
+    assert read_rule.get_str_form() == "iptables -t filter -A INPUT"
     system.overwrite_rule(Table("FILTER"), Chain("INPUT"), 0, rule_b)
     read_rule = system.get_rule(Table("FILTER"), Chain("INPUT"), 0)
-    assert read_rule.get_str_form() == "iptables -t FILTER -A INPUT -j DROP"
+    assert read_rule.get_str_form() == "iptables -t filter -A INPUT -j DROP"
 
 
 def test_file_operation():
@@ -126,9 +126,9 @@ def test_file_operation():
         ],
     ]
     system = RuleSystem(signatures)
-    rule = system.create_rule_from_raw_str("iptables -t FILTER -A INPUT", "", "")
+    rule = system.create_rule_from_raw_str("iptables -t filter -A INPUT", "", "")
     rule_b = system.create_rule_from_raw_str(
-        "iptables -t FILTER -A INPUT -j DROP", "", ""
+        "iptables -t filter -A INPUT -j DROP", "", ""
     )
     system.append_rule(Table("FILTER"), Chain("INPUT"), rule)
     system.append_rule(Table("FILTER"), Chain("INPUT"), rule_b)
@@ -136,9 +136,9 @@ def test_file_operation():
     system_b = RuleSystem(signatures)
     system_b.read_from_file("test_a.txt")
     read_rule = system.get_rule(Table("FILTER"), Chain("INPUT"), 0)
-    assert read_rule.get_str_form() == "iptables -t FILTER -A INPUT"
+    assert read_rule.get_str_form() == "iptables -t filter -A INPUT"
     read_rule = system.get_rule(Table("FILTER"), Chain("INPUT"), 1)
-    assert read_rule.get_str_form() == "iptables -t FILTER -A INPUT -j DROP"
+    assert read_rule.get_str_form() == "iptables -t filter -A INPUT -j DROP"
 
 
 def test_pcap_operation():
@@ -148,7 +148,7 @@ def test_pcap_operation():
         pass
     system = RuleSystem()
     rule = system.create_rule_from_raw_str(
-        "iptables -t FILTER -A FORWARD -p tcp -j DROP", "", ""
+        "iptables -t filter -A FORWARD -p tcp -j DROP", "", ""
     )
     # rule_b = system.create_rule_from_raw_str("iptables -t nat -A POSTROUTING -p udp -j SNAT --to-source 10.0.0.1", "", "")
     system.append_rule(Table("FILTER"), Chain("FORWARD"), rule)
@@ -169,7 +169,7 @@ def test_nat():
     source_parser = SourceParser()
     system = RuleSystem()
     rule = system.create_rule_from_raw_str(
-        "iptables -t NAT -A PREROUTING -j SNAT --to-source 192.168.56.1",
+        "iptables -t nat -A PREROUTING -j SNAT --to-source 192.168.56.1",
         "",
         "",
     )
@@ -177,5 +177,5 @@ def test_nat():
     read_rule = system.get_rule(Table("NAT"), Chain("PREROUTING"), 0)
     assert (
         read_rule.get_str_form()
-        == "iptables -t NAT -A PREROUTING -j SNAT --to-source 192.168.56.1"
+        == "iptables -t nat -A PREROUTING -j SNAT --to-source 192.168.56.1"
     )
