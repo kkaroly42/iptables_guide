@@ -1,6 +1,7 @@
 from IPTables_Guide.model.rule_system import *
 import IPTables_Guide.model.parser_entries as parser_entries
 
+
 def gen_rules_to_file():
     tcp = TCPParser()
     j_drop = JumpParser()
@@ -20,13 +21,18 @@ def gen_rules_to_file():
         ],
     ]
     system = RuleSystem(signatures)
-    rule = system.create_rule_from_raw_str("iptables -t filter -A INPUT -p tcp --sport 1222 -j DROP", "", "")
+    rule = system.create_rule_from_raw_str(
+        "iptables -t filter -A INPUT -p tcp --sport 1222 -j DROP", "", ""
+    )
     rule_b = system.create_rule_from_raw_str(
-        "iptables -t nat -A PREROUTING -p tcp --dport 5001 -j DNAT --to-destination 192.168.0.11", "", ""
+        "iptables -t nat -A PREROUTING -p tcp --dport 5001 -j DNAT --to-destination 192.168.0.11",
+        "",
+        "",
     )
     system.append_rule(Table("FILTER"), Chain("INPUT"), rule)
     system.append_rule(Table("NAT"), Chain("PREROUTING"), rule_b)
     system.write_to_file(".ci_input.txt")
+
 
 if __name__ == "__main__":
     gen_rules_to_file()
