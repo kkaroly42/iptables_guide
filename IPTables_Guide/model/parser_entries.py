@@ -447,16 +447,17 @@ class DestinationParser:
     def __init__(self):
         self.start_strings = ["-d", "--destination"]
         self.repr_dict = {
-                "str_form": "-d",
-                "explanation": "",
-                "type": "condition",
-                "condition_method": check_destination_ip,
-            }
+            "str_form": "-d",
+            "explanation": "",
+            "type": "condition",
+            "condition_method": check_destination_ip,
+        }
 
     def find_fit(self, substr: List[str]):
         if len(substr) > 1:
             if substr[0] in self.start_strings and validate_ip(substr[1]):
                 to_return = self.repr_dict.copy()
+                to_return["str_form"] = to_return["str_form"] + " " + substr[1]
                 to_return["value"] = substr[1]
                 return to_return, substr[2:]
         return None

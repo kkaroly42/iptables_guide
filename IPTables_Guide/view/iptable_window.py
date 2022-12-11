@@ -131,6 +131,13 @@ class IPTableWindow(AbstractTableWindow):
         self.model.rule_inserted.connect(self.rule_inserted)
         self.model.rule_deleted.connect(self.rule_deleted)
 
+        self.table.setStyleSheet(
+            """
+            QLabel {
+                color: #d33f3f;
+            }"""
+        )
+
     @Slot(str, str)
     def rule_appended(self, table_str: str, chain_str: str) -> None:
         """
@@ -200,7 +207,6 @@ class IPTableWindow(AbstractTableWindow):
                 self.table[ind, "check"].setText("Invalid format")  # type: ignore
 
         self.table[ind, "rule"].textEdited.connect(text_edited)  # type: ignore
-        # TODO set label based on checks
 
     @Slot()
     def setup_rules(self) -> None:

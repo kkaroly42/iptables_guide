@@ -10,6 +10,7 @@ from PySide6.QtWidgets import (  # pylint: disable=import-error
 )
 
 from IPTables_Guide.view.gui_utils import log_gui
+from IPTables_Guide.view.help_window import display_help
 
 
 class CustomLineEdit(QLineEdit):
@@ -54,5 +55,6 @@ class CustomLineEdit(QLineEdit):
         ):
             # TODO handle CTRL + right click
             assert log_gui("CTRL+right mouse button click happened")
+            display_help()
             self.modified_Right_clicked.emit()
         super().mousePressEvent(arg__1)

@@ -176,23 +176,22 @@ class PacketCreationWindow(AbstractTableWindow):
                 call=lambda: self.create_packet(PacketType.TCP),
             ),
             "delete": Button(
-                btn=QPushButton("Törlés", self.centralWidget()),
+                btn=QPushButton("törlés", self.centralWidget()),
                 call=self.delete_clicked,
             ),
             "clear": Button(
-                btn=QPushButton("Összes törlése", self.centralWidget()), call=self.clear
+                btn=QPushButton("összes törlése", self.centralWidget()), call=self.clear
             ),
         }
         self.menu_line_buttons: Dict[str, Button] = {
             "load": Button(
-                btn=QPushButton("Betöltés", self.centralWidget()), call=self.load_pcap
+                btn=QPushButton("betöltés", self.centralWidget()), call=self.load_pcap
             ),
             "write": Button(
-                btn=QPushButton("Mentés", self.centralWidget()), call=self.write_pcap
+                btn=QPushButton("mentés", self.centralWidget()), call=self.write_pcap
             ),
         }
         self.setWindowTitle("Csomagkészítés")
-
 
         for _, v in self.buttons.items():
             btn = v.btn

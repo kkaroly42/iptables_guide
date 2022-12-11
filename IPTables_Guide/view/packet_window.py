@@ -76,7 +76,7 @@ class PacketWindow(QWidget):
                 }
         """
         )
-        self.run_button = QPushButton("Futtatás", self)
+        self.run_button = QPushButton("futtatás", self)
         self.input_label = QLabel("Bemeneti fájl:", self)
         self.output_label = QLabel("Kimeneti fájl:", self)
         self.input_text = QLineEdit(self)
@@ -114,7 +114,10 @@ class PacketWindow(QWidget):
 
         @Slot()
         def run_packet():
-            if self.table.currentText() in self.model.tables:
+            if (
+                self.table.currentText() in self.model.tables
+                and self.input_text.text() != ""
+            ):
                 table = self.table.currentText()
                 if self.chain.currentText() in self.model.get_chain_names(table):
                     input_file = self.input_text.text()
@@ -129,9 +132,20 @@ class PacketWindow(QWidget):
                         self.model.run_chain_on_raw_packets(
                             input_file, output_file, table, self.chain.currentText()
                         )
+                        msg_box = QMessageBox()
+                        msg_box.setWindowTitle("Csomagküldés")
+                        msg_box.setIcon(QMessageBox.Information)
+                        msg_box.setText("Sikeres futtatás!")
+                        msg_box.exec()
+            else:
+                msg_box = QMessageBox()
+                msg_box.setWindowTitle("Csomagküldés")
+                msg_box.setIcon(QMessageBox.Warning)
+                msg_box.setText("Hiányzó fájnév, tábla adatok!")
+                msg_box.exec()
+                return
 
         self.run_button.clicked.connect(run_packet)  # type: ignore
-
         PacketWindow.instance = self
         assert log_gui("PacketWindow opened")
 
