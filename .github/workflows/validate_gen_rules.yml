@@ -1,0 +1,44 @@
+name: Validate generated rules
+run-name: Validate generated rules triggered by ${{ github.event_name }}
+
+on: 
+  workflow_dispatch:
+  push:
+    branches:
+    - main
+  pull_request:
+    branches:
+    - main
+
+jobs:
+  setup_env_and_test:
+    runs-on: ubuntu-20.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v3
+      - name: Set up Python 3.x
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.x' # setting up the latest python version
+          architecture: 'x64'
+      - name: Display Python version
+        run: python -c "import sys; print(sys.version)"
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+          pip list
+          sudo apt update
+          sudo apt upgrade
+      - name: Add rules to iptables and save curr state
+        run: |
+          python ./ci_generate_rules.py
+          cat .ci_input.txt
+          echo === END OF CI INPUT === 
+          python ./ci_add_rules_to_iptables.py
+          sudo iptables-save > .ci_results.txt
+      - name: Check content of iptables
+        run: |
+          python ./ci_validate_results.py
+        
+          
