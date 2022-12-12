@@ -173,7 +173,7 @@ class PacketCreationWindow(AbstractTableWindow):
             ),
             "udp": Button(
                 btn=QPushButton("UDP", self.centralWidget()),
-                call=lambda: self.create_packet(PacketType.TCP),
+                call=lambda: self.create_packet(PacketType.UDP),
             ),
             "delete": Button(
                 btn=QPushButton("törlés", self.centralWidget()),
