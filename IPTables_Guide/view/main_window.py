@@ -19,7 +19,7 @@ from PySide6.QtWidgets import (  # pylint: disable=import-error
 from IPTables_Guide.model.packets import PacketManager
 from IPTables_Guide.view.help_window import HelpWindow, display_help
 from IPTables_Guide.view.packet_window import PacketWindow, get_packet_window
-from IPTables_Guide.view.packet_creation_window import get_packet_creation_window
+from IPTables_Guide.view.packet_creation_window import PacketCreationWindow
 from IPTables_Guide.view.iptable_window import IPTableWindow
 from IPTables_Guide.view.persistence import PersistenceWindow
 from IPTables_Guide.view.gui_utils import open_window, log_gui, Button
@@ -62,8 +62,10 @@ class MainWindow(QMainWindow):
             ),
             "package_creation": Button(
                 btn=QPushButton("Csomagkészítés", self.centralWidget()),
-                call=lambda: get_packet_creation_window(
-                    packet_manager=self.packet_manager
+                call=lambda: open_window(
+                    PacketCreationWindow,
+                    parent=self,
+                    packet_manager=self.packet_manager,
                 ),
             ),
             "persistence": Button(
